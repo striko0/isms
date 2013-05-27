@@ -1,0 +1,12 @@
+Manifest-Version: 1.0
+Bundle-Name: KTable Examples Plug-in
+Bundle-SymbolicName: de.kupzog.KTable.examples
+Bundle-Version: 2.2.0
+Bundle-ClassPath: ktable_examples.jar
+Bundle-Activator: de.kupzog.KTable.examples.ExamplesPlugin
+Bundle-Localization: plugin
+Require-Bundle: org.eclipse.ui,
+ org.eclipse.core.runtime,
+ de.kupzog.ktable;bundle-version="[2.2.0,2.2.0]"
+Eclipse-AutoStart: true
+Export-Package: de.kupzog.examples

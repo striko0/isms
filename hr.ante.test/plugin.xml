@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<plugin>
+
+   <extension
+         id="product"
+         point="org.eclipse.core.runtime.products">
+      <product
+            name="hr.ante.test"
+            application="org.eclipse.e4.ui.workbench.swt.E4Application">
+         <property
+               name="clearPersistedState"
+               value="true">
+         </property>  
+         <property
+				name="appName"
+				value="hr.ante.test" >
+		</property>  
+		<property
+				name="applicationXMI"
+				value="hr.ante.test/Application.e4xmi" >
+		</property>
+          <property
+               name="applicationCSS"
+               value="platform:/plugin/hr.ante.test/css/e4_mytheme.css">
+              
+         </property>  
+         
+      </product>
+   </extension>
+	<extension
+			point="org.eclipse.e4.ui.css.swt.theme">
+		<theme
+			basestylesheeturi="css/blue.css"
+			id="hr.ante.test.blue"
+			label="Blue Theme">
+		</theme>
+  <theme
+        basestylesheeturi="css/e4_mytheme.css"
+        id="hr.ante.test.theme1"
+        label="MyTheme">
+  </theme>
+	</extension>
+
+</plugin>

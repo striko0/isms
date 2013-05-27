@@ -1,0 +1,20 @@
+Label {
+ 
+    //color:rgb(178,34,34);
+    background-color:blue;
+}
+ 
+Button, Text, DateTime, Composite{
+     color: red;
+}
+  
+Shell, KTable{
+
+}
+
+.MPartStack {
+	  swt-maximize-visible: false;
+	  swt-minimize-visible: false;
+background-color: gradient radial white blue 50% ;
+	} 
+
