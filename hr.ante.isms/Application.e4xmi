@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<application:Application xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:advanced="http://www.eclipse.org/ui/2010/UIModel/application/ui/advanced" xmlns:application="http://www.eclipse.org/ui/2010/UIModel/application" xmlns:basic="http://www.eclipse.org/ui/2010/UIModel/application/ui/basic" xmlns:menu="http://www.eclipse.org/ui/2010/UIModel/application/ui/menu" xmi:id="_DOk2QMHoEeKRFJks8F58qg" elementId="org.eclipse.e4.ide.application" bindingContexts="_DOk2SMHoEeKRFJks8F58qg">
+  <children xsi:type="basic:TrimmedWindow" xmi:id="_DOk2QcHoEeKRFJks8F58qg" elementId="hr.ante.isms.trimmedwindow.0" label="ISMS" width="800" height="600">
+    <children xsi:type="advanced:PerspectiveStack" xmi:id="_DOk2X8HoEeKRFJks8F58qg" elementId="hr.ante.isms.perspectivestack.0">
+      <children xsi:type="advanced:Perspective" xmi:id="_DOk2YMHoEeKRFJks8F58qg" elementId="hr.ante.isms.perspective.main">
+        <children xsi:type="basic:Part" xmi:id="_-ND-0Ma2EeKnGd2mN_Ma-g" elementId="hr.ante.isms.part.0" contributionURI="bundleclass://hr.ante.isms/hr.ante.isms.parts.Isms" label="" closeable="true"/>
+      </children>
+    </children>
+    <mainMenu xmi:id="_DOk2WMHoEeKRFJks8F58qg" elementId="menu:org.eclipse.ui.main.menu">
+      <children xsi:type="menu:Menu" xmi:id="_DOk2WcHoEeKRFJks8F58qg" elementId="hr.ante.isms.mainmenu.glavni" label="&amp;Glavni">
+        <children xsi:type="menu:HandledMenuItem" xmi:id="_DOk2WsHoEeKRFJks8F58qg" label="Open" iconURI="platform:/plugin/hr.ante.isms/icons/sample.gif" command="_DOk2T8HoEeKRFJks8F58qg"/>
+        <children xsi:type="menu:HandledMenuItem" xmi:id="_DOk2W8HoEeKRFJks8F58qg" label="Save" iconURI="platform:/plugin/hr.ante.isms/icons/save_edit.gif" command="_mfzgoMLXEeKy-ewonlH2xg"/>
+        <children xsi:type="menu:HandledMenuItem" xmi:id="_DOk2XMHoEeKRFJks8F58qg" label="Quit" command="_DOk2S8HoEeKRFJks8F58qg"/>
+      </children>
+      <children xsi:type="menu:Menu" xmi:id="_DOk2XcHoEeKRFJks8F58qg" elementId="hr.ante.isms.mainmenu.transakcije" label="&amp;Transakcije">
+        <children xsi:type="menu:HandledMenuItem" xmi:id="_DOk2XsHoEeKRFJks8F58qg" label="About" command="_DOk2VcHoEeKRFJks8F58qg"/>
+      </children>
+      <children xsi:type="menu:Menu" xmi:id="_kBCIEMa8EeKnGd2mN_Ma-g" elementId="hr.ante.isms.menu.pomoc" label="&amp;Pomoć">
+        <children xsi:type="menu:HandledMenuItem" xmi:id="_y9C0YMa8EeKnGd2mN_Ma-g" elementId="hr.ante.isms.handledmenuitem.0" label="O aplikaciji"/>
+      </children>
+    </mainMenu>
+    <trimBars xmi:id="_Ca5mUMa5EeKnGd2mN_Ma-g" elementId="hr.ante.isms.trimbar.0">
+      <children xsi:type="menu:ToolControl" xmi:id="_DSeukMa5EeKnGd2mN_Ma-g" elementId="hr.ante.isms.toolcontrol.0" contributionURI="bundleclass://hr.ante.isms/hr.ante.isms.parts.ToolbarTop"/>
+    </trimBars>
+  </children>
+  <handlers xmi:id="_DOk2TMHoEeKRFJks8F58qg" contributionURI="bundleclass://hr.ante.isms/hr.ante.isms.handlers.QuitHandler" command="_DOk2S8HoEeKRFJks8F58qg"/>
+  <handlers xmi:id="_DOk2UMHoEeKRFJks8F58qg" contributionURI="bundleclass://hr.ante.isms/hr.ante.isms.handlers.OpenHandler" command="_DOk2T8HoEeKRFJks8F58qg"/>
+  <handlers xmi:id="_DOk2U8HoEeKRFJks8F58qg" contributionURI="bundleclass://hr.ante.isms/hr.ante.isms.handlers.SaveHandler" command="_DOk2UsHoEeKRFJks8F58qg"/>
+  <handlers xmi:id="_DOk2VsHoEeKRFJks8F58qg" contributionURI="bundleclass://hr.ante.isms/hr.ante.isms.handlers.AboutHandler" command="_DOk2VcHoEeKRFJks8F58qg"/>
+  <handlers xmi:id="_wlewIMLXEeKy-ewonlH2xg" elementId="hr.ante.isms.handler.new" contributionURI="bundleclass://hr.ante.isms/hr.ante.isms.handlers.NewFormHandler" command="_mfzgoMLXEeKy-ewonlH2xg"/>
+  <bindingTables xmi:id="_DOk2TcHoEeKRFJks8F58qg" bindingContext="_DOk2SMHoEeKRFJks8F58qg">
+    <bindings xmi:id="_DOk2TsHoEeKRFJks8F58qg" keySequence="M1+Q" command="_DOk2S8HoEeKRFJks8F58qg"/>
+    <bindings xmi:id="_DOk2UcHoEeKRFJks8F58qg" keySequence="M1+O" command="_DOk2T8HoEeKRFJks8F58qg"/>
+    <bindings xmi:id="_DOk2VMHoEeKRFJks8F58qg" keySequence="M1+S" command="_DOk2UsHoEeKRFJks8F58qg"/>
+    <bindings xmi:id="_DOk2V8HoEeKRFJks8F58qg" keySequence="M1+A" command="_DOk2VcHoEeKRFJks8F58qg"/>
+  </bindingTables>
+  <rootContext xmi:id="_DOk2SMHoEeKRFJks8F58qg" elementId="org.eclipse.ui.contexts.dialogAndWindow" name="In Dialog and Windows">
+    <children xmi:id="_DOk2ScHoEeKRFJks8F58qg" elementId="org.eclipse.ui.contexts.window" name="In Windows"/>
+    <children xmi:id="_DOk2SsHoEeKRFJks8F58qg" elementId="org.eclipse.ui.contexts.dialog" name="In Dialogs"/>
+  </rootContext>
+  <commands xmi:id="_DOk2S8HoEeKRFJks8F58qg" elementId="org.eclipse.ui.file.exit" commandName="quitCommand"/>
+  <commands xmi:id="_DOk2T8HoEeKRFJks8F58qg" elementId="hr.ante.isms.open" commandName="openCommand"/>
+  <commands xmi:id="_DOk2UsHoEeKRFJks8F58qg" elementId="org.eclipse.ui.file.save" commandName="saveCommand"/>
+  <commands xmi:id="_DOk2VcHoEeKRFJks8F58qg" elementId="org.eclipse.ui.help.aboutAction" commandName="aboutCommand"/>
+  <commands xmi:id="_mfzgoMLXEeKy-ewonlH2xg" elementId="hr.ante.isms.command.new" commandName="New form"/>
+  <addons xmi:id="_DOk2QsHoEeKRFJks8F58qg" elementId="org.eclipse.e4.core.commands.service" contributionURI="bundleclass://org.eclipse.e4.core.commands/org.eclipse.e4.core.commands.CommandServiceAddon"/>
+  <addons xmi:id="_DOk2Q8HoEeKRFJks8F58qg" elementId="org.eclipse.e4.ui.contexts.service" contributionURI="bundleclass://org.eclipse.e4.ui.services/org.eclipse.e4.ui.services.ContextServiceAddon"/>
+  <addons xmi:id="_DOk2RMHoEeKRFJks8F58qg" elementId="org.eclipse.e4.ui.bindings.service" contributionURI="bundleclass://org.eclipse.e4.ui.bindings/org.eclipse.e4.ui.bindings.BindingServiceAddon"/>
+  <addons xmi:id="_DOk2RcHoEeKRFJks8F58qg" elementId="org.eclipse.e4.ui.workbench.commands.model" contributionURI="bundleclass://org.eclipse.e4.ui.workbench/org.eclipse.e4.ui.internal.workbench.addons.CommandProcessingAddon"/>
+  <addons xmi:id="_DOk2RsHoEeKRFJks8F58qg" elementId="org.eclipse.e4.ui.workbench.contexts.model" contributionURI="bundleclass://org.eclipse.e4.ui.workbench/org.eclipse.e4.ui.internal.workbench.addons.ContextProcessingAddon"/>
+  <addons xmi:id="_DOk2R8HoEeKRFJks8F58qg" elementId="org.eclipse.e4.ui.workbench.bindings.model" contributionURI="bundleclass://org.eclipse.e4.ui.workbench.swt/org.eclipse.e4.ui.workbench.swt.util.BindingProcessingAddon"/>
+</application:Application>

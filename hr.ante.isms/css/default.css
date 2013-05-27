@@ -1,0 +1,16 @@
+.MWindow{
+  font-family: Arial 50px;
+}
+//
+//.MWindow > lblNaziv_{
+//
+//}
+
+.MTrimmedWindow{
+  background-color: blue;
+}
+
+
+.MPart {
+background-color: blue;
+}
