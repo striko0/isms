@@ -27,11 +27,14 @@ import de.kupzog.ktable.renderers.DefaultCellRenderer;
 import de.kupzog.ktable.renderers.FixedCheckableCellRenderer;
 import de.kupzog.ktable.renderers.TextCellRenderer;
 
-public class ThreatASKTableModel extends KTableSortedModel {
+public class ThreatIdentASKTableModel extends KTableSortedModel {
 
 	private Random rand = new Random();
 	private HashMap content = new HashMap();
 	public HashMap meta = new HashMap();
+	public int rowNumber=0;
+
+	private int columnNumber=-1;
 	private int[] colWidths;
 
 	private int rowHeight;
@@ -66,21 +69,18 @@ public class ThreatASKTableModel extends KTableSortedModel {
 	/**
    *
    */
-	public ThreatASKTableModel() {
-		// before initializing, you probably have to set some member values
-		// to make all model getter methods work properly.
+	public ThreatIdentASKTableModel() {
 
 		initialize();
 
 
-		//statusLine.setMessage("hello");
-
-
-
-		// we don't want the default foreground color on text cells,
-		// so we change it:
+		/** BROJ STUPACA!
+		 *
+		 */
+		columnNumber=1;
 		//meta.put("0", "");
-		meta.put("1", "Text");
+		for (int i=1; i<=columnNumber;i++)
+			meta.put(""+i+"", "Text");
 
 		colWidths = new int[getColumnCount()];
 
@@ -145,37 +145,6 @@ public class ThreatASKTableModel extends KTableSortedModel {
 
 		return "";
 
-//
-//		Boolean val = null;
-//
-//		if(col!=4 | (col==4 && row==0) )
-//		{
-//
-//			String erg = (String) content.get(col + "/" + row);
-//			if (erg != null)
-//				return erg;
-//			return "";
-//		}
-//		else
-//		{
-//
-//			val = (Boolean) content.get(col + "/" + row);
-//			if (val != null)
-//				return val;
-//			else
-//		            val = new Boolean(false);
-//
-//			/**OVO TRIBA PROVJERITI I IZMINITI **/
-//			if (row==0){
-//				return "Checkbox";
-//			}
-//			else{
-//				content.put(col+"/"+row, val);
-//				 return val;
-//			}
-//
-//
-//		}
 
 
 	}
@@ -242,7 +211,7 @@ public class ThreatASKTableModel extends KTableSortedModel {
 
 	// Table size:
 	public int doGetRowCount() {
-		return 4 + getFixedRowCount();
+		return 0 + getFixedRowCount();
 	}
 
 	public int doGetColumnCount() {
@@ -306,6 +275,13 @@ public class ThreatASKTableModel extends KTableSortedModel {
 	 *
 	 * @see de.kupzog.ktable.KTableDefaultModel#getInitialColumnWidth(int)
 	 */
+
+	public void setRowNumber(int number) {
+		// no cell spanning:
+		 rowNumber=number;
+
+	}
+
 
 	public String doGetTooltipAt(int col, int row) {
 		return "Tooltip for cell: " + col + "/" + row;

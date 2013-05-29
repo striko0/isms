@@ -1,7 +1,7 @@
 package hr.ante.isms.parts;
 
 import hr.ante.isms.parts.table.ASKTable;
-import hr.ante.isms.parts.table.IAnalysisASKTableModel;
+import hr.ante.isms.parts.table.ImpactAnalysisASKTableModel;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
@@ -141,13 +141,14 @@ public class ImpactAnalysis {
 		Composite compositeASKTable = new Composite(mParent, SWT.NONE);
 		compositeASKTable.setLayout(new FillLayout());
 		GridData gd_compositeASKTable = new GridData(SWT.FILL, SWT.FILL, true, true, 2, 1);
+		gd_compositeASKTable.heightHint = 164;
 		gd_compositeASKTable.minimumHeight = 100;
 		gd_compositeASKTable.widthHint = 778;
 		gd_compositeASKTable.horizontalIndent = 10;
 		compositeASKTable.setLayoutData(gd_compositeASKTable);
 
 //		new ASKTable(compositeASKTable, 717,compositeASKTable.getBounds().height );
-		new ASKTable(compositeASKTable,new IAnalysisASKTableModel(), 717,compositeASKTable.getBounds().height );
+		new ASKTable(compositeASKTable,new ImpactAnalysisASKTableModel(), 717,compositeASKTable.getBounds().height );
 				new Label(mParent, SWT.NONE);
 
 		Composite compositeButtons_ = new Composite(mParent, SWT.NONE);

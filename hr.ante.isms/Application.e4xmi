@@ -1,10 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <application:Application xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:advanced="http://www.eclipse.org/ui/2010/UIModel/application/ui/advanced" xmlns:application="http://www.eclipse.org/ui/2010/UIModel/application" xmlns:basic="http://www.eclipse.org/ui/2010/UIModel/application/ui/basic" xmlns:menu="http://www.eclipse.org/ui/2010/UIModel/application/ui/menu" xmi:id="_DOk2QMHoEeKRFJks8F58qg" elementId="org.eclipse.e4.ide.application" bindingContexts="_DOk2SMHoEeKRFJks8F58qg">
-  <children xsi:type="basic:TrimmedWindow" xmi:id="_DOk2QcHoEeKRFJks8F58qg" elementId="hr.ante.isms.trimmedwindow.0" label="ISMS" width="800" height="600">
-    <children xsi:type="advanced:PerspectiveStack" xmi:id="_DOk2X8HoEeKRFJks8F58qg" elementId="hr.ante.isms.perspectivestack.0">
-      <children xsi:type="advanced:Perspective" xmi:id="_DOk2YMHoEeKRFJks8F58qg" elementId="hr.ante.isms.perspective.main">
-        <children xsi:type="basic:Part" xmi:id="_-ND-0Ma2EeKnGd2mN_Ma-g" elementId="hr.ante.isms.part.0" contributionURI="bundleclass://hr.ante.isms/hr.ante.isms.parts.Isms" label="" closeable="true"/>
+  <children xsi:type="basic:TrimmedWindow" xmi:id="_DOk2QcHoEeKRFJks8F58qg" elementId="hr.ante.isms.trimmedwindow.0" label="ISMS" width="900" height="600">
+    <children xsi:type="advanced:PerspectiveStack" xmi:id="_DOk2X8HoEeKRFJks8F58qg" elementId="hr.ante.isms.perspectivestack.admin" selectedElement="_DOk2YMHoEeKRFJks8F58qg">
+      <children xsi:type="advanced:Perspective" xmi:id="_DOk2YMHoEeKRFJks8F58qg" elementId="hr.ante.isms.perspective.main" label="Admin">
+        <children xsi:type="basic:Part" xmi:id="_-ND-0Ma2EeKnGd2mN_Ma-g" elementId="hr.ante.isms.part.asset" contributionURI="bundleclass://hr.ante.isms/hr.ante.isms.parts.ListAssets" label="Imovina" closeable="true"/>
+        <children xsi:type="basic:Part" xmi:id="_wBsqMMhUEeKpmOoztJtsBA" elementId="hr.ante.isms.part.risk" visible="false" contributionURI="bundleclass://hr.ante.isms/hr.ante.isms.parts.ListRisks" label="Rizik"/>
       </children>
+      <children xsi:type="advanced:Perspective" xmi:id="_TQ0HkMeKEeK97MPScHyovA" elementId="hr.ante.isms.perspective.user" accessibilityPhrase="" label="User"/>
     </children>
     <mainMenu xmi:id="_DOk2WMHoEeKRFJks8F58qg" elementId="menu:org.eclipse.ui.main.menu">
       <children xsi:type="menu:Menu" xmi:id="_DOk2WcHoEeKRFJks8F58qg" elementId="hr.ante.isms.mainmenu.glavni" label="&amp;Glavni">
@@ -19,8 +21,8 @@
         <children xsi:type="menu:HandledMenuItem" xmi:id="_y9C0YMa8EeKnGd2mN_Ma-g" elementId="hr.ante.isms.handledmenuitem.0" label="O aplikaciji"/>
       </children>
     </mainMenu>
-    <trimBars xmi:id="_Ca5mUMa5EeKnGd2mN_Ma-g" elementId="hr.ante.isms.trimbar.0">
-      <children xsi:type="menu:ToolControl" xmi:id="_DSeukMa5EeKnGd2mN_Ma-g" elementId="hr.ante.isms.toolcontrol.0" contributionURI="bundleclass://hr.ante.isms/hr.ante.isms.parts.ToolbarTop"/>
+    <trimBars xmi:id="_oU1pEMeMEeK97MPScHyovA" elementId="hr.ante.isms.trimbar.1" side="Left">
+      <children xsi:type="menu:ToolControl" xmi:id="_pqvsEMeMEeK97MPScHyovA" elementId="hr.ante.isms.toolcontrol.1" contributionURI="bundleclass://hr.ante.isms/hr.ante.isms.parts.Toolbar"/>
     </trimBars>
   </children>
   <handlers xmi:id="_DOk2TMHoEeKRFJks8F58qg" contributionURI="bundleclass://hr.ante.isms/hr.ante.isms.handlers.QuitHandler" command="_DOk2S8HoEeKRFJks8F58qg"/>

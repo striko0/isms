@@ -1,7 +1,7 @@
 package hr.ante.isms.parts;
 
 import hr.ante.isms.parts.table.ASKTable;
-import hr.ante.isms.parts.table.ISMSASKTableModel;
+import hr.ante.isms.parts.table.ListAssetASKTableModel;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
@@ -26,7 +26,7 @@ import org.eclipse.wb.swt.SWTResourceManager;
 
 
 
-public class Isms {
+public class ListAssets {
 	@Inject IStylingEngine engine;
     @Inject private MApplication app;
 
@@ -41,15 +41,16 @@ public class Isms {
 
 
     private Composite mParent;
-	 @Inject
-	  MDirtyable dirty;
+	@Inject
+	MDirtyable dirty;
 
 
 	@PostConstruct
 	public void createComposite(final Composite parent) {
 
 		final ScrolledComposite scrollBox = new ScrolledComposite(parent,
-				SWT.V_SCROLL | SWT.H_SCROLL);
+				SWT.BORDER | SWT.H_SCROLL | SWT.V_SCROLL);
+		scrollBox.setBackground(SWTResourceManager.getColor(SWT.COLOR_WHITE));
 		scrollBox.setBounds(0, 0, 490, 537);
 		//scrollBox.setBounds(0, 0, 760, 450);
 		//scrollBox.setBounds(0, 0, 448, 375);
@@ -64,31 +65,56 @@ public class Isms {
 		// pixels) then send that value instead.
 
 		mParent = new Composite(scrollBox, SWT.NONE);
+		mParent.setBackground(SWTResourceManager.getColor(SWT.COLOR_WIDGET_BACKGROUND));
 		//parent.setSize(new Point(759, 359));
 		//mParent.getShell().setSize(759, 400);
 		mParent.getShell().setText("Upravljanje Rizicima");
-		mParent.setLayout(new GridLayout(1, false));
+		GridLayout gl_mParent = new GridLayout(1, false);
+		gl_mParent.verticalSpacing = 0;
+		gl_mParent.horizontalSpacing = 0;
+		gl_mParent.marginWidth = 0;
+		gl_mParent.marginHeight = 0;
+		mParent.setLayout(gl_mParent);
+
+		Label naslov_ = new Label (mParent, SWT.NONE);
+		naslov_.setForeground(SWTResourceManager.getColor(SWT.COLOR_WIDGET_FOREGROUND));
+		naslov_.setBackground(SWTResourceManager.getColor(SWT.COLOR_TITLE_BACKGROUND_GRADIENT));
+		naslov_.setFont(SWTResourceManager.getFont("Verdana", 18, SWT.BOLD));
+		naslov_.setText("Imovina");
+		naslov_.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
 
 				Composite compositeASKTable = new Composite(mParent, SWT.NONE);
+				compositeASKTable.setBackground(SWTResourceManager.getColor(SWT.COLOR_WHITE));
 				compositeASKTable.setLayout(new FillLayout());
 				GridData gd_compositeASKTable = new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1);
 				gd_compositeASKTable.minimumHeight = 100;
 				gd_compositeASKTable.widthHint = 778;
-				gd_compositeASKTable.horizontalIndent = 10;
 				compositeASKTable.setLayoutData(gd_compositeASKTable);
-				new ASKTable(compositeASKTable,new ISMSASKTableModel(), 717,compositeASKTable.getBounds().height );
+				new ASKTable(compositeASKTable,new ListAssetASKTableModel(), 717,compositeASKTable.getBounds().height );
 
-				Composite composite = new Composite(mParent, SWT.NONE);
-				composite.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
-				composite.setLayout(new GridLayout(2, false));
+				Composite compositeUser_ = new Composite(mParent, SWT.NONE);
+				compositeUser_.setBackground(SWTResourceManager.getColor(SWT.COLOR_WIDGET_BACKGROUND));
+				GridData gd_compositeUser_ = new GridData(SWT.RIGHT, SWT.FILL, true, false, 1, 1);
+				gd_compositeUser_.heightHint = 20;
+				compositeUser_.setLayoutData(gd_compositeUser_);
+				GridLayout gl_composite = new GridLayout(3, false);
+				gl_composite.marginHeight = 0;
+				gl_composite.marginWidth = 0;
+				compositeUser_.setLayout(gl_composite);
 
-				CLabel label = new CLabel(composite, SWT.NONE);
-				label.setText("ANTE STRIKOMAN");
-				label.setBackground(SWTResourceManager.getColor(SWT.COLOR_TITLE_INACTIVE_BACKGROUND_GRADIENT));
+				CLabel labelUser_ = new CLabel(compositeUser_, SWT.NONE);
+				labelUser_.setLayoutData(new GridData(SWT.LEFT, SWT.TOP, true, false, 1, 1));
+				labelUser_.setText("TESTUser");
+				labelUser_.setBackground(SWTResourceManager.getColor(SWT.COLOR_TITLE_INACTIVE_BACKGROUND_GRADIENT));
 
-				CLabel label_1 = new CLabel(composite, SWT.NONE);
-				label_1.setText("ponedjeljak, 27. svibanj 2013");
-				label_1.setBackground(SWTResourceManager.getColor(SWT.COLOR_TITLE_INACTIVE_BACKGROUND_GRADIENT));
+				Label labelsep_ = new Label(compositeUser_, SWT.SEPARATOR);
+				CLabel labelUserDatum_ = new CLabel(compositeUser_, SWT.NONE);
+				labelUserDatum_.setLayoutData(new GridData(SWT.LEFT, SWT.TOP, true, false, 1, 1));
+				labelUserDatum_.setText("ponedjeljak, 27. svibanj 2013");
+				labelUserDatum_.setBackground(SWTResourceManager.getColor(SWT.COLOR_TITLE_INACTIVE_BACKGROUND_GRADIENT));
+				new Label(compositeUser_, SWT.NONE);
+				new Label(compositeUser_, SWT.NONE);
+				new Label(compositeUser_, SWT.NONE);
 
 		scrollBox.setContent(mParent);
 	}
@@ -111,5 +137,4 @@ public class Isms {
 	public void setFocus() {
 		mParent.setFocus();
 	}
-
 }

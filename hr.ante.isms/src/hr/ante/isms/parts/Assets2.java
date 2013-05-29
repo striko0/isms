@@ -11,6 +11,7 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.ScrolledComposite;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.layout.FormAttachment;
 import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.layout.GridData;
@@ -23,6 +24,7 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.wb.swt.ResourceManager;
 import org.eclipse.swt.layout.FormLayout;
+import org.mihalis.opal.opalDialog.Dialog;
 
 public class Assets2 {
 
@@ -41,7 +43,7 @@ public class Assets2 {
 
 		final ScrolledComposite scrollBox = new ScrolledComposite(parent,
 				SWT.V_SCROLL | SWT.H_SCROLL);
-		scrollBox.setMinHeight(359);
+		scrollBox.setMinHeight(349);
 		scrollBox.setMinWidth(650);
 
 		scrollBox.setExpandHorizontal(true);
@@ -85,8 +87,7 @@ public class Assets2 {
 		Label lblKategorija_ = new Label(compositeLeft, SWT.NONE);
 		lblKategorija_.setText("Kategorija:");
 
-		Combo comboKateg_ = new Combo(compositeLeft, SWT.NONE);
-
+		Combo comboKateg_ = new Combo(compositeLeft, SWT.NONE);	
 
 		Label lblPodkateg_ = new Label(compositeLeft, SWT.NONE);
 		lblPodkateg_.setText("Podkategorija:");
@@ -120,34 +121,39 @@ public class Assets2 {
 
 		Combo comboPovjerljivost_ = new Combo(grpVanostImovine, SWT.NONE);
 		comboPovjerljivost_.setLocation(90, 40);
+		
 		comboPovjerljivost_.setSize(180, 21);
+		comboPovjerljivost_.setItems(new String[]{"1-Vrlo niska (javno)","2-Niska (ogranièeno)","3-Srednja (povjerljivo)","4-Visoka (tajno)","5-Vrlo visoka (vrlo tajno)"});
 
-				Label lblCjelovitost = new Label(grpVanostImovine, SWT.NONE);
-				lblCjelovitost.setLocation(15, 73);
-				lblCjelovitost.setSize(65, 13);
-				lblCjelovitost.setText("Cjelovitost:");
+		Label lblCjelovitost = new Label(grpVanostImovine, SWT.NONE);
+		lblCjelovitost.setLocation(15, 73);
+		lblCjelovitost.setSize(65, 13);
+		lblCjelovitost.setText("Cjelovitost:");
 
-				Combo comboCjelovitost_ = new Combo(grpVanostImovine, SWT.NONE);
-				comboCjelovitost_.setLocation(90, 70);
-				comboCjelovitost_.setSize(180, 21);
+		Combo comboCjelovitost_ = new Combo(grpVanostImovine, SWT.NONE);
+		comboCjelovitost_.setLocation(90, 70);
+		comboCjelovitost_.setSize(180, 21);
+		comboCjelovitost_.setItems(new String[]{"1-Vrlo niska","2-Niska","3-Srednja","4-Visoka","5-Vrlo visoka"});
 
 		Label lblRaspoloivost_ = new Label(grpVanostImovine, SWT.NONE);
 		lblRaspoloivost_.setLocation(15, 103);
 		lblRaspoloivost_.setSize(73, 13);
 		lblRaspoloivost_.setText("Raspolo\u017Eivost:");
 
-				Combo comboRaspolozivost_ = new Combo(grpVanostImovine, SWT.NONE);
-				comboRaspolozivost_.setLocation(90, 100);
-				comboRaspolozivost_.setSize(180, 21);
+		Combo comboRaspolozivost_ = new Combo(grpVanostImovine, SWT.NONE);
+		comboRaspolozivost_.setLocation(90, 100);
+		comboRaspolozivost_.setSize(180, 21);
+		comboRaspolozivost_.setItems(new String[]{"1-Nije važna (do 72 sata)","2-Nije vrlo važna (do 48 sati)","3-Važna (do 8 sati)","4-Vrlo važna ( do 1 sat)","5-Ekstremno važna (kritièna bez odgode)"});
 
-		Label lblOstalo_ = new Label(grpVanostImovine, SWT.NONE);
-		lblOstalo_.setLocation(15, 133);
-		lblOstalo_.setSize(65, 13);
-		lblOstalo_.setText("P. Utjecaj:");
+		Label lblBi_ = new Label(grpVanostImovine, SWT.NONE);
+		lblBi_.setLocation(15, 133);
+		lblBi_.setSize(65, 13);
+		lblBi_.setText("P. Utjecaj:");
 
-		Combo comboOstalo_ = new Combo(grpVanostImovine, SWT.NONE);
-		comboOstalo_.setLocation(90, 130);
-		comboOstalo_.setSize(180, 21);
+		Combo comboBi_ = new Combo(grpVanostImovine, SWT.NONE);
+		comboBi_.setLocation(90, 130);
+		comboBi_.setSize(180, 21);
+		comboBi_.setItems(new String[]{"1-Nije važna","2-Nije vrlo važna","3-Važna","4-Kritièna","5-Vrlo kritièna"});
 
 		Label lblObjanjenjeostalo_ = new Label(grpVanostImovine, SWT.NONE);
 		lblObjanjenjeostalo_.setText("Obja\u0161njenje (ostalo):");
@@ -155,26 +161,72 @@ public class Assets2 {
 
 		textObjanjenjeostalo_ = new Text(grpVanostImovine, SWT.BORDER);
 		textObjanjenjeostalo_.setBounds(10, 180, 308, 92);
+		
+		
 
 		Button btnDescriptionPov_ = new Button(grpVanostImovine, SWT.NONE);
 		btnDescriptionPov_.setImage(ResourceManager.getPluginImage(
 				"hr.ante.isms", "src/icons/gnome_dialog_question (1).png"));
 		btnDescriptionPov_.setBounds(276, 40, 42, 23);
+		btnDescriptionPov_.addSelectionListener(new SelectionAdapter() {
+			
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				// TODO Auto-generated method stub
+					new HelpDialog(mParent.getShell(), 1);
+				}
+
+			
+		});
+		
+		
+		
+		
 
 		Button btnDescriptionCje_ = new Button(grpVanostImovine, SWT.NONE);
 		btnDescriptionCje_.setImage(ResourceManager.getPluginImage(
 				"hr.ante.isms", "src/icons/gnome_dialog_question (1).png"));
 		btnDescriptionCje_.setBounds(276, 70, 42, 23);
+		btnDescriptionCje_.addSelectionListener(new SelectionAdapter() {
+			
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				// TODO Auto-generated method stub
+					new HelpDialog(mParent.getShell(), 2);
+				}
+
+			
+		});
 
 		Button btnDescriptionRas_ = new Button(grpVanostImovine, SWT.NONE);
 		btnDescriptionRas_.setImage(ResourceManager.getPluginImage(
 				"hr.ante.isms", "src/icons/gnome_dialog_question (1).png"));
 		btnDescriptionRas_.setBounds(276, 100, 42, 23);
+		btnDescriptionRas_.addSelectionListener(new SelectionAdapter() {
+			
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				// TODO Auto-generated method stub
+					new HelpDialog(mParent.getShell(), 3);
+				}
 
-		Button btnDescriptionOst_ = new Button(grpVanostImovine, SWT.NONE);
-		btnDescriptionOst_.setImage(ResourceManager.getPluginImage(
+			
+		});
+
+		Button btnDescriptionBi_ = new Button(grpVanostImovine, SWT.NONE);
+		btnDescriptionBi_.setImage(ResourceManager.getPluginImage(
 				"hr.ante.isms", "src/icons/gnome_dialog_question (1).png"));
-		btnDescriptionOst_.setBounds(276, 130, 42, 23);
+		btnDescriptionBi_.setBounds(276, 130, 42, 23);
+		btnDescriptionBi_.addSelectionListener(new SelectionAdapter() {
+			
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				// TODO Auto-generated method stub
+					new HelpDialog(mParent.getShell(), 4);
+				}
+
+			
+		});
 
 		Composite compositeButtons_ = new Composite(mParent, SWT.NONE);
 		compositeButtons_.setBounds(506, 315, 235, 33);
@@ -319,7 +371,7 @@ public class Assets2 {
 
 		//**********textObjanjenjeostalo_ layout
 		FormData fd_textObjanjenjeostalo = new FormData();
-		fd_textObjanjenjeostalo.top = new FormAttachment(comboOstalo_,0);
+		fd_textObjanjenjeostalo.top = new FormAttachment(comboBi_,0);
 		fd_textObjanjenjeostalo.bottom = new FormAttachment(100,0);
 		fd_textObjanjenjeostalo.right = new FormAttachment(100,0);
 		textObjanjenjeostalo_.setLayoutData(fd_textObjanjenjeostalo);

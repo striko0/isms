@@ -1,8 +1,6 @@
 package hr.ante.isms.parts.table;
 
-import hr.ante.test.asktable.ASKTableContextMenu2;
 import hr.ante.test.asktable.comparator.ASKTableSortOnClick2;
-import hr.ante.test.asktable.comparator.ASSortComparatorExample2;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Cursor;
@@ -25,8 +23,6 @@ import de.kupzog.ktable.KTableClickInterceptionListener;
 import de.kupzog.ktable.KTableSortComparator;
 import de.kupzog.ktable.KTableSortedModel;
 import de.kupzog.ktable.SWTX;
-import org.eclipse.swt.custom.CLabel;
-import org.eclipse.swt.widgets.DateTime;
 
 public class ASKTable{
 
@@ -38,6 +34,7 @@ public class ASKTable{
 	KTableActionHandler handler;
 	Menu menu;
 	int sortingColumn = -1;
+	int rowCount = 0;
 
 
 
@@ -56,7 +53,15 @@ public class ASKTable{
 		// TODO Auto-generated constructor stub
 
 		Composite comp1 = new Composite(parent, SWT.NONE);
-		comp1.setLayout(new GridLayout(1,false));
+		//comp1.setLayout(new GridLayout(1,false));
+
+		GridLayout gl_comp1 = new GridLayout(1, false);
+		gl_comp1.verticalSpacing = 0;
+		gl_comp1.horizontalSpacing = 0;
+		gl_comp1.marginHeight = 0;
+		gl_comp1.marginWidth = 0;
+		comp1.setLayout(gl_comp1);
+		//comp1.setBackground(SWTResourceManager.getColor(SWT.COLOR_WHITE));
 
 
 //		KTable table = new KTable(comp1, SWT.FULL_SELECTION | SWT.MULTI | SWT.V_SCROLL
@@ -105,7 +110,7 @@ public class ASKTable{
 					{
 
 						//new ASKTableContextMenu(table,(KTableSortedModel)table.getModel());
-						new ASKTableSortOnClick2(table,col, row, new ASSortComparatorExample2(model,-1, ASSortComparatorExample2.SORT_UP),ASSortComparatorExample2.SORT_UP, 1);
+						new ASKTableSortOnClick2(table,col, row, new ASSortComparatorISMS(model,-1, ASSortComparatorISMS.SORT_UP),ASSortComparatorISMS.SORT_UP, 1);
 
 					}
 				}
@@ -117,7 +122,7 @@ public class ASKTable{
 		});
 
 
-		new ASKTableContextMenu2(table,(KTableSortedModel)table.getModel());
+		new ASKTableContextMenu(table,(KTableSortedModel)table.getModel());
 		table.addCellSelectionListener(new KTableCellSelectionListener() {
 
 			@Override
@@ -184,7 +189,9 @@ public class ASKTable{
 		});
 
 		Composite statusComposite = new Composite(comp1, SWT.BORDER);
+		statusComposite.setBackground(SWTResourceManager.getColor(SWT.COLOR_TITLE_FOREGROUND));
 		statusComposite.setLayout(new GridLayout(2,false));
+
 		GridData gd_statusComposite = new GridData(SWT.FILL, SWT.FILL, true, false, 1, 1);
 		gd_statusComposite.widthHint = 500;
 		gd_statusComposite.heightHint = 20;
@@ -193,9 +200,11 @@ public class ASKTable{
 		statusComposite.setLayoutData(gd_statusComposite);
 
 		Label statusLabelSuma = new Label(statusComposite, SWT.NONE);
+		statusLabelSuma.setBackground(SWTResourceManager.getColor(SWT.COLOR_TITLE_FOREGROUND));
 		statusLabelSuma.setToolTipText("Statusna Linija");
 		statusLabelSuma.setText("Zbroj: " + (givenModel.doGetRowCount()-1) + " | ");
 		statusLabel = new Label(statusComposite, SWT.NONE);
+		statusLabel.setBackground(SWTResourceManager.getColor(SWT.COLOR_TITLE_FOREGROUND));
 		GridData gd_statusLabel = new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1);
 		gd_statusLabel.widthHint = 93;
 		statusLabel.setLayoutData(gd_statusLabel);

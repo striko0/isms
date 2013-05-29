@@ -21,9 +21,10 @@ import de.kupzog.ktable.renderers.DefaultCellRenderer;
 import de.kupzog.ktable.renderers.FixedCheckableCellRenderer;
 import de.kupzog.ktable.renderers.TextCellRenderer;
 
-public class ISMSASKTableModel extends KTableSortedModel {
+public class ListAssetASKTableModel extends KTableSortedModel {
 
 	private Random rand = new Random();
+	private int columnNumber=-1;
 	private HashMap content = new HashMap();
 	public HashMap meta = new HashMap();
 	private int[] colWidths;
@@ -41,8 +42,6 @@ public class ISMSASKTableModel extends KTableSortedModel {
 
 	private KTableCellRenderer m_DefaultRenderer = new DefaultCellRenderer(0);
 
-	private KTableCellRenderer m_TextRenderer = new TextCellRenderer(TextCellRenderer.INDICATION_FOCUS);
-
 	private KTableCellRenderer m_FixedCheckableRenderer = new FixedCheckableCellRenderer(
 			FixedCheckableCellRenderer.STYLE_PUSH | FixedCheckableCellRenderer.INDICATION_FOCUS | FixedCheckableCellRenderer.INDICATION_SORT);
 
@@ -51,17 +50,18 @@ public class ISMSASKTableModel extends KTableSortedModel {
 					| CheckableCellRenderer.INDICATION_FOCUS);
 
 
+	public ASRiskTextCellRenderer m_1Renderer = new ASRiskTextCellRenderer(ASRiskTextCellRenderer.INDICATION_FOCUS, SWTX.ALIGN_HORIZONTAL_LEFT | SWTX.ALIGN_VERTICAL_BOTTOM, Display.getDefault().getSystemColor(SWT.COLOR_DARK_GREEN) );
+	public ASRiskTextCellRenderer m_2Renderer = new ASRiskTextCellRenderer(ASRiskTextCellRenderer.INDICATION_FOCUS, SWTX.ALIGN_HORIZONTAL_LEFT | SWTX.ALIGN_VERTICAL_BOTTOM, Display.getDefault().getSystemColor(SWT.COLOR_BLUE) );
 	public ASRiskTextCellRenderer m_3Renderer = new ASRiskTextCellRenderer(ASRiskTextCellRenderer.INDICATION_FOCUS, SWTX.ALIGN_HORIZONTAL_LEFT | SWTX.ALIGN_VERTICAL_BOTTOM, Display.getDefault().getSystemColor(SWT.COLOR_GRAY) );
 	public ASRiskTextCellRenderer m_4Renderer = new ASRiskTextCellRenderer(ASRiskTextCellRenderer.INDICATION_FOCUS, SWTX.ALIGN_HORIZONTAL_LEFT | SWTX.ALIGN_VERTICAL_BOTTOM, Display.getDefault().getSystemColor(SWT.COLOR_RED) );
-	public ASRiskTextCellRenderer m_2Renderer = new ASRiskTextCellRenderer(ASRiskTextCellRenderer.INDICATION_FOCUS, SWTX.ALIGN_HORIZONTAL_LEFT | SWTX.ALIGN_VERTICAL_BOTTOM, Display.getDefault().getSystemColor(SWT.COLOR_BLUE) );
-
+	public ASRiskTextCellRenderer m_5Renderer = new ASRiskTextCellRenderer(ASRiskTextCellRenderer.INDICATION_FOCUS, SWTX.ALIGN_HORIZONTAL_LEFT | SWTX.ALIGN_VERTICAL_BOTTOM, Display.getDefault().getSystemColor(SWT.COLOR_DARK_RED) );
 
 
 
 	/**
    *
    */
-	public ISMSASKTableModel() {
+	public ListAssetASKTableModel() {
 		// before initializing, you probably have to set some member values
 		// to make all model getter methods work properly.
 
@@ -72,18 +72,22 @@ public class ISMSASKTableModel extends KTableSortedModel {
 
 
 
-
-
+		/** BROJ STUPACA!
+		 *
+		 */
+		columnNumber=9;
 		//meta.put("0", "");
-		meta.put("1", "Text");
-		meta.put("2", "Text");
-		meta.put("3", "Text");
-		meta.put("4", "Text");
-		meta.put("5", "Text");
-		meta.put("6", "Text");
-		meta.put("7", "Text");
-		meta.put("8", "Text");
-		meta.put("9", "Text");
+		for (int i=1; i<=columnNumber;i++)
+			meta.put(""+i+"", "Text");
+//		meta.put("2", "Text");
+//		meta.put("3", "Text");
+//		meta.put("4", "Text");
+//		meta.put("5", "Text");
+//		meta.put("6", "Text");
+//		meta.put("7", "Text");
+//		meta.put("8", "Text");
+//		meta.put("9", "Text");
+//		meta.put("10", "Text");
 
 
 
@@ -97,18 +101,18 @@ public class ISMSASKTableModel extends KTableSortedModel {
 
 		content = new HashMap();
 
-		/**OVO TRIBA IZMINITI **/
-		setContentAt(0, 0, "#");
-
-		setContentAt(1, 0, "Šifra");
-		setContentAt(2, 0, "Naziv");
-		setContentAt(3, 0, "Podkategorija");
-		setContentAt(4, 0, "Vlasnik");
-		setContentAt(5, 0, "Vrijednost");
-		setContentAt(6, 0, "Povjerljivost");
-		setContentAt(7, 0, "Cjelovitost");
-		setContentAt(8, 0, "Raspoloživost");
-		setContentAt(9, 0, "Poslovni Utjecaj");
+//		/**OVO TRIBA IZMINITI **/
+//		setContentAt(0, 0, "#");
+//
+//		setContentAt(1, 0, "Šifra");
+//		setContentAt(2, 0, "Naziv");
+//		setContentAt(3, 0, "Podkategorija");
+//		setContentAt(4, 0, "Vlasnik");
+//		setContentAt(5, 0, "Vrijednost");
+//		setContentAt(6, 0, "Povjerljivost");
+//		setContentAt(7, 0, "Cjelovitost");
+//		setContentAt(8, 0, "Raspoloživost");
+//		setContentAt(9, 0, "Poslovni Utjecaj");
 
 		putContents();
 
@@ -128,22 +132,12 @@ public class ISMSASKTableModel extends KTableSortedModel {
 	private void putContents() {
 
 		//Zero Column
-		//setContentAt(0, 0, "#");
-		setContentAt(0, 1, "1");
-		setContentAt(0, 2, "2");
-		setContentAt(0, 3, "3");
-		setContentAt(0, 4, "4");
-		setContentAt(0,5, "5");
-		setContentAt(0, 6, "6");
-		setContentAt(0, 7, "7");
-		setContentAt(0, 8, "8");
-		setContentAt(0, 9, "9");
-		setContentAt(0, 10, "10");
-		setContentAt(0, 11, "11");
-		setContentAt(0, 12, "12");
+		setContentAt(0, 0, "#");
+		for (int i=getFixedRowCount(); i<getRowCount();i++)
+			setContentAt(0, i, ""+i+"");
 
 		//1 Column
-		//setContentAt(1, 0, "Šifra");
+		setContentAt(1, 0, "Šifra");
 		setContentAt(1, 1, "147");
 		setContentAt(1, 2, "148");
 		setContentAt(1, 3, "149");
@@ -156,9 +150,14 @@ public class ISMSASKTableModel extends KTableSortedModel {
 		setContentAt(1, 10, "1190");
 		setContentAt(1, 11, "272");
 		setContentAt(1, 12, "1150");
+		setContentAt(1, 13, "301");
+		setContentAt(1, 14, "320");
+		setContentAt(1, 15, "1186");
+		setContentAt(1, 16, "1161");
+		setContentAt(1, 17, "309");
 
 		//2 Column
-		//setContentAt(2, 0, "Naziv");
+		setContentAt(2, 0, "Naziv");
 		setContentAt(2, 1, "Zaštita od zloæudnog i prenosivog koda");
 		setContentAt(2, 2, "Kreiranje sigurnosnih kopija");
 		setContentAt(2, 3, "Upravljanje sigurnošèu mreže");
@@ -171,9 +170,14 @@ public class ISMSASKTableModel extends KTableSortedModel {
 		setContentAt(2, 10, "BSA izvršni kod,baza i žurnali");
 		setContentAt(2, 11, "Ugovor o isporuci informacijskog sustava ");
 		setContentAt(2, 12, "Izjave o zaprimanju korisnièkih naziva i zaporki");
+		setContentAt(2, 13, "BSA Jabanet");
+		setContentAt(2, 14, "JABAnet certifikati");
+		setContentAt(2, 15, "SRVIBA3 server internet bankarstva");
+		setContentAt(2, 16, "STARA oprema - neodložena");
+		setContentAt(2, 17, "BSA Plaæe komitenata");
 
 		//3 Column
-		//setContentAt(3, 0, "Podkategorija");
+		setContentAt(3, 0, "Podkategorija");
 		setContentAt(3, 1, "201011 - Proces druga razina");
 		setContentAt(3, 2, "201011 - Proces druga razina");
 		setContentAt(3, 3, "201011 - Proces druga razina");
@@ -186,9 +190,14 @@ public class ISMSASKTableModel extends KTableSortedModel {
 		setContentAt(3, 10, "101010 - Programski kod ");
 		setContentAt(3, 11, "1020 - Papirnati Dokument");
 		setContentAt(3, 12, "1020 - Papirnati Dokument");
+		setContentAt(3, 13, "301016 - Aplikativni softver (BSA, Bonitet,…)");
+		setContentAt(3, 14, "301016 - Aplikativni softver (BSA, Bonitet,…)");
+		setContentAt(3, 15, "Produkcijski server");
+		setContentAt(3, 16, "4020 - Oprema i uredaji");
+		setContentAt(3, 17, "301016 - Aplikativni softver (BSA, Bonitet,…)");
 
 		//4 Column
-		// setContentAt(4, 0, "Vlasnik");
+		setContentAt(4, 0, "Vlasnik");
 		setContentAt(4, 1, "Direkcija informatike");
 		setContentAt(4, 2, "Direkcija informatike");
 		setContentAt(4, 3, "Direkcija informatike");
@@ -201,14 +210,19 @@ public class ISMSASKTableModel extends KTableSortedModel {
 		setContentAt(4, 10, "Direkcija informatike");
 		setContentAt(4, 11, "Direkcija informatike");
 		setContentAt(4, 12, "Direkcija informatike");
+		setContentAt(4, 13, "Direkcija informatike");
+		setContentAt(4, 14, "Direkcija informatike");
+		setContentAt(4, 15, "Direkcija informatike");
+		setContentAt(4, 16, "Direkcija informatike");
+		setContentAt(4, 17, "Direkcija informatike");
 
 		//5 Column
-		//setContentAt(5, 0, "Vrijednost");
+		setContentAt(5, 0, "Vrijednost");
 		setContentAt(5, 1, "3");
 		setContentAt(5, 2, "3");
 		setContentAt(5, 3, "3");
 		setContentAt(5, 4, "4");
-		setContentAt(5,5, "3");
+		setContentAt(5, 5, "3");
 		setContentAt(5, 6, "3");
 		setContentAt(5, 7, "4");
 		setContentAt(5, 8, "3");
@@ -216,9 +230,14 @@ public class ISMSASKTableModel extends KTableSortedModel {
 		setContentAt(5, 10, "4");
 		setContentAt(5, 11, "4");
 		setContentAt(5, 12, "2");
+		setContentAt(5, 13, "4");
+		setContentAt(5, 14, "5");
+		setContentAt(5, 15, "5");
+		setContentAt(5, 16, "2");
+		setContentAt(5, 17, "1");
 
 		//Sixth Column
-		// setContentAt(6, 0, "Povjerljivost");
+		setContentAt(6, 0, "Povjerljivost");
 		setContentAt(6, 1, "Srednja (povjerljivo)");
 		setContentAt(6, 2, "Visoka (tajno)");
 		setContentAt(6, 3, "Srednja (povjerljivo");
@@ -231,9 +250,14 @@ public class ISMSASKTableModel extends KTableSortedModel {
 		setContentAt(6, 10, "Visoka (tajno)");
 		setContentAt(6, 11, "Visoka (tajno)");
 		setContentAt(6, 12, "Niska (ogranièeno)");
+		setContentAt(6, 13, "Visoka (tajno)");
+		setContentAt(6, 14, "Vrlo visoka (vrlo tajno)");
+		setContentAt(6, 15, "Visoka (tajno)");
+		setContentAt(6, 16, "Srednja (povjerljivo)");
+		setContentAt(6, 17, "Vrlo niska (javno)");
 
 		//Seventh Column
-		// setContentAt(7, 0, "Cjelovitost");
+		setContentAt(7, 0, "Cjelovitost");
 		setContentAt(7, 1, "Visoka");
 		setContentAt(7, 2, "Srednja");
 		setContentAt(7, 3, "Srednja");
@@ -246,9 +270,14 @@ public class ISMSASKTableModel extends KTableSortedModel {
 		setContentAt(7, 10, "Vrlo visoka");
 		setContentAt(7, 11, "Vrlo visoka");
 		setContentAt(7, 12, "Niska");
+		setContentAt(7, 13, "Vrlo visoka");
+		setContentAt(7, 14, "Vrlo visoka");
+		setContentAt(7, 15, "Vrlo visoka");
+		setContentAt(7, 16, "Vrlo niska");
+		setContentAt(7, 17, " Vrlo niska");
 
 		//8 Column
-		// setContentAt(8, 0, "Raspoloživost");
+		setContentAt(8, 0, "Raspoloživost");
 		setContentAt(8, 1, "Važna (do 8 sati)");
 		setContentAt(8, 2, "Nije vrlo važna (do 48 sati)");
 		setContentAt(8, 3, "Važna (do 8 sati)");
@@ -261,36 +290,50 @@ public class ISMSASKTableModel extends KTableSortedModel {
 		setContentAt(8, 10, "Važna (do 8 sati)");
 		setContentAt(8, 11, "Važna (do 8 sati)");
 		setContentAt(8, 12, "Nije važna (do 72 sata)");
+		setContentAt(8, 13, "Vrlo važna  ( do 1 sat)");
+		setContentAt(8, 14, "Ekstremno važna  (bez odgode)");
+		setContentAt(8, 15, "Ekstremno važna  (bez odgode)");
+		setContentAt(8, 16, "Nije važna (do 72 sata)");
+		setContentAt(8, 17, "Nije važna (do 72 sata)");
 
 		// 9 Column
-		// setContentAt(9, 0, "Klasifikacija");??
-		setContentAt(9, 1, "Nije vrlo važna");
-		setContentAt(9, 2, "Važna");
-		setContentAt(9, 3, "Nije vrlo važna");
-		setContentAt(9, 4, "Nije vrlo važna");
-		setContentAt(9, 5, "Važna");
-		setContentAt(9, 6, "Važna");
-		setContentAt(9, 7, "Važna");
-		setContentAt(9, 8, "Nije vrlo važna");
-		setContentAt(9, 9, "Nije vrlo važna");
-		setContentAt(9, 10, "Važna");
+		setContentAt(9, 0, "Poslovni Utjecaj");
+		setContentAt(9, 1, "Nije vrlo važan");
+		setContentAt(9, 2, "Važan");
+		setContentAt(9, 3, "Nije vrlo važan");
+		setContentAt(9, 4, "Nije vrlo važan");
+		setContentAt(9, 5, "Važan");
+		setContentAt(9, 6, "Važan");
+		setContentAt(9, 7, "Važan");
+		setContentAt(9, 8, "Nije vrlo važan");
+		setContentAt(9, 9, "Nije vrlo važan");
+		setContentAt(9, 10, "Važan");
 		setContentAt(9, 11, "Kritièna");
-		setContentAt(9, 12, "Nije važna");
+		setContentAt(9, 12, "Nije važan");
+		setContentAt(9, 13, "Važan");
+		setContentAt(9, 14, "Kritièna");
+		setContentAt(9, 15, "Kritièna");
+		setContentAt(9, 16, "Nije važan");
+		setContentAt(9, 17, "Nije važan");
 
-		//10 Column
-		// setContentAt(10, 0, "Klasifikacija");??
-		setContentAt(10, 1, "Vrlo osjetljivo");
-		setContentAt(10, 2, "Vrlo osjetljivo");
-		setContentAt(10, 3, "Vrlo osjetljivo");
-		setContentAt(10, 4, "Osjetljivo");
-		setContentAt(10, 5, "Vrlo osjetljivo");
-		setContentAt(10, 6, "Vrlo osjetljivo");
-		setContentAt(10, 7, "Vrlo osjetljivo");
-		setContentAt(10, 8, "Vrlo osjetljivo");
-		setContentAt(10, 9, "Vrlo osjetljivo");
-		setContentAt(10, 10, "Vrlo osjetljivo");
-		setContentAt(10, 11, "Vrlo osjetljivo");
-		setContentAt(10, 12, "Osjetljivo");
+//		//10 Column
+//		setContentAt(10, 0, "Klasifikacija");
+//		setContentAt(10, 1, "Vrlo osjetljivo");
+//		setContentAt(10, 2, "Vrlo osjetljivo");
+//		setContentAt(10, 3, "Vrlo osjetljivo");
+//		setContentAt(10, 4, "Osjetljivo");
+//		setContentAt(10, 5, "Vrlo osjetljivo");
+//		setContentAt(10, 6, "Vrlo osjetljivo");
+//		setContentAt(10, 7, "Vrlo osjetljivo");
+//		setContentAt(10, 8, "Vrlo osjetljivo");
+//		setContentAt(10, 9, "Vrlo osjetljivo");
+//		setContentAt(10, 10, "Vrlo osjetljivo");
+//		setContentAt(10, 11, "Vrlo osjetljivo");
+//		setContentAt(10, 12, "Osjetljivo");
+//		setContentAt(10, 13, "Vrlo osjetljivo");
+//		setContentAt(10, 14, "Vrlo osjetljivo");
+//		setContentAt(10, 15, "1150");
+//		setContentAt(10, 16, "1150");
 	}
 
 
@@ -341,19 +384,30 @@ public class ISMSASKTableModel extends KTableSortedModel {
 			return m_FixedRenderer;
 		}
 
-		if (getContentAt(5, row) == "2") {
+		if (content.get(5+"/"+row)=="1")
+		{
+			return m_1Renderer;
+		}
+
+		if (content.get(5+"/"+row)=="2")
+				{
 			return m_2Renderer;
 		}
 
-		if (getContentAt(5, row) == "3") {
+		if (content.get(5+"/"+row)=="3") {
 			return m_3Renderer;
 		}
 
-		if (getContentAt(5, row) == "4") {
+		if (/*getContentAt(5, row) == "4"*/content.get(5+"/"+row)=="4") {
 //			 for (int i=getFixedHeaderRowCount(); i<getRowCount(); i++)
 //			        for (int j=getFixedHeaderColumnCount(); j<getColumnCount(); j++)
 							return m_4Renderer;
 		}
+
+		if (content.get(5+"/"+row)=="5") {
+			return m_5Renderer;
+		}
+
 
 		return m_DefaultRenderer;
 	}
@@ -407,11 +461,11 @@ public class ISMSASKTableModel extends KTableSortedModel {
 
 	// Table size:
 	public int doGetRowCount() {
-		return 12 + getFixedRowCount();
+		return 17 + getFixedRowCount();
 	}
 
 	public int doGetColumnCount() {
-		return meta.size() + getFixedColumnCount();
+		return columnNumber + getFixedColumnCount();
 	}
 
 	public int getFixedHeaderRowCount() {

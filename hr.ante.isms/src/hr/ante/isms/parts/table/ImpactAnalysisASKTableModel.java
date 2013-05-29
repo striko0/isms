@@ -19,11 +19,12 @@ import de.kupzog.ktable.renderers.DefaultCellRenderer;
 import de.kupzog.ktable.renderers.FixedCheckableCellRenderer;
 import de.kupzog.ktable.renderers.TextCellRenderer;
 
-public class IAnalysisASKTableModel extends KTableSortedModel {
+public class ImpactAnalysisASKTableModel extends KTableSortedModel {
 
 	private Random rand = new Random();
 	private HashMap content = new HashMap();
 	public HashMap meta = new HashMap();
+	private int columnNumber=-1;
 	private int[] colWidths;
 
 	private int rowHeight;
@@ -58,24 +59,18 @@ public class IAnalysisASKTableModel extends KTableSortedModel {
 	/**
    *
    */
-	public IAnalysisASKTableModel() {
-		// before initializing, you probably have to set some member values
-		// to make all model getter methods work properly.
+	public ImpactAnalysisASKTableModel() {
 
 		initialize();
 
 
-		//statusLine.setMessage("hello");
-
-
-
-		// we don't want the default foreground color on text cells,
-		// so we change it:
+		/** BROJ STUPACA!
+		 *
+		 */
+		columnNumber=4;
 		//meta.put("0", "");
-		meta.put("1", "Text");
-		meta.put("2", "Text");
-		meta.put("3", "Text");
-		meta.put("4", "Text");
+		for (int i=1; i<=columnNumber;i++)
+			meta.put(""+i+"", "Text");
 
 		colWidths = new int[getColumnCount()];
 
@@ -200,7 +195,7 @@ public class IAnalysisASKTableModel extends KTableSortedModel {
 
 	// Table size:
 	public int doGetRowCount() {
-		return 4 + getFixedRowCount();
+		return 0 + getFixedRowCount();
 	}
 
 	public int doGetColumnCount() {
