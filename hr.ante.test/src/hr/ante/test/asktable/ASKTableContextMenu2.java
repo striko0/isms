@@ -25,8 +25,8 @@ import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.MenuItem;
 import org.eclipse.ui.IActionBars;
 import org.eclipse.ui.actions.ActionFactory;
+import org.eclipse.wb.swt.ResourceManager;
 import org.mihalis.opal.opalDialog.Dialog;
-import org.mihalis.opal.panels.BlurredPanel;
 
 import de.kupzog.ktable.KTable;
 import de.kupzog.ktable.KTableCellSelectionListener;
@@ -142,17 +142,17 @@ public class ASKTableContextMenu2{
 				Image descending = null;
 				Image sort = null;
 				Image filter = null;
-
-				try {
-					ascending = new Image(Display.getCurrent(), "C:\\IT\\astrikom\\workspace4\\hr.ante.test\\src\\icons\\sort_up_green.png");
-					descending = new Image(Display.getCurrent(), "C:\\IT\\astrikom\\workspace4\\hr.ante.test\\src\\icons\\sort_down_green.png");
-					sort = new Image(Display.getCurrent(), "C:\\IT\\astrikom\\workspace4\\hr.ante.test\\src\\icons\\sort_neutral_green.png");
-					filter = new Image(Display.getCurrent(), "C:\\IT\\astrikom\\workspace4\\hr.ante.test\\src\\icons\\filter.png");
-		        } catch (Exception e) {
-		            System.out.println("Cannot load images");
-		            System.out.println(e.getMessage());
-		            System.exit(1);
-		        }
+//
+//				try {
+//					ascending = new Image(Display.getCurrent(), "C:\\IT\\astrikom\\workspace4\\hr.ante.test\\src\\icons\\sort_up_green.png");
+//					
+//					
+//					filter = new Image(Display.getCurrent(), "C:\\IT\\astrikom\\workspace4\\hr.ante.test\\src\\icons\\filter.png");
+//		        } catch (Exception e) {
+//		            System.out.println("Cannot load images");
+//		            System.out.println(e.getMessage());
+//		            System.exit(1);
+//		        }
 
 
 				//1. item in FixedMenu
@@ -173,8 +173,17 @@ public class ASKTableContextMenu2{
 				//3. item in FixedMenu - separator
 				fixedItemSort = new MenuItem(m_FixedMenu, SWT.CASCADE);
 				fixedItemSort.setText("Sort");
-				fixedItemSort.setImage(sort);
+				try {
+					fixedItemSort
+							.setImage(ResourceManager.getPluginImage(
+									"hr.ante.test",
+									"src/icons/sort_neutral_green.png"));
 
+				} catch (Exception e) {
+					System.out.println("Cannot load images");
+					System.out.println(e.getMessage());
+					System.exit(1);
+				}
 				//Sub menu in 3. item in FixedMenu
 				fixedItemSubMenu = new Menu(m_FixedMenu);
 				fixedItemSort.setMenu(fixedItemSubMenu);
@@ -182,7 +191,14 @@ public class ASKTableContextMenu2{
 				//1. sub item in 3. item in FixedMenu
 				fixedItemSubItem1 = new MenuItem(fixedItemSubMenu, SWT.PUSH);
 				fixedItemSubItem1.setText("Ascending");
-				fixedItemSubItem1.setImage(ascending/*ResourceManager.getPluginImage("hr.ante.test.icons", "sort_up.png")*/);
+				try {
+					fixedItemSubItem1.setImage(ResourceManager.getPluginImage(
+							"hr.ante.test", "src/icons/sort_up_green.png"));
+				} catch (Exception e) {
+					System.out.println("Cannot load images");
+					System.out.println(e.getMessage());
+					System.exit(1);
+				}
 				fixedItemSubItem1.addSelectionListener(new SelectionAdapter() {
 
 					@Override
@@ -198,7 +214,14 @@ public class ASKTableContextMenu2{
 				//2. sub item in 3. item in FixedMenu
 				fixedItemSubItem2 = new MenuItem(fixedItemSubMenu, SWT.PUSH);
 				fixedItemSubItem2.setText("Descending");
-				fixedItemSubItem2.setImage(descending);
+				try {
+					fixedItemSubItem2.setImage(ResourceManager.getPluginImage(
+							"hr.ante.test", "src/icons/sort_down_green.png"));
+				} catch (Exception e) {
+					System.out.println("Cannot load images");
+					System.out.println(e.getMessage());
+					System.exit(1);
+				}
 				fixedItemSubItem2.addSelectionListener(new SelectionAdapter() {
 
 					@Override
@@ -228,8 +251,16 @@ public class ASKTableContextMenu2{
 
 				//4. item in FixedMenu - separator
 				fixedItemFilter = new MenuItem(m_FixedMenu, SWT.PUSH);
-				fixedItemFilter.setImage(filter);
+				try {
+					fixedItemFilter.setImage(ResourceManager.getPluginImage(
+							"hr.ante.test", "src/icons/filter.png"));
+				} catch (Exception e) {
+					System.out.println("Cannot load images");
+					System.out.println(e.getMessage());
+					System.exit(1);
+				}
 				fixedItemFilter.setText("Filter");
+				
 				fixedItemFilter.addSelectionListener(new SelectionAdapter() {
 
 					@Override

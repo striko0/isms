@@ -23,10 +23,12 @@ import de.kupzog.ktable.KTableSortedModel;
 
 
 public class ASSortComparatorExample2 extends KTableSortComparator {
+	KTableSortedModel m_Model;
 
 	public ASSortComparatorExample2(KTableSortedModel model, int columnIndex,
 			int direction) {
 		super(model, columnIndex, direction);
+		m_Model = model;
 	}
 
 	public static final int STRING_COMPARATOR = 1;//-
@@ -49,12 +51,17 @@ public class ASSortComparatorExample2 extends KTableSortComparator {
 
 		/** NULL POINTER GREŠKA ako nije ispunjena meta HashMapa **/
 		String metaData = "";
-//		try {
-//			metaData = ((ASTableModel4) getModel()).getMeta()
-//					.get(super.getColumnToSortOn() + "").toString();
-//		} catch (Exception ex) {
-//			System.out.println("ERROR: NO COLUMNS " + metaData);
-//		}
+		try {
+			metaData = ((ASTableModel4) getModel()).getMeta()
+					.get(super.getColumnToSortOn() + "").toString();
+		} catch (Exception ex) {
+			System.out.println("ERROR: NO COLUMNS " + metaData);
+		}
+
+		metaData = ((ASTableModel4) getModel()).getMeta()
+				.get(super.getColumnToSortOn() + "").toString();
+		if(metaData==null)
+			metaData="";
 
 		System.out.println(metaData);
 
