@@ -69,7 +69,7 @@ public class ListRisks {
 		mParent.setLayout(gl_mParent);
 
 		Label naslov_ = new Label (mParent, SWT.NONE);
-		naslov_.setForeground(SWTResourceManager.getColor(SWT.COLOR_WIDGET_BORDER));
+		naslov_.setForeground(SWTResourceManager.getColor(SWT.COLOR_LIST_FOREGROUND));
 		naslov_.setBackground(SWTResourceManager.getColor(SWT.COLOR_TITLE_BACKGROUND_GRADIENT));
 		naslov_.setFont(SWTResourceManager.getFont("Verdana", 18, SWT.BOLD));
 		naslov_.setText("Rizici");

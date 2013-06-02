@@ -46,7 +46,7 @@ public class MeasureEvaluation {
 		// scrollBox.setBounds(0, 0, 837, 298);
 		// scrollBox.setBounds(0, 0, 760, 450);
 		// scrollBox.setBounds(0, 0, 448, 375);
-		scrollBox.setMinHeight(170);
+		scrollBox.setMinHeight(200);
 		scrollBox.setMinWidth(400);
 
 		scrollBox.setExpandHorizontal(true);
@@ -59,7 +59,7 @@ public class MeasureEvaluation {
 		mParent = new Composite(scrollBox, SWT.NONE);
 		// mParent.setSize(790, 659);
 		// parent.setSize(new Point(759, 359));
-		mParent.getShell().setSize(450, 200);
+		mParent.getShell().setSize(450, 250);
 		mParent.getShell().setText("Mjere za smanjenje rizika");
 		mParent.setLayout(new GridLayout(1, false));
 

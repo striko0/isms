@@ -60,9 +60,8 @@ public class Probability {
 		labelPrijet_.setText("Prijetnja:");
 
 		Combo comboPrijet_ = new Combo(mParent, SWT.NONE);
-		GridData gd_comboPrijet_ = new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1);
 		//gd_comboPrijet_.widthHint = 730;
-		comboPrijet_.setLayoutData(gd_comboPrijet_);
+		comboPrijet_.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
 
 		Label lblRanjivost_ = new Label(mParent, SWT.NONE);
 		GridData gd_lblRanjivost_ = new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1);
@@ -71,12 +70,11 @@ public class Probability {
 		lblRanjivost_.setText("Ranjivost:");
 
 		Combo comboRanjivost_ = new Combo(mParent, SWT.NONE);
-		GridData gd_comboRanjivost_ = new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1);
 		//gd_comboRanjivost_.widthHint = 715;
-		comboRanjivost_.setLayoutData(gd_comboRanjivost_);
+		comboRanjivost_.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
 
 		Group grpVjerojatnostOstvarenjaPrijetnje = new Group(mParent, SWT.NONE);
-		grpVjerojatnostOstvarenjaPrijetnje.setLayout(new GridLayout(5, false));
+		grpVjerojatnostOstvarenjaPrijetnje.setLayout(new GridLayout(2, false));
 		GridData gd_grpVjerojatnostOstvarenjaPrijetnje = new GridData(SWT.FILL, SWT.CENTER, true, false, 2, 2);
 		gd_grpVjerojatnostOstvarenjaPrijetnje.horizontalIndent = 10;
 		gd_grpVjerojatnostOstvarenjaPrijetnje.heightHint = 122;
@@ -91,32 +89,16 @@ public class Probability {
 		lblVjerojatnost_.setText("Vjerojatnost:");
 
 		Combo comboVjerojatnost_ = new Combo(grpVjerojatnostOstvarenjaPrijetnje, SWT.NONE);
-		GridData gd_comboVjerojatnost_ = new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1);
-		gd_comboVjerojatnost_.widthHint = 158;
+		GridData gd_comboVjerojatnost_ = new GridData(SWT.LEFT, SWT.CENTER, true, false, 1, 1);
+		gd_comboVjerojatnost_.widthHint = 217;
 		comboVjerojatnost_.setLayoutData(gd_comboVjerojatnost_);
-		new Label(grpVjerojatnostOstvarenjaPrijetnje, SWT.NONE);
-
-		Label lblVjerojatnostOtk_ = new Label(grpVjerojatnostOstvarenjaPrijetnje, SWT.NONE);
-		lblVjerojatnostOtk_.setText("Vjerojatnost Otkrivanja:");
-
-		Combo comboVjerojatnostOtk_ = new Combo(grpVjerojatnostOstvarenjaPrijetnje, SWT.NONE);
-		comboVjerojatnostOtk_.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
 
 		Label lblOpisVjerojat_ = new Label(grpVjerojatnostOstvarenjaPrijetnje, SWT.NONE);
 		lblOpisVjerojat_.setText("Opis Vjerojatnosti:");
 		new Label(grpVjerojatnostOstvarenjaPrijetnje, SWT.NONE);
-		new Label(grpVjerojatnostOstvarenjaPrijetnje, SWT.NONE);
-
-		Label lblOpisVjerojatOtk_ = new Label(grpVjerojatnostOstvarenjaPrijetnje, SWT.NONE);
-		lblOpisVjerojatOtk_.setText("Opis Vjerojatnosti Otkrivanja:");
-		new Label(grpVjerojatnostOstvarenjaPrijetnje, SWT.NONE);
 
 		StyledText styledTextOpisVjerojat_ = new StyledText(grpVjerojatnostOstvarenjaPrijetnje, SWT.BORDER);
 		styledTextOpisVjerojat_.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 2, 1));
-		new Label(grpVjerojatnostOstvarenjaPrijetnje, SWT.NONE);
-
-		StyledText styledTextOpisVjerojatOtk_ = new StyledText(grpVjerojatnostOstvarenjaPrijetnje, SWT.BORDER);
-		styledTextOpisVjerojatOtk_.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 2, 1));
 
 
 		Composite compositeASKTable = new Composite(mParent, SWT.NONE);

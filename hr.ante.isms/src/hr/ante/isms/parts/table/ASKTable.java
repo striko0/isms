@@ -189,7 +189,7 @@ public class ASKTable{
 		});
 
 		Composite statusComposite = new Composite(comp1, SWT.BORDER);
-		statusComposite.setBackground(SWTResourceManager.getColor(SWT.COLOR_TITLE_FOREGROUND));
+		statusComposite.setBackground(SWTResourceManager.getColor(SWT.COLOR_WIDGET_HIGHLIGHT_SHADOW));
 		statusComposite.setLayout(new GridLayout(2,false));
 
 		GridData gd_statusComposite = new GridData(SWT.FILL, SWT.FILL, true, false, 1, 1);
@@ -200,11 +200,11 @@ public class ASKTable{
 		statusComposite.setLayoutData(gd_statusComposite);
 
 		Label statusLabelSuma = new Label(statusComposite, SWT.NONE);
-		statusLabelSuma.setBackground(SWTResourceManager.getColor(SWT.COLOR_TITLE_FOREGROUND));
+		statusLabelSuma.setBackground(SWTResourceManager.getColor(SWT.COLOR_WIDGET_HIGHLIGHT_SHADOW));
 		statusLabelSuma.setToolTipText("Statusna Linija");
 		statusLabelSuma.setText("Zbroj: " + (givenModel.doGetRowCount()-1) + " | ");
 		statusLabel = new Label(statusComposite, SWT.NONE);
-		statusLabel.setBackground(SWTResourceManager.getColor(SWT.COLOR_TITLE_FOREGROUND));
+		statusLabel.setBackground(SWTResourceManager.getColor(SWT.COLOR_WIDGET_HIGHLIGHT_SHADOW));
 		GridData gd_statusLabel = new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1);
 		gd_statusLabel.widthHint = 93;
 		statusLabel.setLayoutData(gd_statusLabel);

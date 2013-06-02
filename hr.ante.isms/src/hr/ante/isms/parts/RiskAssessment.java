@@ -124,7 +124,7 @@ public class RiskAssessment {
 		new Label(grpVjerojatnostOstvarenjaPrijetnje, SWT.NONE);
 
 		textOpisVjerojatnosti_ = new Text(grpVjerojatnostOstvarenjaPrijetnje, SWT.BORDER | SWT.V_SCROLL);
-		GridData gd_textOpisVjerojatnosti_ = new GridData(SWT.FILL, SWT.FILL, true, true, 2, 2);
+		GridData gd_textOpisVjerojatnosti_ = new GridData(SWT.FILL, SWT.FILL, true, true, 2, 1);
 		gd_textOpisVjerojatnosti_.heightHint = 40;
 		textOpisVjerojatnosti_.setLayoutData(gd_textOpisVjerojatnosti_);
 

@@ -30,6 +30,7 @@ import org.eclipse.swt.widgets.ToolBar;
 import org.eclipse.swt.widgets.ToolItem;
 import org.eclipse.wb.swt.ResourceManager;
 import org.eclipse.wb.swt.SWTResourceManager;
+import org.eclipse.swt.graphics.Point;
 
 public class Toolbar {
 
@@ -48,52 +49,24 @@ public class Toolbar {
 
 	@PostConstruct
 	public void createComposite(final Composite parent) {
-		try {
-		} catch (Exception e) {
-			System.out.println("Cannot load images");
-			System.out.println(e.getMessage());
-			System.exit(1);
-		}
-		try {
-		} catch (Exception e) {
-			System.out.println("Cannot load images");
-			System.out.println(e.getMessage());
-			System.exit(1);
-		}
-		try {
-		} catch (Exception e) {
-			System.out.println("Cannot load images");
-			System.out.println(e.getMessage());
-			System.exit(1);
-		}
-		try {
-		} catch (Exception e) {
-			System.out.println("Cannot load images");
-			System.out.println(e.getMessage());
-			System.exit(1);
-		}
-		try {
-		} catch (Exception e) {
-			System.out.println("Cannot load images");
-			System.out.println(e.getMessage());
-			System.exit(1);
-		}
-		GridLayout gl_parent = new GridLayout(1, false);
+		//parent.setSize(new Point(500, 650));
+				GridLayout gl_parent = new GridLayout(1, false);
 		gl_parent.marginWidth = 0;
 		gl_parent.marginHeight = 0;
 		parent.setLayout(gl_parent);
 
 		expandBar = new ExpandBar(parent, SWT.BORDER | SWT.V_SCROLL);
+		//gd_expandBar.heightHint = 490;
 		GridData gd_expandBar = new GridData(SWT.FILL, SWT.FILL, true, true, 1,
 				1);
-		gd_expandBar.heightHint = 490;
+		gd_expandBar.widthHint = 230;
 		expandBar.setLayoutData(gd_expandBar);
 		expandBar.setBackground(SWTResourceManager
 				.getColor(SWT.COLOR_WIDGET_HIGHLIGHT_SHADOW));
 		expandBar.setBounds(0, 0, 165, 177);
 		expandBar.setSpacing(8);
 
-		ExpandItem xpndtmPostavke = new ExpandItem(expandBar, SWT.NONE);
+		final ExpandItem xpndtmPostavke = new ExpandItem(expandBar, SWT.NONE);
 		try {
 			xpndtmPostavke.setImage(ResourceManager.getPluginImage(
 					"hr.ante.isms", "src/icons/applications_system.png"));
@@ -186,18 +159,16 @@ public class Toolbar {
 		}
 		tltmDodajPrijetnje.setText("Dodaj Prijetnje");
 
-		final ExpandItem xpndtmProcjenaRizika = new ExpandItem(expandBar,
+		ExpandItem xpndtmProcjenaRizika = new ExpandItem(expandBar,
 				SWT.NONE);
-		xpndtmProcjenaRizika.setExpanded(true);
 		xpndtmProcjenaRizika.setImage(ResourceManager.getPluginImage(
 				"hr.ante.isms", "src/icons/identPrijetnjiIcon.png"));
 		xpndtmProcjenaRizika.setText("Procjena Rizika");
-
-		ToolBar bar2 = new ToolBar(expandBar, SWT.FLAT | SWT.RIGHT
-				| SWT.SHADOW_OUT | SWT.VERTICAL);
+		
+		final ToolBar bar2 = new ToolBar(expandBar, SWT.FLAT | SWT.WRAP | SWT.RIGHT | SWT.SHADOW_OUT | SWT.VERTICAL);
 		xpndtmProcjenaRizika.setControl(bar2);
-		xpndtmProcjenaRizika.setControl(bar2);
-
+		xpndtmProcjenaRizika.setHeight(500);
+		
 		ToolItem tltmImovina = new ToolItem(bar2, SWT.NONE);
 		tltmImovina.setImage(ResourceManager.getPluginImage("hr.ante.isms",
 				"src/icons/application_form.png"));
@@ -348,14 +319,14 @@ public class Toolbar {
 			@Override
 			public void itemExpanded(ExpandEvent e) {
 
-				if (e.item == xpndtmProcjenaRizika) {
-					System.out.println("e.item");
-					MPart part = partService.findPart("hr.ante.isms.part.risk");
-					part.setVisible(false);
-					MPart partToShow = partService
-							.findPart("hr.ante.isms.part.asset");
-					partToShow.setVisible(true);
-				}
+//				if (e.item == xpndtmProcjenaRizika) {
+//					System.out.println("e.item");
+//					MPart part = partService.findPart("hr.ante.isms.part.risk");
+//					part.setVisible(false);
+//					MPart partToShow = partService
+//							.findPart("hr.ante.isms.part.asset");
+//					partToShow.setVisible(true);
+//				}
 
 				if (e.item == xpndtmSmanjivanjeRizika) {
 
@@ -375,8 +346,9 @@ public class Toolbar {
 
 		});
 
+
 		ToolBar bar3 = new ToolBar(expandBar, SWT.FLAT | SWT.RIGHT
-				| SWT.VERTICAL);
+				| SWT.SHADOW_OUT | SWT.VERTICAL);
 		xpndtmSmanjivanjeRizika.setControl(bar3);
 		xpndtmSmanjivanjeRizika.setHeight(150);
 
