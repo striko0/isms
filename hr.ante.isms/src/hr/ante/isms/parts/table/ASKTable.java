@@ -2,6 +2,13 @@ package hr.ante.isms.parts.table;
 
 import hr.ante.test.asktable.comparator.ASKTableSortOnClick2;
 
+import javax.inject.Inject;
+
+import org.eclipse.e4.ui.model.application.ui.basic.MPart;
+import org.eclipse.e4.ui.model.application.ui.menu.MDirectToolItem;
+import org.eclipse.e4.ui.model.application.ui.menu.MMenuFactory;
+import org.eclipse.e4.ui.model.application.ui.menu.MToolBar;
+import org.eclipse.e4.ui.workbench.modeling.EPartService;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Cursor;
 import org.eclipse.swt.graphics.Image;
@@ -26,6 +33,8 @@ import de.kupzog.ktable.SWTX;
 
 public class ASKTable{
 
+	@Inject
+	protected EPartService partService;
 
 	KTable table;
 	Label statusLabel;

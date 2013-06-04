@@ -1,7 +1,10 @@
 package hr.ante.isms.parts;
 
+import hr.ante.isms.connection.DatabaseConnection;
 import hr.ante.isms.parts.table.ASKTable;
 import hr.ante.isms.parts.table.ControlsAnalysisASKTableModel;
+
+import java.sql.SQLException;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
@@ -72,6 +75,7 @@ public class SuggestMeasures {
 
 		Combo comboKontrola_ = new Combo(composite, SWT.NONE);
 		comboKontrola_.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+
 
 		Label lblPrijedlog_ = new Label(composite, SWT.NONE);
 		lblPrijedlog_.setText("Prijedlog:");
@@ -177,6 +181,36 @@ public class SuggestMeasures {
 
 
 		scrollBox.setContent(mParent);
+	}
+
+
+	public String[] getComboItemsFromDB(String tableName) {
+		DatabaseConnection con = new DatabaseConnection();
+		con.doConnection();
+
+		try {
+
+			return con.getComboItems(tableName);
+
+		} catch (SQLException ex) {
+			System.out.println(ex.getMessage());
+			try {
+				con.connection.close();
+			} catch (SQLException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+
+		}
+		System.out.println("Connection : " + con.doConnection());
+		try {
+			con.connection.close();
+		} catch (SQLException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+		return new String[] {};
+
 	}
 
 	@PreDestroy

@@ -1,7 +1,10 @@
 package hr.ante.isms.parts;
 
+import hr.ante.isms.connection.DatabaseConnection;
 import hr.ante.isms.parts.table.ASKTable;
 import hr.ante.isms.parts.table.ProbabilityASKTableModel;
+
+import java.sql.SQLException;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
@@ -12,7 +15,6 @@ import org.eclipse.e4.ui.di.Persist;
 import org.eclipse.e4.ui.model.application.ui.MDirtyable;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.ScrolledComposite;
-import org.eclipse.swt.custom.StyledText;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.layout.FillLayout;
@@ -23,12 +25,15 @@ import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Text;
 
 public class Probability {
 
 	private Composite mParent;
 	 @Inject
 	  MDirtyable dirty;
+	 private Text textVjerojatnostOtkrivanja_;
+	 private Text textOpisVjerojat_;
 
 
 	@PostConstruct
@@ -62,6 +67,7 @@ public class Probability {
 		Combo comboPrijet_ = new Combo(mParent, SWT.NONE);
 		//gd_comboPrijet_.widthHint = 730;
 		comboPrijet_.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+		comboPrijet_.setItems(getThreatVulnerabilityItemsFromDB("as_threat",""));
 
 		Label lblRanjivost_ = new Label(mParent, SWT.NONE);
 		GridData gd_lblRanjivost_ = new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1);
@@ -72,9 +78,11 @@ public class Probability {
 		Combo comboRanjivost_ = new Combo(mParent, SWT.NONE);
 		//gd_comboRanjivost_.widthHint = 715;
 		comboRanjivost_.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+		comboRanjivost_.setItems(getThreatVulnerabilityItemsFromDB("as_vulnerability",""));
+
 
 		Group grpVjerojatnostOstvarenjaPrijetnje = new Group(mParent, SWT.NONE);
-		grpVjerojatnostOstvarenjaPrijetnje.setLayout(new GridLayout(2, false));
+		grpVjerojatnostOstvarenjaPrijetnje.setLayout(new GridLayout(4, false));
 		GridData gd_grpVjerojatnostOstvarenjaPrijetnje = new GridData(SWT.FILL, SWT.CENTER, true, false, 2, 2);
 		gd_grpVjerojatnostOstvarenjaPrijetnje.horizontalIndent = 10;
 		gd_grpVjerojatnostOstvarenjaPrijetnje.heightHint = 122;
@@ -90,15 +98,33 @@ public class Probability {
 
 		Combo comboVjerojatnost_ = new Combo(grpVjerojatnostOstvarenjaPrijetnje, SWT.NONE);
 		GridData gd_comboVjerojatnost_ = new GridData(SWT.LEFT, SWT.CENTER, true, false, 1, 1);
-		gd_comboVjerojatnost_.widthHint = 217;
+		gd_comboVjerojatnost_.widthHint = 150;
 		comboVjerojatnost_.setLayoutData(gd_comboVjerojatnost_);
+		comboVjerojatnost_.setItems(getComboItemsFromDB("as_probability"));
+
+		Label lblVjerojatnostOtkrivanja_ = new Label(grpVjerojatnostOstvarenjaPrijetnje, SWT.NONE);
+		lblVjerojatnostOtkrivanja_.setText("Vjerojatnost otkrivanja:");
+
+		Combo comboVjerojatnostOtkrivanja_ = new Combo(grpVjerojatnostOstvarenjaPrijetnje, SWT.NONE);
+		GridData gd_comboVjerojatnostOtkrivanja_ = new GridData(SWT.LEFT, SWT.CENTER, true, false, 1, 1);
+		gd_comboVjerojatnostOtkrivanja_.widthHint = 150;
+		comboVjerojatnostOtkrivanja_.setLayoutData(gd_comboVjerojatnostOtkrivanja_);
+		comboVjerojatnostOtkrivanja_.setItems(getComboItemsFromDB("as_detection_probability"));
 
 		Label lblOpisVjerojat_ = new Label(grpVjerojatnostOstvarenjaPrijetnje, SWT.NONE);
 		lblOpisVjerojat_.setText("Opis Vjerojatnosti:");
 		new Label(grpVjerojatnostOstvarenjaPrijetnje, SWT.NONE);
 
-		StyledText styledTextOpisVjerojat_ = new StyledText(grpVjerojatnostOstvarenjaPrijetnje, SWT.BORDER);
-		styledTextOpisVjerojat_.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 2, 1));
+		Label lblOpisVjerojatnostiOtkrivnja = new Label(grpVjerojatnostOstvarenjaPrijetnje, SWT.NONE);
+		lblOpisVjerojatnostiOtkrivnja.setText("Opis vjerojatnosti otkrivnja:");
+		new Label(grpVjerojatnostOstvarenjaPrijetnje, SWT.NONE);
+
+				textOpisVjerojat_ = new Text(grpVjerojatnostOstvarenjaPrijetnje, SWT.BORDER | SWT.H_SCROLL | SWT.V_SCROLL | SWT.CANCEL);
+				textOpisVjerojat_.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 2, 1));
+
+						textVjerojatnostOtkrivanja_ = new Text(grpVjerojatnostOstvarenjaPrijetnje, SWT.BORDER | SWT.WRAP | SWT.V_SCROLL);
+						textVjerojatnostOtkrivanja_.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 2, 1));
+
 
 
 		Composite compositeASKTable = new Composite(mParent, SWT.NONE);
@@ -154,6 +180,66 @@ public class Probability {
 
 		scrollBox.setContent(mParent);
 	}
+
+	public String[] getComboItemsFromDB(String tableName) {
+		DatabaseConnection con = new DatabaseConnection();
+		con.doConnection();
+
+		try {
+
+			return con.getComboItems(tableName);
+
+		} catch (SQLException ex) {
+			System.out.println(ex.getMessage());
+			try {
+				con.connection.close();
+			} catch (SQLException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+
+		}
+		System.out.println("Connection : " + con.doConnection());
+		try {
+			con.connection.close();
+		} catch (SQLException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+		return new String[] {};
+
+	}
+
+
+	public String[] getThreatVulnerabilityItemsFromDB(String tableName,String whereStatement){
+		DatabaseConnection con = new DatabaseConnection();
+		con.doConnection();
+
+		try {
+
+			return con.getComboItemsThreatOrVulnerability(tableName, whereStatement);
+
+		} catch (SQLException ex) {
+			System.out.println(ex.getMessage());
+			try {
+				con.connection.close();
+			} catch (SQLException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+
+		}
+		System.out.println("Connection : " + con.doConnection());
+		try {
+			con.connection.close();
+		} catch (SQLException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+		return new String[]{};
+
+	}
+
 	@PreDestroy
 	public void dispose() throws Exception {
 	  System.out.println("Closing application");

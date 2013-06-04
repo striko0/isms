@@ -1,5 +1,9 @@
 package hr.ante.isms.parts;
 
+import hr.ante.isms.connection.DatabaseConnection;
+
+import java.sql.SQLException;
+
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import javax.inject.Inject;
@@ -13,7 +17,6 @@ import org.eclipse.e4.ui.model.application.ui.basic.MPart;
 import org.eclipse.e4.ui.model.application.ui.basic.MWindow;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.ScrolledComposite;
-import org.eclipse.swt.custom.StyledText;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
@@ -155,6 +158,7 @@ public class Controls {
 		Combo comboOcjDjelot_ = new Combo(composite2, SWT.NONE);
 		comboOcjDjelot_.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true,
 				false, 1, 1));
+		comboOcjDjelot_.setItems(getComboItemsFromDB("as_control_effectiveness"));
 
 		Label lblOdgOsoba_ = new Label(composite2, SWT.NONE);
 		lblOdgOsoba_.setText("Odgovorna Osoba:");
@@ -162,6 +166,7 @@ public class Controls {
 		Combo comboOdgOsoba_ = new Combo(composite2, SWT.NONE);
 		comboOdgOsoba_.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true,
 				false, 1, 1));
+		comboOdgOsoba_.setItems(getComboItemsFromDB("as_owner"));
 
 		Label lblSukl_ = new Label(composite2, SWT.NONE);
 		lblSukl_.setText("Sukladnost:");
@@ -169,6 +174,7 @@ public class Controls {
 		Combo comboSukl_ = new Combo(composite2, SWT.NONE);
 		comboSukl_.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true,
 				false, 1, 1));
+		comboSukl_.setItems(getComboItemsFromDB("as_control_compliance"));
 
 		Composite composite3 = new Composite(mParent, SWT.NONE);
 		composite3.setLayout(new GridLayout(1, false));
@@ -268,6 +274,35 @@ public class Controls {
 			}
 		});
 		scrollBox.setContent(mParent);
+
+	}
+
+	public String[] getComboItemsFromDB(String tableName) {
+		DatabaseConnection con = new DatabaseConnection();
+		con.doConnection();
+
+		try {
+
+			return con.getComboItems(tableName);
+
+		} catch (SQLException ex) {
+			System.out.println(ex.getMessage());
+			try {
+				con.connection.close();
+			} catch (SQLException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+
+		}
+		System.out.println("Connection : " + con.doConnection());
+		try {
+			con.connection.close();
+		} catch (SQLException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+		return new String[] {};
 
 	}
 

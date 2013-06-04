@@ -1,7 +1,10 @@
 package hr.ante.isms.parts;
 
+import hr.ante.isms.connection.DatabaseConnection;
 import hr.ante.isms.parts.table.ASKTable;
 import hr.ante.isms.parts.table.ImpactAnalysisASKTableModel;
+
+import java.sql.SQLException;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
@@ -23,12 +26,15 @@ import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Text;
 
 public class ImpactAnalysis {
 
 	private Composite mParent;
 	 @Inject
 	  MDirtyable dirty;
+	 private Text textOpisVjerojat_;
+	 private Text textOpisUcinka_;
 
 
 	@PostConstruct
@@ -64,6 +70,7 @@ public class ImpactAnalysis {
 		Combo comboPrijet_ = new Combo(mParent, SWT.NONE);
 		//gd_comboPrijet_.widthHint = 730;
 		comboPrijet_.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+		comboPrijet_.setItems(getThreatVulnerabilityItemsFromDB("as_threat",""));
 
 		Label lblRanjivost_ = new Label(mParent, SWT.NONE);
 		GridData gd_lblRanjivost_ = new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1);
@@ -74,6 +81,7 @@ public class ImpactAnalysis {
 		Combo comboRanjivost_ = new Combo(mParent, SWT.NONE);
 		//gd_comboRanjivost_.widthHint = 715;
 		comboRanjivost_.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+		comboRanjivost_.setItems(getThreatVulnerabilityItemsFromDB("as_vulnerability",""));
 
 		Group grpVjerojatnostOstvarenjaPrijetnje = new Group(mParent, SWT.NONE);
 		grpVjerojatnostOstvarenjaPrijetnje.setLayout(new GridLayout(2, false));
@@ -94,21 +102,21 @@ public class ImpactAnalysis {
 		GridData gd_comboVjerojatnost_ = new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1);
 		gd_comboVjerojatnost_.widthHint = 250;
 		comboVjerojatnost_.setLayoutData(gd_comboVjerojatnost_);
+		comboVjerojatnost_.setItems(getComboItemsFromDB("as_probability"));
 
 		Label lblOpisVjerojat_ = new Label(grpVjerojatnostOstvarenjaPrijetnje, SWT.NONE);
 		lblOpisVjerojat_.setText("Opis Vjerojatnosti:");
 		new Label(grpVjerojatnostOstvarenjaPrijetnje, SWT.NONE);
 
-		StyledText styledTextOpisVjerojat_ = new StyledText(grpVjerojatnostOstvarenjaPrijetnje, SWT.BORDER);
-		GridData gd_styledTextOpisVjerojat_ = new GridData(SWT.FILL, SWT.FILL, true, true, 2, 1);
-		gd_styledTextOpisVjerojat_.heightHint = 17;
-		styledTextOpisVjerojat_.setLayoutData(gd_styledTextOpisVjerojat_);
+		textOpisVjerojat_ = new Text(grpVjerojatnostOstvarenjaPrijetnje, SWT.BORDER | SWT.V_SCROLL);
+		textOpisVjerojat_.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 2, 1));
+
 
 		Group grpAnalizaUinkaPrijetnje = new Group(mParent, SWT.NONE);
 		grpAnalizaUinkaPrijetnje.setText("Analiza U\u010Dinka Prijetnje");
 		GridData gd_grpAnalizaUinkaPrijetnje = new GridData(SWT.FILL, SWT.FILL, true, true, 2, 1);
 		gd_grpAnalizaUinkaPrijetnje.horizontalIndent = 10;
-		gd_grpAnalizaUinkaPrijetnje.heightHint = 86;
+		gd_grpAnalizaUinkaPrijetnje.heightHint = 136;
 		gd_grpAnalizaUinkaPrijetnje.widthHint = 371;
 		grpAnalizaUinkaPrijetnje.setLayoutData(gd_grpAnalizaUinkaPrijetnje);
 		grpAnalizaUinkaPrijetnje.setLayout(new GridLayout(2, false));
@@ -120,6 +128,8 @@ public class ImpactAnalysis {
 		GridData gd_comboUcinak_ = new GridData(SWT.LEFT, SWT.CENTER, true, false, 1, 1);
 		gd_comboUcinak_.widthHint = 250;
 		comboUcinak_.setLayoutData(gd_comboUcinak_);
+		comboUcinak_.setItems(getComboItemsFromDB("as_threat_impact"));
+
 
 		Label lblOpisUcinka_ = new Label(grpAnalizaUinkaPrijetnje, SWT.NONE);
 		GridData gd_lblOpisUcinka_ = new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1);
@@ -128,20 +138,17 @@ public class ImpactAnalysis {
 		lblOpisUcinka_.setText("Opis U\u010Dinka:");
 		new Label(grpAnalizaUinkaPrijetnje, SWT.NONE);
 
-		StyledText styledTextUcinak_ = new StyledText(grpAnalizaUinkaPrijetnje, SWT.BORDER);
-		GridData gd_styledTextUcinak_ = new GridData(SWT.FILL, SWT.FILL, true, true, 2, 1);
-		gd_styledTextUcinak_.heightHint = 9;
-		styledTextUcinak_.setLayoutData(gd_styledTextUcinak_);
-//		new Label(grpAnalizaUinkaPrijetnje, SWT.NONE);
-//		new Label(grpAnalizaUinkaPrijetnje, SWT.NONE);
-//		new Label(mParent, SWT.NONE);
-//		new Label(mParent, SWT.NONE);
+		textOpisUcinka_ = new Text(grpAnalizaUinkaPrijetnje, SWT.BORDER | SWT.V_SCROLL);
+		GridData gd_textOpisUcinka_ = new GridData(SWT.FILL, SWT.FILL, true, true, 2, 1);
+		gd_textOpisUcinka_.heightHint = 63;
+		textOpisUcinka_.setLayoutData(gd_textOpisUcinka_);
+
 
 
 		Composite compositeASKTable = new Composite(mParent, SWT.NONE);
 		compositeASKTable.setLayout(new FillLayout());
 		GridData gd_compositeASKTable = new GridData(SWT.FILL, SWT.FILL, true, true, 2, 1);
-		gd_compositeASKTable.heightHint = 164;
+		gd_compositeASKTable.heightHint = 95;
 		gd_compositeASKTable.minimumHeight = 100;
 		gd_compositeASKTable.widthHint = 778;
 		gd_compositeASKTable.horizontalIndent = 10;
@@ -191,6 +198,67 @@ public class ImpactAnalysis {
 
 		scrollBox.setContent(mParent);
 	}
+
+	public String[] getComboItemsFromDB(String tableName) {
+		DatabaseConnection con = new DatabaseConnection();
+		con.doConnection();
+
+		try {
+
+			return con.getComboItems(tableName);
+
+		} catch (SQLException ex) {
+			System.out.println(ex.getMessage());
+			try {
+				con.connection.close();
+			} catch (SQLException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+
+		}
+		System.out.println("Connection : " + con.doConnection());
+		try {
+			con.connection.close();
+		} catch (SQLException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+		return new String[] {};
+
+	}
+
+
+	public String[] getThreatVulnerabilityItemsFromDB(String tableName,String whereStatement){
+		DatabaseConnection con = new DatabaseConnection();
+		con.doConnection();
+
+		try {
+
+			return con.getComboItemsThreatOrVulnerability(tableName, whereStatement);
+
+		} catch (SQLException ex) {
+			System.out.println(ex.getMessage());
+			try {
+				con.connection.close();
+			} catch (SQLException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+
+		}
+		System.out.println("Connection : " + con.doConnection());
+		try {
+			con.connection.close();
+		} catch (SQLException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+		return new String[]{};
+
+	}
+
+
 	@PreDestroy
 	public void dispose() throws Exception {
 	  System.out.println("Closing application");

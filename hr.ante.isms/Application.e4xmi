@@ -5,6 +5,7 @@
       <children xsi:type="advanced:Perspective" xmi:id="_DOk2YMHoEeKRFJks8F58qg" elementId="hr.ante.isms.perspective.main" label="Admin">
         <children xsi:type="basic:Part" xmi:id="_-ND-0Ma2EeKnGd2mN_Ma-g" elementId="hr.ante.isms.part.asset" contributionURI="bundleclass://hr.ante.isms/hr.ante.isms.parts.ListAssets" label="Imovina" closeable="true"/>
         <children xsi:type="basic:Part" xmi:id="_wBsqMMhUEeKpmOoztJtsBA" elementId="hr.ante.isms.part.risk" visible="false" contributionURI="bundleclass://hr.ante.isms/hr.ante.isms.parts.ListRisks" label="Rizik"/>
+        <children xsi:type="basic:Part" xmi:id="_9DsZMMwrEeKpmOoztJtsBA" elementId="hr.ante.isms.part.start" contributionURI="bundleclass://hr.ante.isms/hr.ante.isms.parts.StartPage" label="Start Page"/>
       </children>
       <children xsi:type="advanced:Perspective" xmi:id="_TQ0HkMeKEeK97MPScHyovA" elementId="hr.ante.isms.perspective.user" accessibilityPhrase="" label="User"/>
     </children>

@@ -1,7 +1,8 @@
 package hr.ante.isms.parts;
 
-import hr.ante.isms.parts.table.ASKTable;
-import hr.ante.isms.parts.table.ControlsAnalysisASKTableModel;
+import hr.ante.isms.connection.DatabaseConnection;
+
+import java.sql.SQLException;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
@@ -11,23 +12,17 @@ import org.eclipse.e4.ui.di.Focus;
 import org.eclipse.e4.ui.di.Persist;
 import org.eclipse.e4.ui.model.application.MApplication;
 import org.eclipse.e4.ui.model.application.ui.MDirtyable;
-import org.eclipse.e4.ui.model.application.ui.basic.MBasicFactory;
-import org.eclipse.e4.ui.model.application.ui.basic.MPart;
-import org.eclipse.e4.ui.model.application.ui.basic.MWindow;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.ScrolledComposite;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
-import org.eclipse.swt.events.SelectionListener;
-import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Label;
-import org.eclipse.swt.widgets.Text;
 import org.eclipse.swt.widgets.Group;
+import org.eclipse.swt.widgets.Label;
 
 public class MeasureEvaluation {
 	private Composite mParent;
@@ -63,23 +58,24 @@ public class MeasureEvaluation {
 		mParent.getShell().setText("Mjere za smanjenje rizika");
 		mParent.setLayout(new GridLayout(1, false));
 
-		Group grpOekivaneVrijednostiNakon = new Group(mParent, SWT.NONE);
-		grpOekivaneVrijednostiNakon.setLayout(new GridLayout(4, false));
-		grpOekivaneVrijednostiNakon.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false, 1, 1));
-		grpOekivaneVrijednostiNakon.setText("O\u010Dekivane Vrijednosti Nakon Uvo\u0111enja Predlo\u017Eenih Mjera");
+		Group grpOcekivaneVrijednostiNakon_ = new Group(mParent, SWT.NONE);
+		grpOcekivaneVrijednostiNakon_.setLayout(new GridLayout(4, false));
+		grpOcekivaneVrijednostiNakon_.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false, 1, 1));
+		grpOcekivaneVrijednostiNakon_.setText("O\u010Dekivane Vrijednosti Nakon Uvo\u0111enja Predlo\u017Eenih Mjera");
 
-		Label lblVjerojatnost = new Label(grpOekivaneVrijednostiNakon, SWT.NONE);
-		lblVjerojatnost.setText("Vjerojatnost:");
+		Label lblVjerojatnost_ = new Label(grpOcekivaneVrijednostiNakon_, SWT.NONE);
+		lblVjerojatnost_.setText("Vjerojatnost:");
 
-		Combo combo = new Combo(grpOekivaneVrijednostiNakon, SWT.NONE);
-		combo.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+		Combo comboVjerojatnost_ = new Combo(grpOcekivaneVrijednostiNakon_, SWT.NONE);
+		comboVjerojatnost_.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+		comboVjerojatnost_.setItems(getComboItemsFromDB("as_probability"));
 
-		Label lblUinak = new Label(grpOekivaneVrijednostiNakon, SWT.NONE);
-		lblUinak.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
-		lblUinak.setText("U\u010Dinak: ");
+		Label lblUcinak_ = new Label(grpOcekivaneVrijednostiNakon_, SWT.NONE);
+		lblUcinak_.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
+		lblUcinak_.setText("U\u010Dinak: ");
 
-		Combo combo_1 = new Combo(grpOekivaneVrijednostiNakon, SWT.NONE);
-		combo_1.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+		Combo comboUcinak_ = new Combo(grpOcekivaneVrijednostiNakon_, SWT.NONE);
+		comboUcinak_.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
 				new Label(mParent, SWT.NONE);
 
 				Group grpNainSmanjivanjaRizika = new Group(mParent, SWT.NONE);
@@ -87,12 +83,13 @@ public class MeasureEvaluation {
 				grpNainSmanjivanjaRizika.setText("Na\u010Din Smanjivanja Rizika");
 				grpNainSmanjivanjaRizika.setLayout(new GridLayout(2, false));
 
-						Label lblNainSmanjivanja = new Label(grpNainSmanjivanjaRizika, SWT.NONE);
-						lblNainSmanjivanja.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
-						lblNainSmanjivanja.setText("Na\u010Din Smanjivanja: ");
+						Label lblNacinSmanjivanja_ = new Label(grpNainSmanjivanjaRizika, SWT.NONE);
+						lblNacinSmanjivanja_.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
+						lblNacinSmanjivanja_.setText("Na\u010Din Smanjivanja: ");
 
-								Combo combo_2 = new Combo(grpNainSmanjivanjaRizika, SWT.NONE);
-								combo_2.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+								Combo comboNacinSmanjivanja_ = new Combo(grpNainSmanjivanjaRizika, SWT.NONE);
+								comboNacinSmanjivanja_.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+								comboNacinSmanjivanja_.setItems(getComboItemsFromDB("as_risk_mitigation"));
 
 		Composite compositeButtons_ = new Composite(mParent, SWT.NONE);
 		GridData gd_compositeButtons_ = new GridData(SWT.RIGHT, SWT.FILL, true,
@@ -129,6 +126,35 @@ public class MeasureEvaluation {
 
 
 		scrollBox.setContent(mParent);
+	}
+
+	public String[] getComboItemsFromDB(String tableName) {
+		DatabaseConnection con = new DatabaseConnection();
+		con.doConnection();
+
+		try {
+
+			return con.getComboItems(tableName);
+
+		} catch (SQLException ex) {
+			System.out.println(ex.getMessage());
+			try {
+				con.connection.close();
+			} catch (SQLException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+
+		}
+		System.out.println("Connection : " + con.doConnection());
+		try {
+			con.connection.close();
+		} catch (SQLException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+		return new String[] {};
+
 	}
 
 	@PreDestroy

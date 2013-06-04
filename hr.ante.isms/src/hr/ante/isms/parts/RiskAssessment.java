@@ -1,7 +1,8 @@
 package hr.ante.isms.parts;
 
-import hr.ante.isms.parts.table.ASKTable;
-import hr.ante.isms.parts.table.ControlsAnalysisASKTableModel;
+import hr.ante.isms.connection.DatabaseConnection;
+
+import java.sql.SQLException;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
@@ -11,23 +12,18 @@ import org.eclipse.e4.ui.di.Focus;
 import org.eclipse.e4.ui.di.Persist;
 import org.eclipse.e4.ui.model.application.MApplication;
 import org.eclipse.e4.ui.model.application.ui.MDirtyable;
-import org.eclipse.e4.ui.model.application.ui.basic.MBasicFactory;
-import org.eclipse.e4.ui.model.application.ui.basic.MPart;
-import org.eclipse.e4.ui.model.application.ui.basic.MWindow;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.ScrolledComposite;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
-import org.eclipse.swt.events.SelectionListener;
-import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
-import org.eclipse.swt.widgets.Group;
 
 public class RiskAssessment {
 	private Composite mParent;
@@ -43,6 +39,7 @@ public class RiskAssessment {
 	private Text textPotencijalniGubitak_;
 	private Text textOpisUcinka_;
 	private Text textOpisFaktoraIzlozenosti_;
+	private Text textOpisVjerojatnostiOtkrivanja_;
 
 	@PostConstruct
 	public void createComposite(final Composite parent) {
@@ -109,7 +106,7 @@ public class RiskAssessment {
 		gd_grpVjerojatnostOstvarenjaPrijetnje.heightHint = 154;
 		grpVjerojatnostOstvarenjaPrijetnje.setLayoutData(gd_grpVjerojatnostOstvarenjaPrijetnje);
 		grpVjerojatnostOstvarenjaPrijetnje.setText("Vjerojatnost Ostvarenja Prijetnje");
-		grpVjerojatnostOstvarenjaPrijetnje.setLayout(new GridLayout(2, false));
+		grpVjerojatnostOstvarenjaPrijetnje.setLayout(new GridLayout(4, false));
 
 		Label lblVjerojatnost_ = new Label(grpVjerojatnostOstvarenjaPrijetnje, SWT.NONE);
 		lblVjerojatnost_.setText("Vjerojatnost: ");
@@ -118,15 +115,34 @@ public class RiskAssessment {
 		GridData gd_comboVjerojatnost_ = new GridData(SWT.LEFT, SWT.CENTER, true, false, 1, 1);
 		gd_comboVjerojatnost_.widthHint = 217;
 		comboVjerojatnost_.setLayoutData(gd_comboVjerojatnost_);
+		comboVjerojatnost_.setItems(getComboItemsFromDB("as_probability"));
+
+		Label lblVjerojatnostOtkrivanja_ = new Label(grpVjerojatnostOstvarenjaPrijetnje, SWT.NONE);
+		lblVjerojatnostOtkrivanja_.setText("Vjerojatnost Otkrivanja: ");
+
+		Combo comboVjerojatnostOtkrivanja_ = new Combo(grpVjerojatnostOstvarenjaPrijetnje, SWT.NONE);
+		comboVjerojatnostOtkrivanja_.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+		comboVjerojatnostOtkrivanja_.setItems(getComboItemsFromDB("as_detection_probability"));
 
 		Label lblOpisVjerojatnosti_ = new Label(grpVjerojatnostOstvarenjaPrijetnje, SWT.NONE);
 		lblOpisVjerojatnosti_.setText("Opis vjerojatnosti:");
 		new Label(grpVjerojatnostOstvarenjaPrijetnje, SWT.NONE);
 
-		textOpisVjerojatnosti_ = new Text(grpVjerojatnostOstvarenjaPrijetnje, SWT.BORDER | SWT.V_SCROLL);
+		Label lblOpisVjerojatnostiOtkrivanja_ = new Label(grpVjerojatnostOstvarenjaPrijetnje, SWT.NONE);
+		lblOpisVjerojatnostiOtkrivanja_.setText("Opis vjerojatnosti otkrivanja:");
+		new Label(grpVjerojatnostOstvarenjaPrijetnje, SWT.NONE);
+
+		textOpisVjerojatnosti_ = new Text(grpVjerojatnostOstvarenjaPrijetnje, SWT.BORDER | SWT.H_SCROLL | SWT.V_SCROLL | SWT.CANCEL);
 		GridData gd_textOpisVjerojatnosti_ = new GridData(SWT.FILL, SWT.FILL, true, true, 2, 1);
 		gd_textOpisVjerojatnosti_.heightHint = 40;
 		textOpisVjerojatnosti_.setLayoutData(gd_textOpisVjerojatnosti_);
+
+		textOpisVjerojatnostiOtkrivanja_ = new Text(grpVjerojatnostOstvarenjaPrijetnje, SWT.BORDER | SWT.H_SCROLL | SWT.V_SCROLL | SWT.CANCEL);
+		textOpisVjerojatnostiOtkrivanja_.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 2, 1));
+		new Label(grpVjerojatnostOstvarenjaPrijetnje, SWT.NONE);
+		new Label(grpVjerojatnostOstvarenjaPrijetnje, SWT.NONE);
+		new Label(grpVjerojatnostOstvarenjaPrijetnje, SWT.NONE);
+		new Label(grpVjerojatnostOstvarenjaPrijetnje, SWT.NONE);
 
 
 		Group grpAnalizaUinkaPrijetnje = new Group(mParent, SWT.NONE);
@@ -141,6 +157,7 @@ public class RiskAssessment {
 		GridData gd_comboUcinak_ = new GridData(SWT.LEFT, SWT.CENTER, true, false, 1, 1);
 		gd_comboUcinak_.widthHint = 75;
 		comboUcinak_.setLayoutData(gd_comboUcinak_);
+		comboUcinak_.setItems(getComboItemsFromDB("as_threat_impact"));
 		new Label(grpAnalizaUinkaPrijetnje, SWT.NONE);
 				new Label(grpAnalizaUinkaPrijetnje, SWT.NONE);
 
@@ -151,6 +168,7 @@ public class RiskAssessment {
 				GridData gd_comboUtjecajNaPovjerljivost_ = new GridData(SWT.LEFT, SWT.CENTER, true, false, 1, 1);
 				gd_comboUtjecajNaPovjerljivost_.widthHint = 120;
 				comboUtjecajNaPovjerljivost_.setLayoutData(gd_comboUtjecajNaPovjerljivost_);
+				comboUtjecajNaPovjerljivost_.setItems(getComboItemsFromDB("as_confidentiality"));
 		new Label(grpAnalizaUinkaPrijetnje, SWT.NONE);
 		new Label(grpAnalizaUinkaPrijetnje, SWT.NONE);
 
@@ -161,7 +179,7 @@ public class RiskAssessment {
 		GridData gd_comboUtjecajNaCjelovitost_ = new GridData(SWT.LEFT, SWT.CENTER, true, false, 1, 1);
 		gd_comboUtjecajNaCjelovitost_.widthHint = 120;
 		comboUtjecajNaCjelovitost_.setLayoutData(gd_comboUtjecajNaCjelovitost_);
-
+		comboUtjecajNaCjelovitost_.setItems(getComboItemsFromDB("as_integrity"));
 		Label lblFaktorIzlozenosti_ = new Label(grpAnalizaUinkaPrijetnje,
 				SWT.NONE);
 		lblFaktorIzlozenosti_.setText("Faktor izlo\u017Eenosti:");
@@ -180,7 +198,7 @@ public class RiskAssessment {
 		GridData gd_comboUtjecajNaRaspolozivost_ = new GridData(SWT.LEFT, SWT.CENTER, true, false, 1, 1);
 		gd_comboUtjecajNaRaspolozivost_.widthHint = 120;
 		comboUtjecajNaRaspolozivost_.setLayoutData(gd_comboUtjecajNaRaspolozivost_);
-
+		comboUtjecajNaRaspolozivost_.setItems(getComboItemsFromDB("as_accessibility"));
 		Label lblPotencijalniGubitak_ = new Label(grpAnalizaUinkaPrijetnje,
 				SWT.NONE);
 		lblPotencijalniGubitak_.setText("Potencijalni gubitak:");
@@ -201,7 +219,7 @@ public class RiskAssessment {
 				.setText("Opis faktora izlo\u017Eenosti i potenc. gubitka");
 		new Label(grpAnalizaUinkaPrijetnje, SWT.NONE);
 
-		textOpisUcinka_ = new Text(grpAnalizaUinkaPrijetnje, SWT.BORDER | SWT.V_SCROLL);
+		textOpisUcinka_ = new Text(grpAnalizaUinkaPrijetnje, SWT.BORDER | SWT.V_SCROLL  | SWT.WRAP );
 		textOpisUcinka_.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 2, 2));
 
 		textOpisFaktoraIzlozenosti_  = new Text(grpAnalizaUinkaPrijetnje, SWT.BORDER | SWT.V_SCROLL);
@@ -250,6 +268,36 @@ public class RiskAssessment {
 
 		scrollBox.setContent(mParent);
 	}
+
+	public String[] getComboItemsFromDB(String tableName) {
+		DatabaseConnection con = new DatabaseConnection();
+		con.doConnection();
+
+		try {
+
+			return con.getComboItems(tableName);
+
+		} catch (SQLException ex) {
+			System.out.println(ex.getMessage());
+			try {
+				con.connection.close();
+			} catch (SQLException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+
+		}
+		System.out.println("Connection : " + con.doConnection());
+		try {
+			con.connection.close();
+		} catch (SQLException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+		return new String[] {};
+
+	}
+
 
 	@PreDestroy
 	public void dispose() throws Exception {

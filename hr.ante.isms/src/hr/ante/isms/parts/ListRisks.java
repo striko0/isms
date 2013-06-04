@@ -57,7 +57,7 @@ public class ListRisks {
 		// pixels) then send that value instead.
 
 		mParent = new Composite(scrollBox, SWT.NONE);
-		mParent.setBackground(SWTResourceManager.getColor(SWT.COLOR_WIDGET_BACKGROUND));
+		mParent.setBackground(SWTResourceManager.getColor(SWT.COLOR_TITLE_BACKGROUND_GRADIENT));
 		//parent.setSize(new Point(759, 359));
 		//mParent.getShell().setSize(759, 400);
 		mParent.getShell().setText("Upravljanje Rizicima");
@@ -71,9 +71,10 @@ public class ListRisks {
 		Label naslov_ = new Label (mParent, SWT.NONE);
 		naslov_.setForeground(SWTResourceManager.getColor(SWT.COLOR_LIST_FOREGROUND));
 		naslov_.setBackground(SWTResourceManager.getColor(SWT.COLOR_TITLE_BACKGROUND_GRADIENT));
-		naslov_.setFont(SWTResourceManager.getFont("Verdana", 18, SWT.BOLD));
+		naslov_.setFont(SWTResourceManager.getFont("Georgia", 18, SWT.BOLD));
 		naslov_.setText("Rizici");
-		GridData gd_naslov_ = new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1);
+		GridData gd_naslov_ = new GridData(SWT.FILL, SWT.FILL, true, false, 1, 1);
+		gd_naslov_.horizontalIndent = 10;
 		gd_naslov_.widthHint = 136;
 		naslov_.setLayoutData(gd_naslov_);
 

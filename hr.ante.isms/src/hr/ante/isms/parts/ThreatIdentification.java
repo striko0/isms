@@ -1,5 +1,8 @@
 package hr.ante.isms.parts;
 
+import java.sql.SQLException;
+
+import hr.ante.isms.connection.DatabaseConnection;
 import hr.ante.isms.parts.table.ASKTable;
 import hr.ante.isms.parts.table.ThreatIdentASKTableModel;
 import hr.ante.test.asktable.ASTableModel4;
@@ -15,6 +18,7 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.ScrolledComposite;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
@@ -55,7 +59,7 @@ public class ThreatIdentification {
 
 		mParent = new Composite(scrollBox, SWT.NONE);
 
-	//	parent.getShell().setSize(759, 389);
+		parent.getShell().setSize(759, 389);
 
 		mParent.getShell().setText(
 				"Identifikacija prijetnji za imovinu: --***--");
@@ -70,19 +74,28 @@ public class ThreatIdentification {
 		Label lblVrstaPrijet_ = new Label(composite, SWT.NONE);
 		lblVrstaPrijet_.setText("Vrsta prijetnje:");
 
-		Combo comboVrstaPrijet_ = new Combo(composite, SWT.NONE);
+		final Combo comboVrstaPrijet_ = new Combo(composite, SWT.NONE);
+
+				Label lblPrijetnja_ = new Label(composite, SWT.NONE);
+				lblPrijetnja_.setText("Prijetnja:");
+		final Combo comboPrijetnja_ = new Combo(composite, SWT.NONE);
+		comboPrijetnja_.setEnabled(false);
+
+
+				comboPrijetnja_.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
 		comboVrstaPrijet_.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+		comboVrstaPrijet_.setItems(getComboItemsFromDB("as_threat_type"));
+		comboVrstaPrijet_.addSelectionListener(new SelectionAdapter() {
 
-		Label lblPrijetnja_ = new Label(composite, SWT.NONE);
-		lblPrijetnja_.setText("Prijetnja:");
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				// TODO Auto-generated method stub
+				int index = comboVrstaPrijet_.getSelectionIndex()+1;
+				comboPrijetnja_.setEnabled(true);
+				comboPrijetnja_.setItems(getComboItemsFromDB("as_threat", "WHERE threattype_id LIKE '"+index+"%'",true));
+			}
 
-		Combo comboPrijetnja_ = new Combo(composite, SWT.NONE);
-		comboPrijetnja_.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
-
-		Button button = new Button(composite, SWT.NONE);
-
-		button.setText("Dodaj Redak");
-		new Label(composite, SWT.NONE);
+		});
 
 
 		Composite compositeASKTable = new Composite(mParent, SWT.INHERIT_FORCE);
@@ -142,6 +155,96 @@ public class ThreatIdentification {
 
 
 
+
+	}
+
+	public String[] getComboItemsFromDB(String tableName){
+		DatabaseConnection con = new DatabaseConnection();
+		con.doConnection();
+
+		try {
+
+				return con.getComboItems(tableName);
+
+
+
+
+		} catch (SQLException ex) {
+			System.out.println(ex.getMessage());
+			try {
+				con.connection.close();
+			} catch (SQLException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+
+		}
+		System.out.println("Connection : " + con.doConnection());
+		try {
+			con.connection.close();
+		} catch (SQLException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+		return new String[]{};
+
+	}
+
+	public String[] getComboItemsFromDB(String tableName, String whereStatement){
+		DatabaseConnection con = new DatabaseConnection();
+		con.doConnection();
+
+		try {
+
+			return con.getComboItemsWithWhere(tableName, whereStatement);
+
+		} catch (SQLException ex) {
+			System.out.println(ex.getMessage());
+			try {
+				con.connection.close();
+			} catch (SQLException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+
+		}
+		System.out.println("Connection : " + con.doConnection());
+		try {
+			con.connection.close();
+		} catch (SQLException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+		return new String[]{};
+
+	}
+
+	public String[] getComboItemsFromDB(String tableName, String whereStatement, boolean valid){
+		DatabaseConnection con = new DatabaseConnection();
+		con.doConnection();
+
+		try {
+//			if(type=="threat")
+				return con.getComboItemsThreatOrVulnerability(tableName, whereStatement);
+
+		} catch (SQLException ex) {
+			System.out.println(ex.getMessage());
+			try {
+				con.connection.close();
+			} catch (SQLException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+
+		}
+		System.out.println("Connection : " + con.doConnection());
+		try {
+			con.connection.close();
+		} catch (SQLException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+		return new String[]{};
 
 	}
 

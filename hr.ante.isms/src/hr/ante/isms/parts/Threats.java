@@ -1,8 +1,10 @@
 package hr.ante.isms.parts;
 
+import hr.ante.isms.connection.DatabaseConnection;
 import hr.ante.isms.parts.table.ASKTable;
 import hr.ante.isms.parts.table.ThreatsASKTableModel;
-import hr.ante.isms.parts.table.ProbabilityASKTableModel;
+
+import java.sql.SQLException;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
@@ -12,24 +14,19 @@ import org.eclipse.e4.ui.di.Focus;
 import org.eclipse.e4.ui.di.Persist;
 import org.eclipse.e4.ui.model.application.MApplication;
 import org.eclipse.e4.ui.model.application.ui.MDirtyable;
-import org.eclipse.e4.ui.model.application.ui.basic.MBasicFactory;
-import org.eclipse.e4.ui.model.application.ui.basic.MPart;
-import org.eclipse.e4.ui.model.application.ui.basic.MWindow;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.ScrolledComposite;
-import org.eclipse.swt.custom.StyledText;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
+import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
-import org.eclipse.swt.layout.FillLayout;
 
 public class Threats {
 
@@ -69,7 +66,7 @@ public class Threats {
 		composite1.setLayout(new GridLayout(4, false));
 		GridData gd_composite1 = new GridData(SWT.FILL, SWT.FILL, true, true,
 				2, 1);
-		gd_composite1.heightHint = 87;
+		gd_composite1.heightHint = 214;
 		composite1.setLayoutData(gd_composite1);
 
 		Label lblNaziv_ = new Label(composite1, SWT.NONE);
@@ -87,6 +84,7 @@ public class Threats {
 				false, 3, 1);
 		gd_comboVrsta_.widthHint = 190;
 		comboVrsta_.setLayoutData(gd_comboVrsta_);
+		comboVrsta_.setItems(getComboItemsFromDB("as_threat_type"));
 
 		Label lblOpis_ = new Label(composite1, SWT.NONE);
 		lblOpis_.setText("Opis:");
@@ -94,9 +92,9 @@ public class Threats {
 		new Label(composite1, SWT.NONE);
 		new Label(composite1, SWT.NONE);
 
-		textOpis_ = new Text(composite1, SWT.BORDER | SWT.V_SCROLL);
+		textOpis_ = new Text(composite1, SWT.BORDER | SWT.WRAP | SWT.V_SCROLL);
 		GridData gd_textOpis_ = new GridData(SWT.FILL, SWT.FILL, true, true, 4, 2);
-		gd_textOpis_.heightHint = 71;
+		gd_textOpis_.heightHint = 44;
 		textOpis_.setLayoutData(gd_textOpis_);
 
 		Label lblVjerojatnost_ = new Label(composite1, SWT.NONE);
@@ -108,6 +106,7 @@ public class Threats {
 				false, false, 1, 1);
 		gd_comboVjerojatnost_.widthHint = 200;
 		comboVjerojatnost_.setLayoutData(gd_comboVjerojatnost_);
+		comboVjerojatnost_.setItems(getComboItemsFromDB("as_probability"));
 
 		Label lblPorijeklo_ = new Label(composite1, SWT.NONE);
 		lblPorijeklo_.setText("Porijeklo:");
@@ -117,6 +116,7 @@ public class Threats {
 				1);
 		gd_comboPorijeklo_.widthHint = 130;
 		comboPorijeklo_.setLayoutData(gd_comboPorijeklo_);
+		comboPorijeklo_.setItems(getComboItemsFromDB("as_threat_origin"));
 
 		Label lblUcestalost_ = new Label(composite1, SWT.NONE);
 		lblUcestalost_.setText("U\u010Destalost:");
@@ -126,6 +126,7 @@ public class Threats {
 				false, 1, 1);
 		gd_comboUcestalost_.widthHint = 130;
 		comboUcestalost_.setLayoutData(gd_comboUcestalost_);
+		comboUcestalost_.setItems(getComboItemsFromDB("as_threat_frequency"));
 
 				Label lblRazorMoc_ = new Label(composite1, SWT.NONE);
 				lblRazorMoc_.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
@@ -135,6 +136,7 @@ public class Threats {
 				GridData gd_comboRazorMoc_ = new GridData(SWT.LEFT, SWT.CENTER, true, false, 1, 1);
 				gd_comboRazorMoc_.widthHint = 130;
 				comboRazorMoc_.setLayoutData(gd_comboRazorMoc_);
+				comboRazorMoc_.setItems(getComboItemsFromDB("as_threat_impact"));
 
 				Label lblIzvor_ = new Label(composite1, SWT.NONE);
 				lblIzvor_.setText("Izvor:");
@@ -143,6 +145,7 @@ public class Threats {
 				GridData gd_comboIzvor_ = new GridData(SWT.LEFT, SWT.CENTER, true, false, 1, 1);
 				gd_comboIzvor_.widthHint = 130;
 				comboIzvor_.setLayoutData(gd_comboIzvor_);
+				comboIzvor_.setItems(getComboItemsFromDB("as_threat_source"));
 
 				Label lblNamjera_ = new Label(composite1, SWT.NONE);
 				lblNamjera_.setText("Namjera:");
@@ -151,6 +154,7 @@ public class Threats {
 				GridData gd_comboNamjera_ = new GridData(SWT.LEFT, SWT.CENTER, true, false, 1, 1);
 				gd_comboNamjera_.widthHint = 130;
 				comboNamjera_.setLayoutData(gd_comboNamjera_);
+				comboNamjera_.setItems(getComboItemsFromDB("as_threat_intention"));
 				new Label(composite1, SWT.NONE);
 				new Label(composite1, SWT.NONE);
 				new Label(composite1, SWT.NONE);
@@ -250,6 +254,35 @@ public class Threats {
 
 
 		scrollBox.setContent(mParent);
+
+	}
+
+	public String[] getComboItemsFromDB(String tableName) {
+		DatabaseConnection con = new DatabaseConnection();
+		con.doConnection();
+
+		try {
+
+			return con.getComboItems(tableName);
+
+		} catch (SQLException ex) {
+			System.out.println(ex.getMessage());
+			try {
+				con.connection.close();
+			} catch (SQLException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+
+		}
+		System.out.println("Connection : " + con.doConnection());
+		try {
+			con.connection.close();
+		} catch (SQLException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+		return new String[] {};
 
 	}
 

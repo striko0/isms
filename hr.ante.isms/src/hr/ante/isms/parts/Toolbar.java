@@ -159,16 +159,16 @@ public class Toolbar {
 		}
 		tltmDodajPrijetnje.setText("Dodaj Prijetnje");
 
-		ExpandItem xpndtmProcjenaRizika = new ExpandItem(expandBar,
+		final ExpandItem xpndtmProcjenaRizika = new ExpandItem(expandBar,
 				SWT.NONE);
 		xpndtmProcjenaRizika.setImage(ResourceManager.getPluginImage(
 				"hr.ante.isms", "src/icons/identPrijetnjiIcon.png"));
 		xpndtmProcjenaRizika.setText("Procjena Rizika");
-		
+
 		final ToolBar bar2 = new ToolBar(expandBar, SWT.FLAT | SWT.WRAP | SWT.RIGHT | SWT.SHADOW_OUT | SWT.VERTICAL);
 		xpndtmProcjenaRizika.setControl(bar2);
 		xpndtmProcjenaRizika.setHeight(500);
-		
+
 		ToolItem tltmImovina = new ToolItem(bar2, SWT.NONE);
 		tltmImovina.setImage(ResourceManager.getPluginImage("hr.ante.isms",
 				"src/icons/application_form.png"));
@@ -179,7 +179,7 @@ public class Toolbar {
 				final MWindow window = MBasicFactory.INSTANCE.createWindow();
 
 				MPart part = MBasicFactory.INSTANCE.createPart();
-				part.setContributionURI("bundleclass://hr.ante.isms/hr.ante.isms.parts.Assets2");
+				part.setContributionURI("bundleclass://hr.ante.isms/hr.ante.isms.parts.Assets3");
 				part.setCloseable(true);
 				window.getChildren().add(part);
 
@@ -230,10 +230,28 @@ public class Toolbar {
 					}
 				});
 
+				ToolItem tltmAnalizaKontrola = new ToolItem(bar2, SWT.NONE);
+				tltmAnalizaKontrola.setImage(ResourceManager.getPluginImage(
+						"hr.ante.isms", "src/icons/application_form.png"));
+				tltmAnalizaKontrola.setText("Analiza Kontrola");
+				tltmAnalizaKontrola.addSelectionListener(new SelectionAdapter() {
+					@Override
+					public void widgetSelected(SelectionEvent e) {
+						final MWindow window = MBasicFactory.INSTANCE.createWindow();
+						MPart part = MBasicFactory.INSTANCE.createPart();
+						part.setContributionURI("bundleclass://hr.ante.isms/hr.ante.isms.parts.ControlsAnalysis");
+						part.setCloseable(true);
+						window.getChildren().add(part);
+
+						app.getChildren().add(window);
+						// System.out.println("identRanjivosti");
+					}
+				});
+
 		ToolItem tltmUtvrivanjeVjerojatnosti = new ToolItem(bar2, SWT.NONE);
 		tltmUtvrivanjeVjerojatnosti.setImage(ResourceManager.getPluginImage(
 				"hr.ante.isms", "src/icons/application_form.png"));
-		tltmUtvrivanjeVjerojatnosti.setText("Utvr\u0111ivanje Vjerojatnosti");
+		tltmUtvrivanjeVjerojatnosti.setText("Odre\u0111ivanje Vjerojatnosti");
 		tltmUtvrivanjeVjerojatnosti
 				.addSelectionListener(new SelectionAdapter() {
 					@Override
@@ -250,24 +268,6 @@ public class Toolbar {
 						// System.out.println("identRanjivosti");
 					}
 				});
-
-		ToolItem tltmAnalizaKontrola = new ToolItem(bar2, SWT.NONE);
-		tltmAnalizaKontrola.setImage(ResourceManager.getPluginImage(
-				"hr.ante.isms", "src/icons/application_form.png"));
-		tltmAnalizaKontrola.setText("Analiza Kontrola");
-		tltmAnalizaKontrola.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				final MWindow window = MBasicFactory.INSTANCE.createWindow();
-				MPart part = MBasicFactory.INSTANCE.createPart();
-				part.setContributionURI("bundleclass://hr.ante.isms/hr.ante.isms.parts.ControlsAnalysis");
-				part.setCloseable(true);
-				window.getChildren().add(part);
-
-				app.getChildren().add(window);
-				// System.out.println("identRanjivosti");
-			}
-		});
 
 		System.out.println("identPrijetnji_");
 
@@ -297,6 +297,10 @@ public class Toolbar {
 				"hr.ante.isms", "src/icons/identRanjivostiIcon.png"));
 		xpndtmSmanjivanjeRizika.setText("Smanjivanje Rizika");
 
+		final MPart riskPart = partService.findPart("hr.ante.isms.part.risk");
+		final MPart assetPart = partService.findPart("hr.ante.isms.part.asset");
+		final MPart startPart = partService.findPart("hr.ante.isms.part.start");
+
 		expandBar.addExpandListener(new ExpandListener() {
 
 			@Override
@@ -304,14 +308,36 @@ public class Toolbar {
 				// expandBar.setSize(expandBar.getSize().x,
 				// xpndtmWarningDetails.getHeaderHeight());
 				// parent.layout(true);
+				if (e.item == xpndtmProcjenaRizika) {
+					if (xpndtmSmanjivanjeRizika.getExpanded()!= true && xpndtmPostavke.getExpanded()!=true){
+						riskPart.setVisible(false);
+						assetPart.setVisible(false);
+						startPart.setVisible(true);
+
+					}
+				}
 
 				if (e.item == xpndtmSmanjivanjeRizika) {
+					if (xpndtmProcjenaRizika.getExpanded()!= true && xpndtmPostavke.getExpanded()!=true){
+						riskPart.setVisible(false);
+						assetPart.setVisible(false);
+						startPart.setVisible(true);
 
-					MPart part = partService.findPart("hr.ante.isms.part.risk");
-					part.setVisible(false);
-					MPart partToShow = partService
-							.findPart("hr.ante.isms.part.asset");
-					partToShow.setVisible(true);
+					}
+
+//					MPart part = partService.findPart("hr.ante.isms.part.risk");
+//					part.setVisible(false);
+//					MPart partToShow = partService.findPart("hr.ante.isms.part.asset");
+//					partToShow.setVisible(true);
+				}
+
+				if (e.item == xpndtmPostavke) {
+					if (xpndtmSmanjivanjeRizika.getExpanded()!= true && xpndtmProcjenaRizika.getExpanded()!=true){
+						riskPart.setVisible(false);
+						assetPart.setVisible(false);
+						startPart.setVisible(true);
+
+					}
 				}
 
 			}
@@ -319,22 +345,51 @@ public class Toolbar {
 			@Override
 			public void itemExpanded(ExpandEvent e) {
 
-//				if (e.item == xpndtmProcjenaRizika) {
-//					System.out.println("e.item");
+				if (e.item == xpndtmProcjenaRizika) {
+					xpndtmSmanjivanjeRizika.setExpanded(false);
+					riskPart.setVisible(false);
+					xpndtmPostavke.setExpanded(false);
+					startPart.setVisible(false);
+
+					assetPart.setVisible(true);
+
 //					MPart part = partService.findPart("hr.ante.isms.part.risk");
 //					part.setVisible(false);
-//					MPart partToShow = partService
-//							.findPart("hr.ante.isms.part.asset");
+//					MPart partToShow = partService.findPart("hr.ante.isms.part.asset");
 //					partToShow.setVisible(true);
-//				}
+				}
 
 				if (e.item == xpndtmSmanjivanjeRizika) {
+					xpndtmProcjenaRizika.setExpanded(false);
+					assetPart.setVisible(false);
+					xpndtmPostavke.setExpanded(false);
+					startPart.setVisible(false);
 
-					MPart part = partService.findPart("hr.ante.isms.part.risk");
-					part.setVisible(true);
-					MPart partToShow = partService
-							.findPart("hr.ante.isms.part.asset");
-					partToShow.setVisible(false);
+					riskPart.setVisible(true);
+
+
+
+
+
+					xpndtmProcjenaRizika.setExpanded(false);
+					xpndtmPostavke.setExpanded(false);
+//					MPart part = partService.findPart("hr.ante.isms.part.risk");
+//					part.setVisible(true);
+//					MPart partToShow = partService
+//							.findPart("hr.ante.isms.part.asset");
+//					partToShow.setVisible(false);
+				}
+
+				if (e.item == xpndtmPostavke) {
+					xpndtmProcjenaRizika.setExpanded(false);
+					assetPart.setVisible(false);
+					xpndtmSmanjivanjeRizika.setExpanded(false);
+					riskPart.setVisible(false);
+
+					startPart.setVisible(true);
+
+
+
 				}
 
 				//
@@ -370,7 +425,7 @@ public class Toolbar {
 		});
 		tltmUtvrivanjeRizika.setImage(ResourceManager.getPluginImage(
 				"hr.ante.isms", "src/icons/risk.png"));
-		tltmUtvrivanjeRizika.setText("Utvr\u0111ivanje Rizika");
+		tltmUtvrivanjeRizika.setText("Odre\u0111ivanje Rizika");
 
 		ToolItem tltmPredlaganjeMjera = new ToolItem(bar3, SWT.NONE);
 		tltmPredlaganjeMjera.addSelectionListener(new SelectionAdapter() {
@@ -404,7 +459,7 @@ public class Toolbar {
 		});
 		tltmOcjenaMjera.setImage(ResourceManager.getPluginImage("hr.ante.isms",
 				"src/icons/to_do_list_checked1 (1).png"));
-		tltmOcjenaMjera.setText("Ocjena Mjera");
+		tltmOcjenaMjera.setText("Procjena Predlo\u017Eenih Mjera");
 
 		ToolItem tltmPotvrdaProcjene = new ToolItem(bar3, SWT.NONE);
 		tltmPotvrdaProcjene.setImage(ResourceManager.getPluginImage(
