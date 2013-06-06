@@ -1,6 +1,7 @@
 package hr.ante.isms.parts.table;
 
-
+import hr.ante.isms.connection.DatabaseConnection;
+import hr.ante.isms.parts.DataFromServer;
 import hr.ante.test.asktable.editors.ASKTableCellEditorComboText;
 import hr.ante.test.asktable.editors.ASKTableCellEditorCurrency3;
 import hr.ante.test.asktable.editors.ASKTableCellEditorDateTime2;
@@ -8,6 +9,7 @@ import hr.ante.test.asktable.editors.ASKTableCellEditorTime;
 import hr.ante.test.renderers.ASCurrencyTextCellRenderer;
 import hr.ante.test.renderers.ASFixedCellRenderer;
 
+import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Random;
 
@@ -31,56 +33,67 @@ public class ThreatIdentASKTableModel extends KTableSortedModel {
 
 	private Random rand = new Random();
 	private HashMap content = new HashMap();
+	private HashMap identity = new HashMap();
 	public HashMap meta = new HashMap();
-	public int rowNumber=0;
+	public int rowNumber = 0;
 
-	private int columnNumber=-1;
+	private int columnNumber = -1;
 	private int[] colWidths;
 
 	private int rowHeight;
 
 	private KTableCellRenderer m_FixedFirstColumnRenderer = new ASFixedCellRenderer(
-			ASFixedCellRenderer.STYLE_FLAT	| ASFixedCellRenderer.INDICATION_FOCUS
-			| ASFixedCellRenderer.INDICATION_CLICKED |  ASFixedCellRenderer.INDICATION_FOCUS_ROW);
+			ASFixedCellRenderer.STYLE_FLAT
+					| ASFixedCellRenderer.INDICATION_FOCUS
+					| ASFixedCellRenderer.INDICATION_CLICKED
+					| ASFixedCellRenderer.INDICATION_FOCUS_ROW);
 
 	private KTableCellRenderer m_FixedRenderer = new ASFixedCellRenderer(
-			ASFixedCellRenderer.STYLE_PUSH | ASFixedCellRenderer.INDICATION_SORT
+			ASFixedCellRenderer.STYLE_PUSH
+					| ASFixedCellRenderer.INDICATION_SORT
 					| ASFixedCellRenderer.INDICATION_FOCUS
-					| ASFixedCellRenderer.INDICATION_CLICKED |  ASFixedCellRenderer.INDICATION_FOCUS_ROW);
+					| ASFixedCellRenderer.INDICATION_CLICKED
+					| ASFixedCellRenderer.INDICATION_FOCUS_ROW);
 
 	private KTableCellRenderer m_DefaultRenderer = new DefaultCellRenderer(0);
 
 	private KTableCellRenderer m_TextRenderer = new TextCellRenderer(0);
 	private KTableCellRenderer m_FixedCheckableRenderer = new FixedCheckableCellRenderer(
-			FixedCheckableCellRenderer.STYLE_PUSH | FixedCheckableCellRenderer.INDICATION_FOCUS | FixedCheckableCellRenderer.INDICATION_SORT);
+			FixedCheckableCellRenderer.STYLE_PUSH
+					| FixedCheckableCellRenderer.INDICATION_FOCUS
+					| FixedCheckableCellRenderer.INDICATION_SORT);
 
 	private KTableCellRenderer m_CheckableRenderer = new CheckableCellRenderer(
 			CheckableCellRenderer.INDICATION_CLICKED
 					| CheckableCellRenderer.INDICATION_FOCUS);
 
-
-	public ASCurrencyTextCellRenderer m_CurrencyRenderer = new ASCurrencyTextCellRenderer(ASCurrencyTextCellRenderer.INDICATION_FOCUS, SWTX.ALIGN_HORIZONTAL_RIGHT | SWTX.ALIGN_VERTICAL_BOTTOM); /* = new TextCellRenderer(TextCellRenderer.INDICATION_CLICKED
-			| TextCellRenderer.INDICATION_FOCUS);*/
-
-
-
-
+	public ASCurrencyTextCellRenderer m_CurrencyRenderer = new ASCurrencyTextCellRenderer(
+			ASCurrencyTextCellRenderer.INDICATION_FOCUS,
+			SWTX.ALIGN_HORIZONTAL_RIGHT | SWTX.ALIGN_VERTICAL_BOTTOM); /*
+																	 * = new
 
 	/**
    *
    */
+//	public void readAllFromDB(){
+//
+////		identity = getContentFromDB("view_risk");
+////
+////		DataFromServer.threatIdentASKTableModel=this;
+////		columnNumber=2;
+////		if(identity.get("@@brojac")==null)
+////				rowNumber=0;
+////		rowNumber=Integer.parseInt(identity.get("@@brojac").toString());
+////		initialize();
+//	}
+
 	public ThreatIdentASKTableModel() {
 
 		initialize();
 
-
-		/** BROJ STUPACA!
-		 *
-		 */
-		columnNumber=1;
-		//meta.put("0", "");
-		for (int i=1; i<=columnNumber;i++)
-			meta.put(""+i+"", "Text");
+		// meta.put("0", "");
+		for (int i = 1; i <= columnNumber; i++)
+			meta.put("" + i + "", "Text");
 
 		colWidths = new int[getColumnCount()];
 
@@ -89,25 +102,55 @@ public class ThreatIdentASKTableModel extends KTableSortedModel {
 			colWidths[i] = 50;
 		}
 
-		// rowHeight = 18;
+		 columnNumber=1;
 		content = new HashMap();
 
-		/**OVO TRIBA IZMINITI **/
-		setContentAt(0, 0, "#");
-
-		setContentAt(1, 0, "Prijetnja");
-//		setContentAt(2, 0, "Time");
-//		setContentAt(3, 0, "Currency");
-//		setContentAt(4, 0, "Checkbox");
-//		setContentAt(5, 0, "Combo");
+		// /**OVO TRIBA IZMINITI **/
+//		 setContentAt(0, 0, "#");
 
 
-		setColumnWidth(0, 30);
-//		setColumnWidth(1, 75);
-//		setColumnWidth(2, 75);
+		 setContentAt(1, 0, "Prijetnja");
+		 // setContentAt(2, 0, "Time");
+		 // setContentAt(3, 0, "Currency");
+		 // setContentAt(4, 0, "Checkbox");
+		 // setContentAt(5, 0, "Combo");
+
+
+		 setColumnWidth(0, 30);
+//		  setColumnWidth(1, 75);
+//		  setColumnWidth(2, 75);
 
 	}
 
+
+	public HashMap<String, String> getContentFromDB(String tableName) {
+		DatabaseConnection con = new DatabaseConnection();
+		con.doConnection();
+
+		try {
+
+			return con.getContentForTable(tableName, "ThreatIdentASKTableModel","");
+
+		} catch (SQLException ex) {
+			System.out.println(ex.getMessage());
+			try {
+				con.connection.close();
+			} catch (SQLException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+
+		}
+		System.out.println("Connection : " + con.doConnection());
+		try {
+			con.connection.close();
+		} catch (SQLException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+		return new HashMap<String, String>();
+
+	}
 
 	public HashMap getMeta() {
 		return meta;
@@ -115,27 +158,33 @@ public class ThreatIdentASKTableModel extends KTableSortedModel {
 
 	public void switchColumn(int destinationColumn, int initColumn) {
 		// TODO Auto-generated method stub
-		//content.put(col+"/"+row, val);
-		HashMap<Integer,Object> contentFromModel = new HashMap<Integer,Object>();
-		for (int row=0; row<getRowCount(); row++){
-			if(content.get(initColumn + "/" + row) instanceof Boolean)
-				contentFromModel.put(row, (Boolean)content.get(initColumn + "/" + row));
+		// content.put(col+"/"+row, val);
+		HashMap<Integer, Object> contentFromModel = new HashMap<Integer, Object>();
+		for (int row = 0; row < getRowCount(); row++) {
+			if (content.get(initColumn + "/" + row) instanceof Boolean)
+				contentFromModel.put(row,
+						(Boolean) content.get(initColumn + "/" + row));
 			contentFromModel.put(row, content.get(initColumn + "/" + row));
-			if( content.get(destinationColumn + "/" + row) instanceof Boolean)
-				content.put(initColumn + "/" + row, (Boolean)content.get(destinationColumn + "/" + row));
-			content.put(initColumn + "/" + row, content.get(destinationColumn + "/" + row));
-			if(contentFromModel.get(row) instanceof Boolean)
-				content.put(destinationColumn + "/" + row, contentFromModel.get(row));
-			content.put(destinationColumn + "/" + row, contentFromModel.get(row));
+			if (content.get(destinationColumn + "/" + row) instanceof Boolean)
+				content.put(initColumn + "/" + row,
+						(Boolean) content.get(destinationColumn + "/" + row));
+			content.put(initColumn + "/" + row,
+					content.get(destinationColumn + "/" + row));
+			if (contentFromModel.get(row) instanceof Boolean)
+				content.put(destinationColumn + "/" + row,
+						contentFromModel.get(row));
+			content.put(destinationColumn + "/" + row,
+					contentFromModel.get(row));
 		}
 
+		// // for (int col=table_.getModel().getFixedHeaderColumnCount();
+		// col<table_.getModel().getColumnCount(); col++)
+		// for (int row=table_.getModel().getFixedHeaderRowCount();
+		// row<table_.getModel().getRowCount(); row++){
+		// rowsX.put(x + "/" + row+"",table_.getModel().getContentAt(x, row));
+		// rowsX2.put(x + "/" + row+"",table_.getModel().getContentAt(x2, row));
 
-//    //	for (int col=table_.getModel().getFixedHeaderColumnCount(); col<table_.getModel().getColumnCount(); col++)
-//    		for (int row=table_.getModel().getFixedHeaderRowCount(); row<table_.getModel().getRowCount(); row++){
-//    			rowsX.put(x + "/" + row+"",table_.getModel().getContentAt(x, row));
-//    			rowsX2.put(x + "/" + row+"",table_.getModel().getContentAt(x2, row));
-
-    		}
+	}
 
 	public Object doGetContentAt(int col, int row) {
 		// System.out.println("col "+col+" row "+row);
@@ -145,16 +194,13 @@ public class ThreatIdentASKTableModel extends KTableSortedModel {
 
 		return "";
 
-
-
 	}
 
 	// Rendering
 	public KTableCellRenderer doGetCellRenderer(int col, int row) {
-		if (isFixedCell(col, row))
-		{
-					if(col==0)
-						return m_FixedFirstColumnRenderer;
+		if (isFixedCell(col, row)) {
+			if (col == 0)
+				return m_FixedFirstColumnRenderer;
 			return m_FixedRenderer;
 		}
 
@@ -170,7 +216,6 @@ public class ThreatIdentASKTableModel extends KTableSortedModel {
 
 		else
 			return new KTableCellEditorText2();
-
 
 	}
 
@@ -278,10 +323,9 @@ public class ThreatIdentASKTableModel extends KTableSortedModel {
 
 	public void setRowNumber(int number) {
 		// no cell spanning:
-		 rowNumber=number;
+		rowNumber = number;
 
 	}
-
 
 	public String doGetTooltipAt(int col, int row) {
 		return "Tooltip for cell: " + col + "/" + row;

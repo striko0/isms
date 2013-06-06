@@ -1,5 +1,8 @@
 package hr.ante.isms.parts;
 
+import hr.ante.isms.parts.table.ListRiskASKTableModel;
+import hr.ante.isms.parts.table.NewASKTable;
+
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import javax.inject.Inject;
@@ -16,11 +19,8 @@ import org.eclipse.e4.ui.workbench.modeling.EPartService;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ExpandEvent;
 import org.eclipse.swt.events.ExpandListener;
-import org.eclipse.swt.events.MouseEvent;
-import org.eclipse.swt.events.MouseListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
-import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
@@ -30,9 +30,14 @@ import org.eclipse.swt.widgets.ToolBar;
 import org.eclipse.swt.widgets.ToolItem;
 import org.eclipse.wb.swt.ResourceManager;
 import org.eclipse.wb.swt.SWTResourceManager;
-import org.eclipse.swt.graphics.Point;
+
+import de.kupzog.ktable.KTableSortedModel;
 
 public class Toolbar {
+
+	private KTableSortedModel m_Model;
+	private NewASKTable m_Table;
+	private int m_Row;
 
 	@Inject
 	IStylingEngine engine;
@@ -65,6 +70,10 @@ public class Toolbar {
 				.getColor(SWT.COLOR_WIDGET_HIGHLIGHT_SHADOW));
 		expandBar.setBounds(0, 0, 165, 177);
 		expandBar.setSpacing(8);
+
+		m_Table = NewASKTable.m_Table;
+		m_Model = DataFromServer.listRiskASKTableModel;
+		m_Row = NewASKTable.clickedRow;
 
 		final ExpandItem xpndtmPostavke = new ExpandItem(expandBar, SWT.NONE);
 		try {
@@ -195,6 +204,7 @@ public class Toolbar {
 				.addSelectionListener(new SelectionAdapter() {
 					@Override
 					public void widgetSelected(SelectionEvent e) {
+//						if(m_Row!=0 && !m_Table.m_Selection.isEmpty()){
 						final MWindow window = MBasicFactory.INSTANCE
 								.createWindow();
 
@@ -207,8 +217,13 @@ public class Toolbar {
 						app.getChildren().add(window);
 
 						System.out.println("identPrijetnji_");
+//						}
+//						else{
+//							System.out.println("NIJE NIŠTE ODABRANO");
+//						}
 					}
 				});
+
 		ToolItem tltmIdentifikacijaRanjivosti = new ToolItem(bar2, SWT.NONE);
 		tltmIdentifikacijaRanjivosti.setImage(ResourceManager.getPluginImage(
 				"hr.ante.isms", "src/icons/application_form.png"));
@@ -230,6 +245,7 @@ public class Toolbar {
 					}
 				});
 
+
 				ToolItem tltmAnalizaKontrola = new ToolItem(bar2, SWT.NONE);
 				tltmAnalizaKontrola.setImage(ResourceManager.getPluginImage(
 						"hr.ante.isms", "src/icons/application_form.png"));
@@ -247,6 +263,7 @@ public class Toolbar {
 						// System.out.println("identRanjivosti");
 					}
 				});
+
 
 		ToolItem tltmUtvrivanjeVjerojatnosti = new ToolItem(bar2, SWT.NONE);
 		tltmUtvrivanjeVjerojatnosti.setImage(ResourceManager.getPluginImage(
@@ -269,7 +286,6 @@ public class Toolbar {
 					}
 				});
 
-		System.out.println("identPrijetnji_");
 
 		ToolItem tltmAnalizaUinka = new ToolItem(bar2, SWT.NONE);
 		tltmAnalizaUinka.setImage(ResourceManager.getPluginImage(
@@ -360,6 +376,7 @@ public class Toolbar {
 				}
 
 				if (e.item == xpndtmSmanjivanjeRizika) {
+					((ListRiskASKTableModel)m_Model).readAllFromDB();
 					xpndtmProcjenaRizika.setExpanded(false);
 					assetPart.setVisible(false);
 					xpndtmPostavke.setExpanded(false);

@@ -59,7 +59,7 @@ public class StartPage {
 		gl_mParent.marginHeight = 0;
 		mParent.setLayout(gl_mParent);
 
-		Composite composite_1 = new Composite(mParent, SWT.BORDER);
+		Composite composite_1 = new Composite(mParent, SWT.NONE);
 		composite_1.setBackground(SWTResourceManager.getColor(SWT.COLOR_TITLE_BACKGROUND_GRADIENT));
 		composite_1.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
 		composite_1.setLayout(new GridLayout(2, false));
@@ -71,6 +71,7 @@ public class StartPage {
 		lblIsms.setBackground(SWTResourceManager
 				.getColor(SWT.COLOR_TITLE_BACKGROUND_GRADIENT));
 		lblIsms.setText("ISMS - Upravljanje Rizicima");
+		new Label(composite_1, SWT.NONE);
 
 		Composite composite = new Composite(mParent, SWT.NONE);
 		GridData gd_composite = new GridData(SWT.RIGHT, SWT.FILL, true, false, 1, 1);
@@ -104,7 +105,7 @@ public class StartPage {
 		// parent.getShell().setMinimumSize(759, 390);
 		// parent.getShell().setSize(780, 410);
 
-		mParent.getShell().setText("Unesi novu imovinu");
+		mParent.getShell().setText("Upravljanje Rizicima");
 
 		//**********textObjanjenjeostalo_ layout
 		FormData fd_textObjanjenjeostalo = new FormData();

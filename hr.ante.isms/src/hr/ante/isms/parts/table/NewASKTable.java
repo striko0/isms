@@ -1,13 +1,7 @@
 package hr.ante.isms.parts.table;
 
-import hr.ante.test.asktable.comparator.ASKTableSortOnClick2;
-
 import javax.inject.Inject;
 
-import org.eclipse.e4.ui.model.application.ui.basic.MPart;
-import org.eclipse.e4.ui.model.application.ui.menu.MDirectToolItem;
-import org.eclipse.e4.ui.model.application.ui.menu.MMenuFactory;
-import org.eclipse.e4.ui.model.application.ui.menu.MToolBar;
 import org.eclipse.e4.ui.workbench.modeling.EPartService;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Cursor;
@@ -31,15 +25,16 @@ import de.kupzog.ktable.KTableSortComparator;
 import de.kupzog.ktable.KTableSortedModel;
 import de.kupzog.ktable.SWTX;
 
-public class ASKTable {
+public class NewASKTable extends KTable{
 
 	public static int clickedRow=0;
 	private int cRow = -1;
 	private int cCol = -1;
+
 	@Inject
 	protected EPartService partService;
 
-	KTable m_Table;
+	public static NewASKTable m_Table;
 	Label statusLabel;
 	KTableSortComparator comparator;
 	public static KTableSortedModel model;
@@ -60,10 +55,10 @@ public class ASKTable {
 
 
 
-	public ASKTable(Composite parent, KTableSortedModel givenModel,int widht, int height) {
-//		super(parent,style);
+	public NewASKTable(Composite parent, KTableSortedModel givenModel,int widht, int height) {
+		super(parent,SWT.MULTI | SWT.H_SCROLL | SWT.V_SCROLL | SWTX.FILL_WITH_LASTCOL);
 		// TODO Auto-generated constructor stub
-
+		m_Table = this;
 		Composite comp1 = new Composite(parent, SWT.NONE);
 		//comp1.setLayout(new GridLayout(1,false));
 
@@ -79,25 +74,25 @@ public class ASKTable {
 //		KTable table = new KTable(comp1, SWT.FULL_SELECTION | SWT.MULTI | SWT.V_SCROLL
 //				| SWT.H_SCROLL | SWTX.FILL_WITH_LASTCOL | SWTX.EDIT_ON_KEY);
 
-		m_Table = new KTable(comp1,SWT.MULTI | SWT.H_SCROLL | SWT.V_SCROLL | SWTX.FILL_WITH_LASTCOL);
-		m_Table.setToolTipText("Tablica");
-		m_Table.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
+		this.setParent(comp1);
+		setToolTipText("Tablica");
+		setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
 
 		model = givenModel;
 		m_Model=givenModel;
 		//table.setSize(parent.getSize());
 
-		m_Table.setBackground(SWTResourceManager.getColor(SWT.COLOR_WHITE));
-		m_Table.setLayout(new FillLayout());
-		m_Table.setBounds(0,0, widht, height);
-		m_Table.setModel(givenModel);
-		m_Table.setData("org.eclipse.e4.ui.css.id", "ASKTable");
+		setBackground(SWTResourceManager.getColor(SWT.COLOR_WHITE));
+		setLayout(new FillLayout());
+		setBounds(0,0, widht, height);
+		setModel(givenModel);
+//		setData("org.eclipse.e4.ui.css.id", "ASKTable");
 
 
 //		table.addListener(SWT.MouseDown, new HeaderListener2(table));
 //		table.addListener(SWT.MouseMove, new HeaderListener2(table));
 
-		m_Table.addClickInterceptionListener(new KTableClickInterceptionListener() {
+		addClickInterceptionListener(new KTableClickInterceptionListener() {
 
 			@Override
 			public boolean cellClicked(int col, int row, Rectangle cellRect,
@@ -124,14 +119,14 @@ public class ASKTable {
 //						new ASKTableContextMenu(table,(KTableSortedModel)table.getModel());
 //						new ASKTableSortOnClick(table,col, row, new ASSortComparatorISMS(model,-1, ASSortComparatorISMS.SORT_UP),ASSortComparatorISMS.SORT_UP, 1);
 						new ASKTableSortOnClick(table,col, row, new ASSortComparatorISMS(m_Model,-1, ASSortComparatorISMS.SORT_UP),ASSortComparatorISMS.SORT_UP, 1);
-						//new ASKTableSortOnClick(m_table,m_Col, 0, new ASSortComparatorISMS(m_Model,m_Col, direction),direction, 3);
+						//new ASKTableSortOnClick(this,m_Col, 0, new ASSortComparatorISMS(m_Model,m_Col, direction),direction, 3);
 					}
 				}
 				if(row != 0 && col != 0)
 				{
 //					table.setSelection(null, false);
 //					if(cRow == row && cCol == col ){
-//						m_Table.m_Selection.clear();
+//						this.m_Selection.clear();
 //						clickedRow=0;
 //						cRow = 0;
 //						cCol = 0;
@@ -142,10 +137,10 @@ public class ASKTable {
 					 *
 					 * POGLEDAJ RENDERERE
 					 */
-					if(!m_Table.m_Selection.isEmpty())
+//					if(!table.m_Selection.isEmpty())
 						clickedRow=row;
-					else
-						clickedRow=0;
+//					else
+//						clickedRow=0;
 
 				}
 				// TODO Auto-generated method stub
@@ -156,8 +151,8 @@ public class ASKTable {
 		});
 
 
-		new ASKTableContextMenu(m_Table,(KTableSortedModel)m_Table.getModel());
-		m_Table.addCellSelectionListener(new KTableCellSelectionListener() {
+		new ASKTableContextMenu(this,(KTableSortedModel)this.getModel());
+		addCellSelectionListener(new KTableCellSelectionListener() {
 
 			@Override
 			public void fixedCellSelected(int col, int row, int statemask) {
@@ -185,7 +180,7 @@ public class ASKTable {
 			}
 		});
 
-		m_Table.addCellSelectionListener(new KTableCellSelectionListener() {
+		addCellSelectionListener(new KTableCellSelectionListener() {
 //
 //
 			public void cellSelected(int col, int row, int statemask) {
@@ -206,7 +201,7 @@ public class ASKTable {
 				});
 
 
-		m_Table.addCellResizeListener(new KTableCellResizeListener() {
+		addCellResizeListener(new KTableCellResizeListener() {
 
 			@Override
 			public void rowResized(int row, int newHeight) {
@@ -277,15 +272,15 @@ public class ASKTable {
 
 			// Cross
 
-			Image crossCursor = SWTX.loadImageResource(m_Table.getDisplay(), "/icons/cross_win32.gif");
+			Image crossCursor = SWTX.loadImageResource(this.getDisplay(), "/icons/cross_win32.gif");
 
 			// Row Resize
 
-			Image row_resizeCursor = SWTX.loadImageResource(m_Table.getDisplay(), "/icons/row_resize_win32.gif");
+			Image row_resizeCursor = SWTX.loadImageResource(this.getDisplay(), "/icons/row_resize_win32.gif");
 
 			// Column Resize
 
-			Image column_resizeCursor  = SWTX.loadImageResource(m_Table.getDisplay(), "/icons/column_resize_win32.gif");
+			Image column_resizeCursor  = SWTX.loadImageResource(this.getDisplay(), "/icons/column_resize_win32.gif");
 
 			// we set the hotspot to the center, so calculate the number of pixels from hotspot to lower border:
 
@@ -297,26 +292,26 @@ public class ASKTable {
 			Point rowresizeSize    = new Point(rowresizeBound.width/2, rowresizeBound.height/2);
 			Point columnresizeSize = new Point(columnresizeBound.width/2, columnresizeBound.height/2);
 
-			m_Table.setDefaultCursor(new Cursor(m_Table.getDisplay(), crossCursor.getImageData(), crossSize.x, crossSize.y), crossSize);
-			m_Table.setDefaultRowResizeCursor(new Cursor(m_Table.getDisplay(), row_resizeCursor.getImageData(), rowresizeSize.x, rowresizeSize.y));
-			m_Table.setDefaultColumnResizeCursor(new Cursor(m_Table.getDisplay(), column_resizeCursor.getImageData(), columnresizeSize.x, columnresizeSize.y));
+			this.setDefaultCursor(new Cursor(this.getDisplay(), crossCursor.getImageData(), crossSize.x, crossSize.y), crossSize);
+			this.setDefaultRowResizeCursor(new Cursor(this.getDisplay(), row_resizeCursor.getImageData(), rowresizeSize.x, rowresizeSize.y));
+			this.setDefaultColumnResizeCursor(new Cursor(this.getDisplay(), column_resizeCursor.getImageData(), columnresizeSize.x, columnresizeSize.y));
 
 		} else {
 
 			// Cross
 
-			Image crossCursor      = SWTX.loadImageResource(m_Table.getDisplay(), "/icons/cross.gif");
-			Image crossCursor_mask = SWTX.loadImageResource(m_Table.getDisplay(), "/icons/cross_mask.gif");
+			Image crossCursor      = SWTX.loadImageResource(this.getDisplay(), "/icons/cross.gif");
+			Image crossCursor_mask = SWTX.loadImageResource(this.getDisplay(), "/icons/cross_mask.gif");
 
 			// Row Resize
 
-			Image row_resizeCursor      = SWTX.loadImageResource(m_Table.getDisplay(), "/icons/row_resize.gif");
-			Image row_resizeCursor_mask = SWTX.loadImageResource(m_Table.getDisplay(), "/icons/row_resize_mask.gif");
+			Image row_resizeCursor      = SWTX.loadImageResource(this.getDisplay(), "/icons/row_resize.gif");
+			Image row_resizeCursor_mask = SWTX.loadImageResource(this.getDisplay(), "/icons/row_resize_mask.gif");
 
 			// Column Resize
 
-			Image column_resizeCursor      = SWTX.loadImageResource(m_Table.getDisplay(), "/icons/column_resize.gif");
-			Image column_resizeCursor_mask = SWTX.loadImageResource(m_Table.getDisplay(), "/icons/column_resize_mask.gif");
+			Image column_resizeCursor      = SWTX.loadImageResource(this.getDisplay(), "/icons/column_resize.gif");
+			Image column_resizeCursor_mask = SWTX.loadImageResource(this.getDisplay(), "/icons/column_resize_mask.gif");
 
 			// we set the hotspot to the center, so calculate the number of pixels from hotspot to lower border:
 
@@ -329,38 +324,14 @@ public class ASKTable {
 			Point columnresizeSize = new Point(columnresizeBound.width/2, columnresizeBound.height/2);
 
 
-			m_Table.setDefaultCursor(new Cursor(m_Table.getDisplay(), crossCursor_mask.getImageData(), crossCursor.getImageData(), crossSize.x, crossSize.y), crossSize);
-			m_Table.setDefaultRowResizeCursor(new Cursor(m_Table.getDisplay(), row_resizeCursor_mask.getImageData(), row_resizeCursor.getImageData(), rowresizeSize.x, rowresizeSize.y));
-			m_Table.setDefaultColumnResizeCursor(new Cursor(m_Table.getDisplay(), column_resizeCursor_mask.getImageData(), column_resizeCursor.getImageData(), columnresizeSize.x, columnresizeSize.y));
+			this.setDefaultCursor(new Cursor(this.getDisplay(), crossCursor_mask.getImageData(), crossCursor.getImageData(), crossSize.x, crossSize.y), crossSize);
+			this.setDefaultRowResizeCursor(new Cursor(this.getDisplay(), row_resizeCursor_mask.getImageData(), row_resizeCursor.getImageData(), rowresizeSize.x, rowresizeSize.y));
+			this.setDefaultColumnResizeCursor(new Cursor(this.getDisplay(), column_resizeCursor_mask.getImageData(), column_resizeCursor.getImageData(), columnresizeSize.x, columnresizeSize.y));
 
 		}
 
 
-
-
-
-
 		}
-
-	private boolean toggleSelection(int col, int row) {
-
-        if (m_Table.isMultiSelectMode()) {
-            Object o;
-            if (m_Table.isRowSelectMode()) {
-                o = new Integer(row);
-            } else {
-                o = new Point(col, row);
-            }
-            if (m_Table.m_Selection.get(o) != null) {
-            	m_Table.m_Selection.remove(o);
-                return false;
-            } else {
-            	m_Table.m_Selection.put(o, o);
-                return true;
-            }
-        }
-        return false;
-    }
 	private void updateStatus(int col, int row) {
 		// TODO Auto-generated method stub
 			statusLabel.setText("Odabrano: " + col + "/" + row);
