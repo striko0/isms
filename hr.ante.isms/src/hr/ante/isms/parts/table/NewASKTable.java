@@ -1,9 +1,19 @@
 package hr.ante.isms.parts.table;
 
+import hr.ante.isms.parts.AssetRowSelected;
+import hr.ante.isms.parts.SuggestMeasures;
+import hr.ante.isms.parts.Threats;
+import hr.ante.isms.parts.ViewSelected;
+import hr.ante.isms.parts.Vulnerability;
+
 import javax.inject.Inject;
 
 import org.eclipse.e4.ui.workbench.modeling.EPartService;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.KeyEvent;
+import org.eclipse.swt.events.KeyListener;
+import org.eclipse.swt.events.TraverseEvent;
+import org.eclipse.swt.events.TraverseListener;
 import org.eclipse.swt.graphics.Cursor;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Point;
@@ -28,8 +38,20 @@ import de.kupzog.ktable.SWTX;
 public class NewASKTable extends KTable{
 
 	public static int clickedRow=0;
-	private int cRow = -1;
-	private int cCol = -1;
+	public static int clickedAssetRow=0;
+	public static int clickedRiskRow=0;
+	public static int clickedVulnerabilityRow = 0;
+	public static int clickedThreatRow = 0;
+	public static int clickedControlRow = 0;
+	public static int clickedControlRiskRow = 0;
+	private boolean selection=true;
+	private ViewSelected m_View;
+	private ViewSelected m_ViewVulnerability;
+	private ViewSelected m_ViewThreat;
+	private ViewSelected m_ViewControl;
+	private ViewSelected m_ViewControlRisk;
+	private AssetRowSelected m_AssetRow;
+	private int cRow = 0;
 
 	@Inject
 	protected EPartService partService;
@@ -55,9 +77,23 @@ public class NewASKTable extends KTable{
 
 
 
-	public NewASKTable(Composite parent, KTableSortedModel givenModel,int widht, int height) {
+	public NewASKTable(ViewSelected view, Composite parent, KTableSortedModel givenModel,int widht, int height) {
 		super(parent,SWT.MULTI | SWT.H_SCROLL | SWT.V_SCROLL | SWTX.FILL_WITH_LASTCOL);
 		// TODO Auto-generated constructor stub
+		if(view instanceof Vulnerability){
+			m_ViewVulnerability=view;
+		}
+
+		if(view instanceof Threats){
+			m_ViewThreat=view;
+		}
+
+		if(view instanceof SuggestMeasures){
+			m_ViewControlRisk=view;
+		}
+		else
+			m_View = view;
+
 		m_Table = this;
 		Composite comp1 = new Composite(parent, SWT.NONE);
 		//comp1.setLayout(new GridLayout(1,false));
@@ -124,23 +160,25 @@ public class NewASKTable extends KTable{
 				}
 				if(row != 0 && col != 0)
 				{
-//					table.setSelection(null, false);
-//					if(cRow == row && cCol == col ){
-//						this.m_Selection.clear();
-//						clickedRow=0;
-//						cRow = 0;
-//						cCol = 0;
+
+
+					setClickedRow(row);
+//					if (selection==true) {
+//						if(table.getModel() instanceof ListAssetASKTableModel){
+//
+//							clickedAssetRow=row;
+//						}
+//
+//						if(table.getModel() instanceof ListRiskASKTableModel){
+//
+//							clickedRiskRow=row;
+//							m_View.rowSelected(row);
+//						}
+//						clickedRow = row;
+//						selection=false;
 //					}
-//					cRow = row;
-//					cCol = col;
-					/**
-					 *
-					 * POGLEDAJ RENDERERE
-					 */
-//					if(!table.m_Selection.isEmpty())
-						clickedRow=row;
-//					else
-//						clickedRow=0;
+
+
 
 				}
 				// TODO Auto-generated method stub
@@ -152,6 +190,46 @@ public class NewASKTable extends KTable{
 
 
 		new ASKTableContextMenu(this,(KTableSortedModel)this.getModel());
+
+		addTraverseListener(new TraverseListener() {
+
+			@Override
+			public void keyTraversed(TraverseEvent e) {
+				// TODO Auto-generated method stub
+				if (e.keyCode == SWT.ARROW_DOWN) {
+					setClickedRow(++cRow);
+				}
+
+				if (e.keyCode == SWT.ARROW_UP) {
+					setClickedRow(--cRow);
+				}
+
+			}
+		});
+
+		addKeyListener(new KeyListener() {
+
+			@Override
+			public void keyReleased(KeyEvent e) {
+				// TODO Auto-generated method stub
+
+			}
+
+			@Override
+			public void keyPressed(KeyEvent e) {
+				// TODO Auto-generated method stub
+				if ((e.stateMask & SWT.CTRL) == 0) {
+
+						selection=false;
+
+
+					}
+				}
+
+
+
+		});
+
 		addCellSelectionListener(new KTableCellSelectionListener() {
 
 			@Override
@@ -167,11 +245,23 @@ public class NewASKTable extends KTable{
 				// the idea is to map the row index back to the model index since the given row index
 		    	// changes when sorting is done.
 				int modelRow = model.mapRowIndexToModel(row);
+
+				setClickedRow(row);
+
+
 //				new KTableActionHandler(table);
 				// table.setMenu(null);
 //				new KTableActionHandler(table);
 				//new ASKTableContextMenu(table,(KTableSortedModel)table.getModel());
-
+//				if(m_Selection.isEmpty()){
+//					clickedRow=0;
+//					m_View.rowSelected(0);
+//				}
+//
+//				else{
+//					m_View.rowSelected(row);
+//					clickedRow = row;
+//				}
 				//new ASMenu(table,1);
 				System.out.println("Cell [" + col + ";" + row
 						+ "] selected. - Model row: " + modelRow);
@@ -180,25 +270,7 @@ public class NewASKTable extends KTable{
 			}
 		});
 
-		addCellSelectionListener(new KTableCellSelectionListener() {
-//
-//
-			public void cellSelected(int col, int row, int statemask) {
-//				    	// the idea is to map the row index back to the model index since the given row index
-//				    	// changes when sorting is done.
-				       int modelRow = model.mapRowIndexToModel(row);
-//				   		new KTableActionHandler(table);
-////				       table.setMenu(null);
-//
-//						System.out.println("Cell ["+col+";"+row+"] selected. - Model row: "+modelRow);
-//						System.out.println("ovo " + table.m_Selection);
-					}
-			public void fixedCellSelected(final int col, final int row, int statemask) {
-//						System.out.println("Header ["+col+";"+row+"] selected.");
-//
-//
-					}
-				});
+
 
 
 		addCellResizeListener(new KTableCellResizeListener() {
@@ -238,7 +310,6 @@ public class NewASKTable extends KTable{
 		gd_statusLabel.widthHint = 93;
 		statusLabel.setLayoutData(gd_statusLabel);
 		statusLabel.setText("Odabrano: 0");
-
 
 //		 Listener armListener = new Listener() {
 //		      public void handleEvent(Event event) {
@@ -332,10 +403,80 @@ public class NewASKTable extends KTable{
 
 
 		}
+
+	private void setClickedRow(int row){
+		cRow=row;
+		if (selection==true) {
+			if(getModel() instanceof ListAssetASKTableModel){
+
+				clickedAssetRow=row;
+			}
+
+			if(getModel() instanceof ListVulnerabilityASKTableModel){
+
+				clickedVulnerabilityRow=row;
+				m_ViewVulnerability.rowSelected(row);
+			}
+
+			if(getModel() instanceof ListThreatASKTableModel){
+
+				clickedThreatRow=row;
+				m_ViewThreat.rowSelected(row);
+			}
+
+			if(getModel() instanceof ListControlRiskASKTableModel){
+
+				clickedControlRiskRow=row;
+				m_ViewControlRisk.rowSelected(row);
+			}
+
+
+			if(getModel() instanceof ListRiskASKTableModel){
+
+				clickedRiskRow=row;
+				m_View.rowSelected(row);
+			}
+			clickedRow = row;
+			}
+
+		else {
+			clickedRow = 0;
+
+			if (getModel() instanceof ListAssetASKTableModel) {
+
+				clickedAssetRow = 0;
+			}
+
+			if(getModel() instanceof ListVulnerabilityASKTableModel){
+
+				clickedVulnerabilityRow=0;
+				m_ViewVulnerability.rowSelected(0);
+			}
+
+			if(getModel() instanceof ListThreatASKTableModel){
+
+				clickedThreatRow=0;
+				m_ViewThreat.rowSelected(0);
+			}
+
+			if(getModel() instanceof ListControlRiskASKTableModel){
+
+				clickedControlRiskRow=0;
+				m_ViewControlRisk.rowSelected(0);
+			}
+
+			if (getModel() instanceof ListRiskASKTableModel) {
+
+				clickedRiskRow = 0;
+				m_View.rowSelected(0);
+			}
+			selection=true;
+		}
+
+	}
 	private void updateStatus(int col, int row) {
 		// TODO Auto-generated method stub
 			statusLabel.setText("Odabrano: " + col + "/" + row);
-
 
 
 	}

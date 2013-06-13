@@ -46,22 +46,14 @@ public class ControlsAnalysis {
 		final ScrolledComposite scrollBox = new ScrolledComposite(parent,
 				SWT.V_SCROLL | SWT.H_SCROLL);
 		scrollBox.setLocation(0, 0);
-		// scrollBox.setBounds(0, 0, 837, 298);
-		// scrollBox.setBounds(0, 0, 760, 450);
-		// scrollBox.setBounds(0, 0, 448, 375);
 		scrollBox.setMinHeight(300);
 		scrollBox.setMinWidth(700);
 
 		scrollBox.setExpandHorizontal(true);
 		scrollBox.setExpandVertical(true);
 
-		// Using 0 here ensures the horizontal scroll bar will never appear. If
-		// you want the horizontal bar to appear at some threshold (say 100
-		// pixels) then send that value instead.
-
 		mParent = new Composite(scrollBox, SWT.NONE);
-		// mParent.setSize(790, 659);
-		// parent.setSize(new Point(759, 359));
+
 		mParent.getShell().setSize(760, 360);
 		mParent.getShell().setText("Analiza kontrole za imovinu");
 		mParent.setLayout(new GridLayout(1, false));
@@ -81,7 +73,7 @@ public class ControlsAnalysis {
 		lblPrimjena_.setText("Primjena:");
 		new Label(composite, SWT.NONE);
 
-		textPrimjena_  = new Text(composite, SWT.BORDER | SWT.V_SCROLL);
+		textPrimjena_  = new Text(composite, SWT.BORDER | SWT.WRAP | SWT.V_SCROLL);
 		GridData gd_Primjena_ = new GridData(SWT.FILL, SWT.FILL, true, false, 2, 2);
 		gd_Primjena_.heightHint = 50;
 		textPrimjena_.setLayoutData(gd_Primjena_);
@@ -90,7 +82,8 @@ public class ControlsAnalysis {
 		compositeASKTtable.setLayout(new FillLayout(SWT.HORIZONTAL));
 		GridData gd_compositeASKTtable = new GridData(SWT.FILL, SWT.FILL, true, true,
 				2, 1);
-		gd_compositeASKTtable.heightHint = 107;
+		gd_compositeASKTtable.minimumHeight = 100;
+		gd_compositeASKTtable.heightHint = 200;
 		compositeASKTtable.setLayoutData(gd_compositeASKTtable);
 		new ASKTable(compositeASKTtable, new ControlsAnalysisASKTableModel(), 717,compositeASKTtable.getBounds().height );
 

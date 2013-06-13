@@ -1,7 +1,7 @@
 package hr.ante.isms.parts;
 
-import hr.ante.isms.parts.table.ASKTable;
 import hr.ante.isms.parts.table.ListRiskASKTableModel;
+import hr.ante.isms.parts.table.NewASKTable;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
@@ -9,9 +9,7 @@ import javax.inject.Inject;
 
 import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.e4.ui.di.Focus;
-import org.eclipse.e4.ui.di.Persist;
 import org.eclipse.e4.ui.model.application.MApplication;
-import org.eclipse.e4.ui.model.application.ui.MDirtyable;
 import org.eclipse.e4.ui.services.IStylingEngine;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CLabel;
@@ -25,7 +23,9 @@ import org.eclipse.wb.swt.SWTResourceManager;
 
 
 
-public class ListRisks {
+public class ListRisks implements ViewSelected {
+
+	private NewASKTable table;
 	@Inject IStylingEngine engine;
     @Inject private MApplication app;
 
@@ -35,8 +35,7 @@ public class ListRisks {
 
 
     private Composite mParent;
-	@Inject
-	MDirtyable dirty;
+
 
 
 	@PostConstruct
@@ -51,10 +50,6 @@ public class ListRisks {
 
 		scrollBox.setExpandHorizontal(true);
 		scrollBox.setExpandVertical(true);
-
-		// Using 0 here ensures the horizontal scroll bar will never appear. If
-		// you want the horizontal bar to appear at some threshold (say 100
-		// pixels) then send that value instead.
 
 		mParent = new Composite(scrollBox, SWT.NONE);
 		mParent.setBackground(SWTResourceManager.getColor(SWT.COLOR_WIDGET_BACKGROUND));
@@ -86,8 +81,13 @@ public class ListRisks {
 		gd_compositeASKTable.minimumHeight = 100;
 		gd_compositeASKTable.widthHint = 778;
 		compositeASKTable.setLayoutData(gd_compositeASKTable);
-		new ASKTable(compositeASKTable, new ListRiskASKTableModel(7, 1,""), 717,
-				compositeASKTable.getBounds().height);
+
+
+		table = new NewASKTable(this,compositeASKTable, new ListRiskASKTableModel(7, 1,""),
+				717, compositeASKTable.getBounds().height);
+
+//		new ASKTable(compositeASKTable, new ListRiskASKTableModel(7, 1,""), 717,
+//				compositeASKTable.getBounds().height);
 
 		Composite compositeUser_ = new Composite(mParent, SWT.NONE);
 		compositeUser_.setBackground(SWTResourceManager
@@ -126,18 +126,13 @@ public class ListRisks {
 	  System.out.println("Closing application");
 	}
 
-	 @Persist
-	  public void save() {
-	    System.out.println("Saving data");
-	    // Save the data
-	    // ...
-	    // Now set the dirty flag to false
-	    dirty.setDirty(false);
-	  }
-
-
 	@Focus
 	public void setFocus() {
 		mParent.setFocus();
+	}
+	@Override
+	public void rowSelected(int row) {
+		// TODO Auto-generated method stub
+
 	}
 }

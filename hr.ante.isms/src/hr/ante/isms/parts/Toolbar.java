@@ -3,13 +3,20 @@ package hr.ante.isms.parts;
 import hr.ante.isms.parts.table.ListRiskASKTableModel;
 import hr.ante.isms.parts.table.NewASKTable;
 
+import java.util.HashMap;
+
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import javax.inject.Inject;
 
+import net.sf.jasperreports.engine.JREmptyDataSource;
+import net.sf.jasperreports.engine.JRException;
+import net.sf.jasperreports.engine.JasperFillManager;
+import net.sf.jasperreports.engine.JasperPrint;
+import net.sf.jasperreports.view.JasperViewer;
+
 import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.e4.ui.di.Focus;
-import org.eclipse.e4.ui.di.Persist;
 import org.eclipse.e4.ui.model.application.MApplication;
 import org.eclipse.e4.ui.model.application.ui.basic.MBasicFactory;
 import org.eclipse.e4.ui.model.application.ui.basic.MPart;
@@ -30,6 +37,8 @@ import org.eclipse.swt.widgets.ToolBar;
 import org.eclipse.swt.widgets.ToolItem;
 import org.eclipse.wb.swt.ResourceManager;
 import org.eclipse.wb.swt.SWTResourceManager;
+import org.mihalis.opal.notify.Notifier;
+import org.mihalis.opal.notify.NotifierColorsFactory.NotifierTheme;
 
 import de.kupzog.ktable.KTableSortedModel;
 
@@ -37,7 +46,9 @@ public class Toolbar {
 
 	private KTableSortedModel m_Model;
 	private NewASKTable m_Table;
+	public ToolItem tltmIdentifikacijaRanjivosti;
 	private int m_Row;
+	private Composite m_Parent;
 
 	@Inject
 	IStylingEngine engine;
@@ -55,7 +66,9 @@ public class Toolbar {
 	@PostConstruct
 	public void createComposite(final Composite parent) {
 		//parent.setSize(new Point(500, 650));
+		m_Parent=parent;
 				GridLayout gl_parent = new GridLayout(1, false);
+
 		gl_parent.marginWidth = 0;
 		gl_parent.marginHeight = 0;
 		parent.setLayout(gl_parent);
@@ -73,7 +86,6 @@ public class Toolbar {
 
 		m_Table = NewASKTable.m_Table;
 		m_Model = DataFromServer.listRiskASKTableModel;
-		m_Row = NewASKTable.clickedRow;
 
 		final ExpandItem xpndtmPostavke = new ExpandItem(expandBar, SWT.NONE);
 		try {
@@ -193,10 +205,12 @@ public class Toolbar {
 				window.getChildren().add(part);
 
 				app.getChildren().add(window);
+
 			}
 		});
 
 		ToolItem tltmIdentifikacijaPrijetnji = new ToolItem(bar2, SWT.NONE);
+
 		tltmIdentifikacijaPrijetnji.setImage(ResourceManager.getPluginImage(
 				"hr.ante.isms", "src/icons/application_form.png"));
 		tltmIdentifikacijaPrijetnji.setText("Identifikacija Prijetnji");
@@ -205,6 +219,9 @@ public class Toolbar {
 					@Override
 					public void widgetSelected(SelectionEvent e) {
 //						if(m_Row!=0 && !m_Table.m_Selection.isEmpty()){
+//
+						m_Row = NewASKTable.clickedAssetRow;
+						if(m_Row!=0){
 						final MWindow window = MBasicFactory.INSTANCE
 								.createWindow();
 
@@ -217,14 +234,16 @@ public class Toolbar {
 						app.getChildren().add(window);
 
 						System.out.println("identPrijetnji_");
-//						}
-//						else{
-//							System.out.println("NIJE NIŠTE ODABRANO");
-//						}
+						}
+						else{
+							Notifier.notify(ResourceManager.getPluginImage("hr.ante.isms",
+									"src/icons/error.ico"),"Problem", "Morate odabrati imovinu", NotifierTheme.RED_THEME);
+						}
 					}
 				});
 
-		ToolItem tltmIdentifikacijaRanjivosti = new ToolItem(bar2, SWT.NONE);
+		tltmIdentifikacijaRanjivosti = new ToolItem(bar2, SWT.NONE);
+		tltmIdentifikacijaRanjivosti.setEnabled(true);
 		tltmIdentifikacijaRanjivosti.setImage(ResourceManager.getPluginImage(
 				"hr.ante.isms", "src/icons/application_form.png"));
 		tltmIdentifikacijaRanjivosti.setText("Identifikacija Ranjivosti");
@@ -232,37 +251,44 @@ public class Toolbar {
 				.addSelectionListener(new SelectionAdapter() {
 					@Override
 					public void widgetSelected(SelectionEvent e) {
+						m_Row = NewASKTable.clickedAssetRow;
+						if(m_Row!=0){
 						final MWindow window = MBasicFactory.INSTANCE
 								.createWindow();
 
 						MPart part = MBasicFactory.INSTANCE.createPart();
-						part.setContributionURI("bundleclass://hr.ante.isms/hr.ante.isms.parts.Vulnerability");
+						part.setContributionURI("bundleclass://hr.ante.isms/hr.ante.isms.parts.VulnerabilityIdentification");
 						part.setCloseable(true);
 						window.getChildren().add(part);
 
 						app.getChildren().add(window);
-						System.out.println("identRanjivosti");
+//						System.out.println("identRanjivosti");
+						}
+						else{
+							Notifier.notify(ResourceManager.getPluginImage("hr.ante.isms",
+									"src/icons/error.ico"),"Problem", "Morate odabrati imovinu", NotifierTheme.RED_THEME);
+						}
 					}
 				});
 
 
-				ToolItem tltmAnalizaKontrola = new ToolItem(bar2, SWT.NONE);
-				tltmAnalizaKontrola.setImage(ResourceManager.getPluginImage(
-						"hr.ante.isms", "src/icons/application_form.png"));
-				tltmAnalizaKontrola.setText("Analiza Kontrola");
-				tltmAnalizaKontrola.addSelectionListener(new SelectionAdapter() {
-					@Override
-					public void widgetSelected(SelectionEvent e) {
-						final MWindow window = MBasicFactory.INSTANCE.createWindow();
-						MPart part = MBasicFactory.INSTANCE.createPart();
-						part.setContributionURI("bundleclass://hr.ante.isms/hr.ante.isms.parts.ControlsAnalysis");
-						part.setCloseable(true);
-						window.getChildren().add(part);
-
-						app.getChildren().add(window);
-						// System.out.println("identRanjivosti");
-					}
-				});
+//				ToolItem tltmAnalizaKontrola = new ToolItem(bar2, SWT.NONE);
+//				tltmAnalizaKontrola.setImage(ResourceManager.getPluginImage(
+//						"hr.ante.isms", "src/icons/application_form.png"));
+//				tltmAnalizaKontrola.setText("Analiza Kontrola");
+//				tltmAnalizaKontrola.addSelectionListener(new SelectionAdapter() {
+//					@Override
+//					public void widgetSelected(SelectionEvent e) {
+//						final MWindow window = MBasicFactory.INSTANCE.createWindow();
+//						MPart part = MBasicFactory.INSTANCE.createPart();
+//						part.setContributionURI("bundleclass://hr.ante.isms/hr.ante.isms.parts.ControlsAnalysis");
+//						part.setCloseable(true);
+//						window.getChildren().add(part);
+//
+//						app.getChildren().add(window);
+//						// System.out.println("identRanjivosti");
+//					}
+//				});
 
 
 		ToolItem tltmUtvrivanjeVjerojatnosti = new ToolItem(bar2, SWT.NONE);
@@ -274,15 +300,24 @@ public class Toolbar {
 					@Override
 					public void widgetSelected(SelectionEvent e) {
 						// System.out.println("utvrdVjerojatnosti_");
+						m_Row = NewASKTable.clickedAssetRow;
+						if(m_Row!=0){
 						final MWindow window = MBasicFactory.INSTANCE
 								.createWindow();
 						MPart part = MBasicFactory.INSTANCE.createPart();
 						part.setContributionURI("bundleclass://hr.ante.isms/hr.ante.isms.parts.Probability");
+						part.setElementId("hr.ante.isms.part.probability");
 						part.setCloseable(true);
 						window.getChildren().add(part);
 
 						app.getChildren().add(window);
 						// System.out.println("identRanjivosti");
+						}
+						else{
+							Notifier.notify(ResourceManager.getPluginImage("hr.ante.isms",
+									"src/icons/error.ico"),"Problem", "Morate odabrati imovinu", NotifierTheme.RED_THEME);
+						}
+
 					}
 				});
 
@@ -294,14 +329,22 @@ public class Toolbar {
 		tltmAnalizaUinka.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				final MWindow window = MBasicFactory.INSTANCE.createWindow();
-				MPart part = MBasicFactory.INSTANCE.createPart();
-				part.setContributionURI("bundleclass://hr.ante.isms/hr.ante.isms.parts.ImpactAnalysis");
-				part.setCloseable(true);
-				window.getChildren().add(part);
+				m_Row = NewASKTable.clickedAssetRow;
+				if (m_Row != 0) {
+					final MWindow window = MBasicFactory.INSTANCE
+							.createWindow();
+					MPart part = MBasicFactory.INSTANCE.createPart();
+					part.setContributionURI("bundleclass://hr.ante.isms/hr.ante.isms.parts.ImpactAnalysis");
+					part.setCloseable(true);
+					window.getChildren().add(part);
 
-				app.getChildren().add(window);
-				// System.out.println("identRanjivosti");
+					app.getChildren().add(window);
+					// System.out.println("identRanjivosti");
+				} else {
+					Notifier.notify(ResourceManager.getPluginImage(
+							"hr.ante.isms", "src/icons/error.ico"), "Problem",
+							"Morate odabrati imovinu", NotifierTheme.RED_THEME);
+				}
 			}
 		});
 
@@ -428,14 +471,22 @@ public class Toolbar {
 		tltmUtvrivanjeRizika.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
+				m_Row = NewASKTable.clickedRiskRow;
+				if (m_Row != 0) {
+					final MWindow window = MBasicFactory.INSTANCE
+							.createWindow();
+					MPart part = MBasicFactory.INSTANCE.createPart();
+					part.setContributionURI("bundleclass://hr.ante.isms/hr.ante.isms.parts.RiskAssessment");
+					part.setCloseable(true);
+					window.getChildren().add(part);
 
-				final MWindow window = MBasicFactory.INSTANCE.createWindow();
-				MPart part = MBasicFactory.INSTANCE.createPart();
-				part.setContributionURI("bundleclass://hr.ante.isms/hr.ante.isms.parts.RiskAssessment");
-				part.setCloseable(true);
-				window.getChildren().add(part);
+					app.getChildren().add(window);
 
-				app.getChildren().add(window);
+				} else {
+					Notifier.notify(ResourceManager.getPluginImage(
+							"hr.ante.isms", "src/icons/error.ico"), "Problem",
+							"Morate odabrati rizik", NotifierTheme.RED_THEME);
+				}
 
 			}
 
@@ -448,13 +499,21 @@ public class Toolbar {
 		tltmPredlaganjeMjera.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				final MWindow window = MBasicFactory.INSTANCE.createWindow();
-				MPart part = MBasicFactory.INSTANCE.createPart();
-				part.setContributionURI("bundleclass://hr.ante.isms/hr.ante.isms.parts.SuggestMeasures");
-				part.setCloseable(true);
-				window.getChildren().add(part);
+				m_Row = NewASKTable.clickedRiskRow;
+				if (m_Row != 0) {
+					final MWindow window = MBasicFactory.INSTANCE
+							.createWindow();
+					MPart part = MBasicFactory.INSTANCE.createPart();
+					part.setContributionURI("bundleclass://hr.ante.isms/hr.ante.isms.parts.SuggestMeasures");
+					part.setCloseable(true);
+					window.getChildren().add(part);
 
-				app.getChildren().add(window);
+					app.getChildren().add(window);
+				} else {
+					Notifier.notify(ResourceManager.getPluginImage(
+							"hr.ante.isms", "src/icons/error.ico"), "Problem",
+							"Morate odabrati rizik", NotifierTheme.RED_THEME);
+				}
 			}
 		});
 		tltmPredlaganjeMjera.setImage(ResourceManager.getPluginImage(
@@ -465,13 +524,21 @@ public class Toolbar {
 		tltmOcjenaMjera.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				final MWindow window = MBasicFactory.INSTANCE.createWindow();
-				MPart part = MBasicFactory.INSTANCE.createPart();
-				part.setContributionURI("bundleclass://hr.ante.isms/hr.ante.isms.parts.MeasureEvaluation");
-				part.setCloseable(true);
-				window.getChildren().add(part);
+				m_Row = NewASKTable.clickedRiskRow;
+				if (m_Row != 0) {
+					final MWindow window = MBasicFactory.INSTANCE
+							.createWindow();
+					MPart part = MBasicFactory.INSTANCE.createPart();
+					part.setContributionURI("bundleclass://hr.ante.isms/hr.ante.isms.parts.MeasureEvaluation");
+					part.setCloseable(true);
+					window.getChildren().add(part);
 
-				app.getChildren().add(window);
+					app.getChildren().add(window);
+				} else {
+					Notifier.notify(ResourceManager.getPluginImage(
+							"hr.ante.isms", "src/icons/error.ico"), "Problem",
+							"Morate odabrati rizik", NotifierTheme.RED_THEME);
+				}
 			}
 		});
 		tltmOcjenaMjera.setImage(ResourceManager.getPluginImage("hr.ante.isms",
@@ -481,6 +548,23 @@ public class Toolbar {
 		ToolItem tltmPotvrdaProcjene = new ToolItem(bar3, SWT.NONE);
 		tltmPotvrdaProcjene.setImage(ResourceManager.getPluginImage(
 				"hr.ante.isms", "src/icons/form_input_button_ok.png"));
+		tltmPotvrdaProcjene.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				HashMap hm = new HashMap();
+				try {
+
+
+					JasperPrint print = JasperFillManager.fillReport("C:/Documents and Settings/Zrosko/git/isms/hr.ante.isms/src/hr/ante/isms/parts/registar_imovine.jasper", hm, new JREmptyDataSource());
+					JasperViewer.viewReport(print);
+
+				} catch (JRException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+
+			}
+		});
 		tltmPotvrdaProcjene.setText("Potvrda Procjene");
 
 	}
@@ -488,16 +572,11 @@ public class Toolbar {
 	@PreDestroy
 	public void dispose() throws Exception {
 		System.out.println("Closing application");
+		m_Parent.getShell().close();
 	}
 
-	@Persist
-	public void save() {
-		// System.out.println("Saving data");
-		// // Save the data
-		// // ...
-		// // Now set the dirty flag to false
-		// dirty.setDirty(false);
-	}
+
+
 
 	@Focus
 	public void setFocus() {

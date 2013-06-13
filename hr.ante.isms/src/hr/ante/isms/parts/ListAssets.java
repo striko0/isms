@@ -1,22 +1,18 @@
 package hr.ante.isms.parts;
 
-import java.util.concurrent.CopyOnWriteArrayList;
-
-import hr.ante.isms.parts.table.ASKTable;
+import hr.ante.isms.connection.DatabaseConnection;
 import hr.ante.isms.parts.table.ListAssetASKTableModel;
 import hr.ante.isms.parts.table.NewASKTable;
+
+import java.sql.SQLException;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import javax.inject.Inject;
 
-import org.eclipse.e4.core.contexts.ContextInjectionFactory;
 import org.eclipse.e4.core.contexts.IEclipseContext;
-import org.eclipse.e4.ui.di.Focus;
-import org.eclipse.e4.ui.di.Persist;
 import org.eclipse.e4.ui.model.application.MApplication;
 import org.eclipse.e4.ui.model.application.ui.MDirtyable;
-import org.eclipse.e4.ui.model.application.ui.basic.MPart;
 import org.eclipse.e4.ui.services.IStylingEngine;
 import org.eclipse.e4.ui.workbench.modeling.EPartService;
 import org.eclipse.swt.SWT;
@@ -31,7 +27,10 @@ import org.eclipse.wb.swt.SWTResourceManager;
 
 
 
-public class ListAssets {
+public class ListAssets implements ViewSelected{
+
+
+	private int m_Row;
 	@Inject IStylingEngine engine;
     @Inject private MApplication app;
 
@@ -56,8 +55,6 @@ public class ListAssets {
 				SWT.BORDER | SWT.H_SCROLL | SWT.V_SCROLL);
 		scrollBox.setBackground(SWTResourceManager.getColor(SWT.COLOR_WHITE));
 		scrollBox.setBounds(0, 0, 490, 537);
-		//scrollBox.setBounds(0, 0, 760, 450);
-		//scrollBox.setBounds(0, 0, 448, 375);
 		scrollBox.setMinHeight(470);
 		scrollBox.setMinWidth(500);
 
@@ -65,14 +62,9 @@ public class ListAssets {
 		scrollBox.setExpandHorizontal(true);
 		scrollBox.setExpandVertical(true);
 
-		// Using 0 here ensures the horizontal scroll bar will never appear. If
-		// you want the horizontal bar to appear at some threshold (say 100
-		// pixels) then send that value instead.
-
 		mParent = new Composite(scrollBox, SWT.NONE);
 		mParent.setBackground(SWTResourceManager.getColor(SWT.COLOR_WIDGET_BACKGROUND));
-		//parent.setSize(new Point(759, 359));
-		//mParent.getShell().setSize(759, 400);
+
 		mParent.getShell().setText("Upravljanje Rizicima");
 		GridLayout gl_mParent = new GridLayout(1, false);
 		gl_mParent.verticalSpacing = 0;
@@ -81,11 +73,7 @@ public class ListAssets {
 		gl_mParent.marginHeight = 0;
 		mParent.setLayout(gl_mParent);
 
-
-
-		MPart assetPart = partService.findPart("hr.ante.isms.part.asset");
-		if(assetPart.isDirty())
-			mParent.redraw();
+		m_Row = NewASKTable.clickedAssetRow;
 
 		Label naslov_ = new Label (mParent, SWT.NONE);
 		naslov_.setForeground(SWTResourceManager.getColor(SWT.COLOR_WIDGET_FOREGROUND));
@@ -105,11 +93,8 @@ public class ListAssets {
 		compositeASKTable.setLayoutData(gd_compositeASKTable);
 
 
-		table = new NewASKTable(compositeASKTable, new ListAssetASKTableModel(),
+		table = new NewASKTable(this,compositeASKTable, new ListAssetASKTableModel(),
 				717, compositeASKTable.getBounds().height);
-//		ContextInjectionFactory.inject(table, context);
-
-
 
 		Composite compositeUser_ = new Composite(mParent, SWT.NONE);
 		compositeUser_.setBackground(SWTResourceManager
@@ -142,27 +127,23 @@ public class ListAssets {
 		new Label(compositeUser_, SWT.NONE);
 
 		scrollBox.setContent(mParent);
+
+
 	}
-
-
 
 	@PreDestroy
 	public void dispose() throws Exception {
 	  System.out.println("Closing application");
 	}
 
-	 @Persist
-	  public void save() {
-	    System.out.println("Saving data");
-	    // Save the data
-	    // ...
-	    // Now set the dirty flag to false
-	    dirty.setDirty(false);
-	  }
 
-
-	@Focus
-	public void setFocus() {
-		mParent.setFocus();
+	@Override
+	public void rowSelected(int row) {
+		// TODO Auto-generated method stub
+//		if (row!=0)
+//				if(getDesiredColumnFromDB("view_risk","threat_id","WHERE asset_id="+table.getModel().getContentAt(1, m_Row)+"").equals(null))
+//		{
+//
+//		}
 	}
 }

@@ -29,7 +29,10 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
+import org.eclipse.ui.internal.SaveAction;
 import org.eclipse.wb.swt.ResourceManager;
+import org.mihalis.opal.notify.Notifier;
+import org.mihalis.opal.notify.NotifierColorsFactory.NotifierTheme;
 
 import de.kupzog.ktable.KTableSortedModel;
 
@@ -38,6 +41,7 @@ public class Assets3 {
 	private KTableSortedModel m_Model;
 	private NewASKTable m_Table;
 	private int m_Row;
+	private String m_AssetId;
 	private int action=1;
 	private Composite mParent;
 	private Text textNaziv_;
@@ -53,12 +57,6 @@ public class Assets3 {
 	private String Objanjenjeostalo_;
 
 
-
-//	 @Inject private IEclipseContext context;
-//
-//	 @Inject
-//	  MDirtyable dirty;
-
 	@Inject
 	protected EPartService partService;
 
@@ -73,12 +71,7 @@ public class Assets3 {
 		scrollBox.setExpandHorizontal(true);
 		scrollBox.setExpandVertical(true);
 
-		// Using 0 here ensures the horizontal scroll bar will never appear. If
-		// you want the horizontal bar to appear at some threshold (say 100
-		// pixels) then send that value instead.
-
 		mParent = new Composite(scrollBox, SWT.NONE);
-		//parent.setSize(new Point(759, 359));
 		parent.getShell().setSize(759, 389);
 
 		FormLayout layout = new FormLayout();
@@ -86,28 +79,15 @@ public class Assets3 {
 		layout.marginHeight = 5;
 		mParent.setLayout(layout);
 
-
-//		parent.getShell().setMinimumSize(759, 384);
 		parent.getShell().setText("Unesi novu imovinu");
-//		parent.getShell().setSize(759, 384);
-
-		System.out.println("tablica");
-//		m_Model = (KTableSortedModel)tablica.getModel();
-
-//		m_Model  = (KTableSortedModel) context.get(NewASKTable.class).getModel();
-
-		System.out.println();
 
 		m_Table = NewASKTable.m_Table;
 		m_Model = DataFromServer.listAssetASKTableModel;
-//		m_Model = DataFromServer.model1;
-
-		m_Row = NewASKTable.clickedRow;
+		m_Row = NewASKTable.clickedAssetRow;
 
 		Composite compositeLeft = new Composite(mParent, SWT.NONE);
 		compositeLeft.setLayout(new FormLayout());
 		compositeLeft.setBounds(5, 10, 392, 299);
-
 
 		Label lblNaziv_ = new Label(compositeLeft, SWT.NONE);
 		lblNaziv_.setText("Naziv:");
@@ -121,8 +101,6 @@ public class Assets3 {
 		comboPodkateg_ = new Combo(compositeLeft, SWT.NONE);
 		comboPodkateg_.setEnabled(false);
 
-
-
 		Label lblPodkateg_ = new Label(compositeLeft, SWT.NONE);
 		lblPodkateg_.setText("Podkategorija:");
 
@@ -131,7 +109,6 @@ public class Assets3 {
 		lblNoisteljorgjed_.setText("Nositelj (org.jed.):");
 
 		comboNoisteljorgjed_ = new Combo(compositeLeft, SWT.NONE);
-
 
 		textOpis_ = new Text(compositeLeft, SWT.BORDER | SWT.WRAP | SWT.V_SCROLL | SWT.MULTI);
 
@@ -151,7 +128,6 @@ public class Assets3 {
 		comboPovjerljivost_ = new Combo(grpVanostImovine, SWT.NONE);
 		comboPovjerljivost_.setLocation(90, 40);
 		comboPovjerljivost_.setSize(180, 21);
-		//comboPovjerljivost_.setItems(new String[]{"1-Vrlo niska (javno)","2-Niska (ogranièeno)","3-Srednja (povjerljivo)","4-Visoka (tajno)","5-Vrlo visoka (vrlo tajno)"});
 
 		Label lblCjelovitost = new Label(grpVanostImovine, SWT.NONE);
 		lblCjelovitost.setLocation(15, 73);
@@ -185,7 +161,7 @@ public class Assets3 {
 
 		Label lblObjanjenjeostalo_ = new Label(grpVanostImovine, SWT.NONE);
 		lblObjanjenjeostalo_.setText("Obja\u0161njenje (Poslovni utjecaj):");
-		lblObjanjenjeostalo_.setBounds(15, 163, 127, 13);
+		lblObjanjenjeostalo_.setBounds(15, 163, 165, 13);
 
 		textObjanjenjeostalo_ = new Text(grpVanostImovine, SWT.BORDER | SWT.WRAP | SWT.V_SCROLL);
 		textObjanjenjeostalo_.setBounds(10, 180, 308, 92);
@@ -262,37 +238,7 @@ public class Assets3 {
 			public void widgetSelected(SelectionEvent e) {
 				// TODO Auto-generated method stub
 //				dirty.setDirty(true);
-				Hashtable<String, String> data = new Hashtable<String, String>();
-				/**
-				 *
-				 *
-				 * UPDATE
-				 */
-				data.put("assettype_id", comboKateg_.getText().substring(0, 2));
-				data.put("name", textNaziv_.getText());
-				data.put("category", comboPodkateg_.getText());
-				data.put("owner", comboNoisteljorgjed_.getText());
-				data.put("description", textOpis_.getText());
-				data.put("confidentiality_level", comboPovjerljivost_.getText()!=null ? comboPovjerljivost_.getText().substring(0, 1) : "");
-				data.put("integrity_level", comboCjelovitost_.getText() !=null ? comboCjelovitost_.getText().substring(0, 1): "");
-				data.put("accessibility_level", comboRaspolozivost_.getText() !=null ? comboRaspolozivost_.getText().substring(0, 1): "");
-				data.put("businessimpact_level", comboBi_.getText() !=null ? comboBi_.getText().substring(0, 1): "");
-				System.out.println("Hashtable" + data);
-				try{
-					if(action==2)
-					{
-						insertDataInDB("as_asset", data, "update",m_Model.getContentAt(1, m_Row).toString());
-
-					}
-					else
-						insertDataInDB("as_asset", data,"insert","");
-					((ListAssetASKTableModel)m_Model).readAllFromDB();
-
-				}
-				catch(Exception e1){
-					e1.printStackTrace();
-
-				}
+				saveAction();
 
 			}
 		});
@@ -454,63 +400,110 @@ public class Assets3 {
 		comboCjelovitost_.setItems(getComboItemsFromDB("as_integrity"));
 		comboRaspolozivost_.setItems(getComboItemsFromDB("as_accessibility", "Combo"));
 		comboBi_.setItems(getComboItemsFromDB("as_business_impact"));
-		comboBi_.addSelectionListener(new SelectionAdapter() {
-
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				// TODO Auto-generated method stub
-				Objanjenjeostalo_= getDescriptionFromDB("as_business_impact","WHERE businessimpact_level ='"+comboBi_.getText().substring(0, 1)+"'");
-				if(Objanjenjeostalo_ == null)
-					Objanjenjeostalo_ = " ";
-				textObjanjenjeostalo_.setText(Objanjenjeostalo_);
-
-			}
-		});
 
 
-		if(m_Row!=0 && !m_Table.m_Selection.isEmpty()){
+
+		if(m_Row!=0/* && !m_Table.m_Selection.isEmpty()*/){
 			action=2;
 			comboPodkateg_.setEnabled(true);
+			m_AssetId=m_Model.getContentAt(10, m_Row).toString();
+
 			textNaziv_.setText(m_Model.getContentAt(2, m_Row).toString());
-			comboPodkateg_.setText(m_Model.getContentAt(3, m_Row).toString());
-			comboKateg_.setText(getTextFromDB("as_asset_type", "WHERE assettype_id="+comboPodkateg_.getText().substring(0,2)+""));
-//			comboPodkateg_.select(2);
 
-//			comboPodkateg_.setItems(getComboItemsFromDB("as_subcateg", "WHERE assubcateg_id LIKE '"+comboKateg_.getText().substring(0,1)+""));
+			String subcategoryId = m_Model.getContentAt(3, m_Row).toString();
+			String ownerId= m_Model.getContentAt(4, m_Row).toString();
+			String confId= m_Model.getContentAt(5, m_Row).toString();
+			String integId= m_Model.getContentAt(6, m_Row).toString();
+			String accessId= m_Model.getContentAt(7, m_Row).toString();
+			String bimpactId= m_Model.getContentAt(8, m_Row).toString();
 
-			comboNoisteljorgjed_.setText(m_Model.getContentAt(4, m_Row).toString());
-			comboPovjerljivost_.setText(m_Model.getContentAt(5, m_Row).toString());
-			comboCjelovitost_.setText(m_Model.getContentAt(6, m_Row).toString());
-			comboRaspolozivost_.setText(m_Model.getContentAt(7, m_Row).toString());
-			comboBi_.setText(m_Model.getContentAt(8, m_Row).toString());
+			String subcategory = getDesiredColumnFromDB("view_asset", "category_name","WHERE asset_id=" + m_AssetId + "");
+			String owner = getDesiredColumnFromDB("view_asset", "owner_name","WHERE asset_id=" + m_AssetId + "");
+			String confidentiality = getDesiredColumnFromDB("view_asset", "confidentiality","WHERE asset_id=" + m_AssetId + "");
+			String integrity = getDesiredColumnFromDB("view_asset", "integrity","WHERE asset_id=" + m_AssetId + "");
+			String accessibility = getDesiredColumnFromDB("view_asset", "accessibility","WHERE asset_id=" + m_AssetId + "");
+			String businessImpact = getDesiredColumnFromDB("view_asset", "businessimpact","WHERE asset_id=" + m_AssetId + "");
 
-			String Opis_ = getDescriptionFromDB("as_asset","WHERE name ='"+textNaziv_.getText()+"'");
+			comboPodkateg_.setItems(getComboItemsFromDB("as_subcateg", "WHERE assubcateg_id LIKE '"+subcategoryId.substring(0,2)+"%'"));
+
+			comboPodkateg_.setText(subcategoryId+"-"+subcategory);
+
+			comboKateg_.setText(getTextFromDB("as_asset_type", "WHERE assettype_id="+subcategoryId.substring(0,2)+""));
+
+			comboNoisteljorgjed_.setText(ownerId+"-"+owner);
+			comboPovjerljivost_.setText(confId+"-"+confidentiality);
+			comboCjelovitost_.setText(integId+"-"+integrity);
+			comboRaspolozivost_.setText(accessId+"-"+accessibility);
+			comboBi_.setText(bimpactId+"-"+businessImpact);
+
+			String Opis_ = getDesiredColumnFromDB("view_asset", "description", "WHERE asset_id=" + m_AssetId + "");
 			if(Opis_ == null)
 				Opis_ = " ";
 			textOpis_.setText(Opis_);
 
-			Objanjenjeostalo_= getDescriptionFromDB("as_business_impact","WHERE businessimpact_level ='"+m_Model.getContentAt(8, m_Row).toString().substring(0, 1)+"'");
+			Objanjenjeostalo_= getDesiredColumnFromDB("view_asset", "bi_description", "WHERE asset_id=" + m_AssetId + "");
 			if(Objanjenjeostalo_ == null)
 				Objanjenjeostalo_ = " ";
 			textObjanjenjeostalo_.setText(Objanjenjeostalo_);
 
-			comboBi_.addSelectionListener(new SelectionAdapter() {
-
-				@Override
-				public void widgetSelected(SelectionEvent e) {
-					// TODO Auto-generated method stub
-					Objanjenjeostalo_= getDescriptionFromDB("as_business_impact","WHERE businessimpact_level ='"+comboBi_.getText().substring(0, 1)+"'");
-					if(Objanjenjeostalo_ == null)
-						Objanjenjeostalo_ = " ";
-					textObjanjenjeostalo_.setText(Objanjenjeostalo_);
-
-				}
-			});
-
-
 		}
 
 
+
+
+	}
+
+	private void saveAction(){
+
+		if(textNaziv_.getText()!="" && textNaziv_.getText().length()>0){
+
+
+		Hashtable<String, String> data = new Hashtable<String, String>();
+		/**
+		 *
+		 *
+		 * UPDATE
+		 */
+		data.put("assettype_id", comboKateg_.getText());
+		data.put("name", textNaziv_.getText());
+		data.put("category", comboPodkateg_.getText());
+		data.put("owner", comboNoisteljorgjed_.getText());
+		data.put("description", textOpis_.getText());
+		data.put("confidentiality_level", comboPovjerljivost_.getText()!=null ? comboPovjerljivost_.getText() : "");
+		data.put("integrity_level", comboCjelovitost_.getText() !=null ? comboCjelovitost_.getText(): "");
+		data.put("accessibility_level", comboRaspolozivost_.getText() !=null ? comboRaspolozivost_.getText(): "");
+		data.put("businessimpact_level", comboBi_.getText() !=null ? comboBi_.getText(): "");
+		data.put("bi_description", textObjanjenjeostalo_.getText());
+
+		System.out.println("Hashtable" + data);
+		try{
+			if(action==2)
+			{
+				insertDataInDB("as_asset", data, "update",m_Model.getContentAt(1, m_Row).toString());
+
+			}
+			else
+				insertDataInDB("as_asset", data,"insert","");
+
+
+		}
+		catch(Exception e1){
+			e1.printStackTrace();
+
+		}
+		Notifier.notify(ResourceManager.getPluginImage("hr.ante.isms",
+				"src/icons/tick.png"),"Spremanje uspješno", "Podaci su spremljeni", NotifierTheme.GREEN_THEME);
+
+		}
+		else
+			Notifier.notify(ResourceManager.getPluginImage("hr.ante.isms",
+					"src/icons/error.ico"),"Nemože se spremiti", "Niste unijeli sve potrebno podatke", NotifierTheme.RED_THEME);
+
+		refreshTable();
+	}
+
+	private void refreshTable(){
+		((ListAssetASKTableModel)m_Model).readAllFromDB();
 	}
 
 

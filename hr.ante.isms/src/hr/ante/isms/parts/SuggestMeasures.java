@@ -1,19 +1,19 @@
 package hr.ante.isms.parts;
 
-import hr.ante.isms.connection.DatabaseConnection;
-import hr.ante.isms.parts.table.ASKTable;
-import hr.ante.isms.parts.table.ControlsAnalysisASKTableModel;
+import hr.ante.isms.connection.DataFromDatabase;
+import hr.ante.isms.parts.table.ListAssetASKTableModel;
+import hr.ante.isms.parts.table.ListRiskASKTableModel;
+import hr.ante.isms.parts.table.ListControlRiskASKTableModel;
+import hr.ante.isms.parts.table.NewASKTable;
 
-import java.sql.SQLException;
+import java.util.Hashtable;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import javax.inject.Inject;
 
 import org.eclipse.e4.ui.di.Focus;
-import org.eclipse.e4.ui.di.Persist;
 import org.eclipse.e4.ui.model.application.MApplication;
-import org.eclipse.e4.ui.model.application.ui.MDirtyable;
 import org.eclipse.e4.ui.model.application.ui.basic.MBasicFactory;
 import org.eclipse.e4.ui.model.application.ui.basic.MPart;
 import org.eclipse.e4.ui.model.application.ui.basic.MWindow;
@@ -21,7 +21,6 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.ScrolledComposite;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
-import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
@@ -30,15 +29,39 @@ import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
+import org.eclipse.wb.swt.ResourceManager;
+import org.mihalis.opal.notify.Notifier;
+import org.mihalis.opal.notify.NotifierColorsFactory.NotifierTheme;
+import org.mihalis.opal.opalDialog.Dialog;
 
-public class SuggestMeasures {
+import de.kupzog.ktable.KTableSortedModel;
+
+public class SuggestMeasures implements ViewSelected {
 	private Composite mParent;
-	@Inject
-	MDirtyable dirty;
+
+	private int action = 1;
+	private KTableSortedModel m_RiskModel;
+	private KTableSortedModel m_Model;
+	private String m_ControlId;
+	private String m_RiskId;
+	private String m_AssetId;
+	private String m_VulnerabilityId;
+	private String m_ThreatId;
+	private String m_ControlRiskId;
+	private int m_Row;
+	private String assetName;
+	private String riskName;
+	private NewASKTable table;
+	private DataFromDatabase dB;
+
+	private Combo comboKontrola_ ;
+	private Text textPrimjena_;
+
+	private Button btnNovo_;
+	private Button btnBrisi_;
 
 	@Inject
 	private MApplication app;
-	private Text textPrimjena_;
 
 	@PostConstruct
 	public void createComposite(final Composite parent) {
@@ -46,24 +69,33 @@ public class SuggestMeasures {
 		final ScrolledComposite scrollBox = new ScrolledComposite(parent,
 				SWT.V_SCROLL | SWT.H_SCROLL);
 		scrollBox.setLocation(0, 0);
-		// scrollBox.setBounds(0, 0, 837, 298);
-		// scrollBox.setBounds(0, 0, 760, 450);
-		// scrollBox.setBounds(0, 0, 448, 375);
 		scrollBox.setMinHeight(300);
 		scrollBox.setMinWidth(700);
 
 		scrollBox.setExpandHorizontal(true);
 		scrollBox.setExpandVertical(true);
 
-		// Using 0 here ensures the horizontal scroll bar will never appear. If
-		// you want the horizontal bar to appear at some threshold (say 100
-		// pixels) then send that value instead.
-
 		mParent = new Composite(scrollBox, SWT.NONE);
-		// mParent.setSize(790, 659);
-		// parent.setSize(new Point(759, 359));
 		mParent.getShell().setSize(760, 360);
-		mParent.getShell().setText("Analiza mjera(kontrola) za imovinu");
+
+		m_RiskModel = DataFromServer.listRiskASKTableModel;
+		m_Model = DataFromServer.listControlRiskASKTableModel;
+		m_Row = NewASKTable.clickedRiskRow;
+		dB = new DataFromDatabase();
+
+		m_RiskId = m_RiskModel.getContentAt(1, m_Row).toString();
+
+		riskName = dB.getDesiredColumnFromDB("view_risk", "name",
+				"WHERE risk_id='" + m_RiskId + "'");
+
+		m_AssetId=dB.getDesiredColumnFromDB("view_risk", "asset_id",
+				"WHERE risk_id='" + m_RiskId + "'");
+		m_VulnerabilityId=dB.getDesiredColumnFromDB("view_risk", "vulnerability_id",
+				"WHERE risk_id='" + m_RiskId + "'");
+		m_ThreatId=dB.getDesiredColumnFromDB("view_risk", "threat_id",
+				"WHERE risk_id='" + m_RiskId + "'");
+
+		mParent.getShell().setText("Analiza mjera(kontrola) za rizik: "+riskName.toUpperCase()+"");
 		mParent.setLayout(new GridLayout(1, false));
 
 		Composite composite = new Composite(mParent, SWT.NONE);
@@ -73,15 +105,14 @@ public class SuggestMeasures {
 		Label lblKontrola_ = new Label(composite, SWT.NONE);
 		lblKontrola_.setText("Kontrola:");
 
-		Combo comboKontrola_ = new Combo(composite, SWT.NONE);
+		comboKontrola_ = new Combo(composite, SWT.NONE);
 		comboKontrola_.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
-
 
 		Label lblPrijedlog_ = new Label(composite, SWT.NONE);
 		lblPrijedlog_.setText("Prijedlog:");
 		new Label(composite, SWT.NONE);
 
-		textPrimjena_  = new Text(composite, SWT.BORDER | SWT.V_SCROLL);
+		textPrimjena_  = new Text(composite, SWT.BORDER | SWT.WRAP | SWT.V_SCROLL);
 		GridData gd_Primjena_ = new GridData(SWT.FILL, SWT.FILL, true, false, 2, 2);
 		gd_Primjena_.heightHint = 50;
 		textPrimjena_.setLayoutData(gd_Primjena_);
@@ -90,9 +121,12 @@ public class SuggestMeasures {
 		compositeASKTtable.setLayout(new FillLayout(SWT.HORIZONTAL));
 		GridData gd_compositeASKTtable = new GridData(SWT.FILL, SWT.FILL, true, true,
 				2, 1);
+		gd_compositeASKTtable.minimumHeight = 150;
 		gd_compositeASKTtable.heightHint = 107;
 		compositeASKTtable.setLayoutData(gd_compositeASKTtable);
-		new ASKTable(compositeASKTtable, new ControlsAnalysisASKTableModel(), 717,compositeASKTtable.getBounds().height );
+
+		table = new NewASKTable(this, compositeASKTtable, new ListControlRiskASKTableModel(m_RiskId), 717, 200);
+//		new ASKTable(compositeASKTtable, new ControlsAnalysisASKTableModel(), 717,compositeASKTtable.getBounds().height );
 
 		Composite compositeButtons_ = new Composite(mParent, SWT.NONE);
 		GridData gd_compositeButtons_ = new GridData(SWT.RIGHT, SWT.FILL, true,
@@ -108,6 +142,15 @@ public class SuggestMeasures {
 				false, 1, 1);
 		gd_btnSpremi_.widthHint = 100;
 		btnSpremi_.setLayoutData(gd_btnSpremi_);
+		btnSpremi_.addSelectionListener(new SelectionAdapter() {
+
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				// TODO Auto-generated method stub
+				saveAction();
+				action=2;
+			}
+		});
 		btnSpremi_.setText("Spremi");
 
 		Button btnEvidKontrola_ = new Button(compositeButtons_, SWT.NONE);
@@ -129,7 +172,7 @@ public class SuggestMeasures {
 		});
 		btnEvidKontrola_.setText("Evid. Kontrola");
 
-		Button btnNovo_ = new Button(compositeButtons_, SWT.NONE);
+		btnNovo_ = new Button(compositeButtons_, SWT.NONE);
 		GridData gd_btnNovo_ = new GridData(SWT.LEFT, SWT.CENTER, false, false,
 				1, 1);
 		gd_btnNovo_.widthHint = 100;
@@ -137,26 +180,35 @@ public class SuggestMeasures {
 		btnNovo_.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
+				table.m_Selection.clear();
+				m_ControlRiskId=null;
+				fillForm();
 			}
 		});
 		btnNovo_.setText("Novo");
 
-		Button btnBrisi_ = new Button(compositeButtons_, SWT.NONE);
+		btnBrisi_ = new Button(compositeButtons_, SWT.NONE);
 		GridData gd_btnBrisi_ = new GridData(SWT.LEFT, SWT.CENTER, false,
 				false, 1, 1);
 		gd_btnBrisi_.widthHint = 100;
 		btnBrisi_.setLayoutData(gd_btnBrisi_);
-		btnBrisi_.addSelectionListener(new SelectionListener() {
+		btnBrisi_.addSelectionListener(new SelectionAdapter() {
 
 			@Override
 			public void widgetSelected(SelectionEvent e) {
 				// TODO Auto-generated method stub
+				boolean confirm = Dialog.isConfirmed("Je ste li sigurni da želite obrisati podatak?", "Podatak æe biti obrisan");
 
-			}
+				if (confirm) {
+					try {
+						dB.deleteDataFromDB("as_control_risk", "ascontrolrisk_id", m_ControlRiskId);
+						refreshTable();
 
-			@Override
-			public void widgetDefaultSelected(SelectionEvent e) {
-				// TODO Auto-generated method stub
+					} catch (Exception e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+					}
+				}
 
 			}
 		});
@@ -177,59 +229,119 @@ public class SuggestMeasures {
 			}
 		});
 
-
-
-
+		fillForm();
 		scrollBox.setContent(mParent);
 	}
 
+	public void refreshTable(){
+		((ListRiskASKTableModel)m_RiskModel).readAllFromDB();
+		((ListControlRiskASKTableModel)table.getModel()).readAllFromDB();
+//		((ListRiskASKTableModel) m_ModelRisk).readAllFromDB();
+		table.redraw();
+	}
 
-	public String[] getComboItemsFromDB(String tableName) {
-		DatabaseConnection con = new DatabaseConnection();
-		con.doConnection();
+	private void fillForm() {
+		// TODO Auto-generated method stub
 
-		try {
+		/**
+		 * Poèetno postavljanje controla
+		 *
+		 */
+		action=1;
+		comboKontrola_.setItems(dB.getControlItemsFromDB("as_control", ""));
+		textPrimjena_.setText("");
+		comboKontrola_.setText("");
 
-			return con.getComboItems(tableName);
+		table.m_Selection.clear();
 
-		} catch (SQLException ex) {
-			System.out.println(ex.getMessage());
-			try {
-				con.connection.close();
-			} catch (SQLException e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
-			}
-
-		}
-		System.out.println("Connection : " + con.doConnection());
-		try {
-			con.connection.close();
-		} catch (SQLException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		}
-		return new String[] {};
 
 	}
+
+
+	@Override
+	public void rowSelected(int row) {
+		// TODO Auto-generated method stub
+		if (row!=0 && !table.getModel().getContentAt(1, row).toString().equals("")) {
+			action=2;
+			btnBrisi_.setEnabled(true);
+			btnNovo_.setEnabled(true);
+
+			m_ControlId=table.getModel().getContentAt(6, row).toString();
+
+			m_ControlRiskId=table.getModel().getContentAt(4, row).toString();
+
+			String control = table.getModel().getContentAt(2, row).toString();
+
+			String description = table.getModel().getContentAt(5, row).toString();
+			textPrimjena_.setText(description);
+//			else
+//				textPrimjena_.setText("");
+
+			comboKontrola_.setText(m_ControlId+"-"+control);
+
+		}
+		else
+		{
+			fillForm();
+		}
+
+	}
+
+	public void saveAction(){
+		if((comboKontrola_.getText()!="" && comboKontrola_.getText().length()>0 )){
+			Hashtable<String, String> data = new Hashtable<String, String>();
+
+
+			String temp = comboKontrola_.getText();
+			int t = temp.indexOf("-");
+			data.put("control_id",comboKontrola_.getText().substring(0,t));
+			data.put("risk_id",m_RiskId);
+			data.put("vulnerability_id",m_VulnerabilityId);
+			data.put("threat_id",m_ThreatId);
+			if(!textPrimjena_.getText().equals("")){
+				data.put("application", textPrimjena_.getText());
+			}
+
+
+
+			System.out.println("Hashtable" + data);
+			try {
+
+				if (action == 2) {
+					dB.insertDataInDB("as_control_risk", data, "update","SuggestMeasures", m_ControlRiskId);
+
+				} else
+					dB.insertDataInDB("as_control_risk", data, "insert","SuggestMeasures", "");
+
+
+			} catch (Exception e1) {
+				e1.printStackTrace();
+
+			}
+			Notifier.notify(ResourceManager.getPluginImage("hr.ante.isms",
+					"src/icons/tick.png"),"Spremanje uspješno", "Podaci su spremljeni", NotifierTheme.GREEN_THEME);
+
+		}
+
+		else
+			Notifier.notify(ResourceManager.getPluginImage("hr.ante.isms",
+					"src/icons/error.ico"),"Nemože se spremiti", "Niste unijeli sve potrebno podatke", NotifierTheme.RED_THEME);
+		refreshTable();
+		fillForm();
+	}
+
+
+
 
 	@PreDestroy
 	public void dispose() throws Exception {
 		System.out.println("Closing application");
 	}
 
-	@Persist
-	  public void save() {
-	    System.out.println("Saving data");
-	    // Save the data
-	    // ...
-	    // Now set the dirty flag to false
-	    dirty.setDirty(false);
-	  }
-
-
 	@Focus
 	public void setFocus() {
 		mParent.setFocus();
 	}
+
+
 }

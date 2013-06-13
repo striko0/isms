@@ -1,17 +1,22 @@
 package hr.ante.isms.parts.table;
 
+import hr.ante.isms.connection.DataFromDatabase;
 import hr.ante.isms.connection.DatabaseConnection;
 import hr.ante.isms.parts.DataFromServer;
-import hr.ante.test.renderers.ASCurrencyTextCellRenderer;
 import hr.ante.test.renderers.ASFixedCellRenderer;
 
 import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Random;
 
+import javax.inject.Inject;
+
+import org.eclipse.e4.ui.workbench.modeling.EPartService;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Display;
+import org.mihalis.opal.notify.Notifier;
+import org.mihalis.opal.notify.NotifierColorsFactory.NotifierTheme;
 
 import de.kupzog.ktable.KTableCellEditor;
 import de.kupzog.ktable.KTableCellRenderer;
@@ -21,11 +26,14 @@ import de.kupzog.ktable.editors.KTableCellEditorText2;
 import de.kupzog.ktable.renderers.CheckableCellRenderer;
 import de.kupzog.ktable.renderers.DefaultCellRenderer;
 import de.kupzog.ktable.renderers.FixedCheckableCellRenderer;
-import de.kupzog.ktable.renderers.TextCellRenderer;
 
 public class ListRiskASKTableModel extends KTableSortedModel {
 
+	@Inject
+	protected EPartService partService;
+
 	private Random rand = new Random();
+	private boolean empty=false;
 	private int columnNumber = -1;
 	private int rowNumber = 0;
 	private String m_assetid = "";
@@ -33,6 +41,7 @@ public class ListRiskASKTableModel extends KTableSortedModel {
 	private HashMap content = new HashMap();
 	public HashMap meta = new HashMap();
 	private int[] colWidths;
+    private DataFromDatabase dB;
 
 	private int rowHeight;
 
@@ -83,28 +92,90 @@ public class ListRiskASKTableModel extends KTableSortedModel {
 	public void readAllFromDB() {
 
 		// identity = getContentFromDB("view_risk");
+		if (!empty) {
 
-		if (m_Vrsta == 1)
-			content = getContentFromDB("view_risk", "ListRiskASKTableModel", "");
+			if (m_Vrsta == 1) {
+				content = dB.getContentFromDB("view_risk",
+						"ListRiskASKTableModel", "");
 
-		if (m_Vrsta == 2) {
-			content = getContentFromDB("view_risk", "ThreatIdentification",
-					m_assetid);
+			}
+			if (m_Vrsta == 2) {
+				content = dB.getContentFromDB("view_risk", "ThreatIdentification",
+						m_assetid);
+//				if (content.size() == 3) {
+//					Notifier.notify("Odreðivanje vjerojatnosti",
+//							"Nema podataka", NotifierTheme.RED_THEME);
+//				}
+			}
+
+			if (m_Vrsta == 3) {
+				content = dB.getContentFromDB("view_risk",
+						"VulnerabilityIdentification", m_assetid);
+				if (content.size() == 3) {
+
+					Notifier.notify("Odreðivanje vjerojatnosti",
+							"Nema podataka za identifikaciju ranjivosti",
+							NotifierTheme.RED_THEME);
+				}
+				System.out.println("SIZE " + content.size());
+			}
+
+			if (m_Vrsta == 4) {
+				content = dB.getContentFromDB("view_risk", "Probability",
+						m_assetid);
+				if (content.size() == 4) {
+					Notifier.notify("Odreðivanje vjerojatnosti",
+							"Nema podataka za odreðivanje vjerojatnosti",
+							NotifierTheme.RED_THEME);
+				}
+				System.out.println("SIZE " + content.size());
+			}
+
+			if (m_Vrsta == 5) {
+				content = dB.getContentFromDB("view_risk", "ImpactAnalysis",
+						m_assetid);
+				if (content.size() == 4) {
+					Notifier.notify("Odreðivanje vjerojatnosti",
+							"Nema podataka za odreðivanje vjerojatnosti",
+							NotifierTheme.RED_THEME);
+				}
+				System.out.println("SIZE " + content.size());
+			}
+
+			DataFromServer.listRiskASKTableModel = this;
+			// columnNumber=2;
+			System.out.println("SIZE " + content.size());
+			if (content.get("@@brojac").toString() == null)
+				rowNumber = 1;
+			rowNumber = Integer.parseInt(content.get("@@brojac").toString());
+			initialize();
 		}
-		DataFromServer.listRiskASKTableModel = this;
-		// columnNumber=2;
 
-		if (content.get("@@brojac").toString() == null )
-			rowNumber = 1;
-		rowNumber = Integer.parseInt(content.get("@@brojac").toString());
-		initialize();
+		else {
+			Notifier.notify("Problem!", "Odaberite Imovinu!",
+					NotifierTheme.RED_THEME);
+			initialize();
+		}
+
 	}
 
 	public ListRiskASKTableModel(int columnNumbers, int vrsta, String assetid) {
 		// before initializing, you probably have to set some member values
 		// to make all model getter methods work properly.
 
-		m_assetid = assetid;
+		dB = new DataFromDatabase();
+
+		if(assetid!="ID"){
+			m_assetid = assetid;
+			empty=false;
+
+		}
+
+		else{
+			m_assetid="0";
+			empty=true;
+		}
+
 		columnNumber = columnNumbers;
 		m_Vrsta = vrsta;
 
@@ -116,20 +187,8 @@ public class ListRiskASKTableModel extends KTableSortedModel {
 		 * BROJ STUPACA!
 		 *
 		 */
-		// columnNumber=7;
-		// meta.put("0", "");
 		for (int i = 1; i <= columnNumber; i++)
 			meta.put("" + i + "", "Text");
-		// meta.put("2", "Text");
-		// meta.put("3", "Text");
-		// meta.put("4", "Text");
-		// meta.put("5", "Text");
-		// meta.put("6", "Text");
-		// meta.put("7", "Text");
-		// meta.put("8", "Text");
-		// meta.put("9", "Text");
-		// meta.put("10", "Text");
-
 		colWidths = new int[getColumnCount()];
 
 		for (int i = 0; i < colWidths.length; i++) {
@@ -142,181 +201,67 @@ public class ListRiskASKTableModel extends KTableSortedModel {
 		// putContents();
 
 		setColumnWidth(0, 30);
+		setColumnWidth(1, 30);
+
 
 		if (m_Vrsta == 1) {
-			setColumnWidth(1, 50);
-			setColumnWidth(2, 200);
-			setColumnWidth(3, 50);
+			setColumnWidth(1, 30);
+			setColumnWidth(2, 150);
+			setColumnWidth(3, 150);
 			setColumnWidth(4, 100);
 			setColumnWidth(5, 100);
 			// setColumnWidth(2, 75);
 		}
 
-	}
-
-	private void putContents() {
-
-		// Zero Column
-		setContentAt(0, 0, "#");
-		for (int i = getFixedRowCount(); i < getRowCount(); i++)
-			setContentAt(0, i, "" + i + "");
-		// setContentAt(0, 2, "2");
-		// setContentAt(0, 3, "3");
-		// setContentAt(0, 4, "4");
-		// setContentAt(0,5, "5");
-		// setContentAt(0, 6, "6");
-		// setContentAt(0, 7, "7");
-		// setContentAt(0, 8, "8");
-		// setContentAt(0, 9, "9");
-		// setContentAt(0, 10, "10");
-		// setContentAt(0, 11, "11");
-		// setContentAt(0, 12, "12");
-
-		// 1 Column
-		setContentAt(1, 0, "Broj");
-		setContentAt(1, 1, "44");
-		setContentAt(1, 2, "125");
-		setContentAt(1, 3, "126");
-		setContentAt(1, 4, "127");
-		setContentAt(1, 5, "131");
-		setContentAt(1, 6, "51");
-		setContentAt(1, 7, "136");
-		setContentAt(1, 8, "152");
-		setContentAt(1, 9, "4");
-		setContentAt(1, 10, "20");
-		// setContentAt(1, 11, "272");
-		// setContentAt(1, 12, "1150");
-
-		// 2 Column
-		setContentAt(2, 0, "Naziv Rizika");
-		setContentAt(2, 1, "Neadekvatan interni razvoj");
-		setContentAt(2, 2, "Nepostojanje adekvatnog ugovora");
-		setContentAt(2, 3,
-				"Zastoj poslovnih procesa zbog loše dokumentiran og softvera");
-		setContentAt(2, 4,
-				"Nedokumentiranost Rijeènika podataka (Data Dictionary)");
-		setContentAt(2, 5,
-				"Nepostojanje mehanizama ispravnog adresiranja i prijenosa poruka");
-		setContentAt(2, 6,
-				"Neuèinkovita kontrola pristupa za nove aplikacije u Banci");
-		setContentAt(2, 7, "Lokacija u podrucju podložnom poplavi");
-		setContentAt(2, 8,
-				"Nekorištenje alata za nadzor integriteta podataka i ispitivanje ranjivosti.");
-		setContentAt(2, 9,
-				"Curenje informacija sa stare raèunalne opreme Banke");
-		setContentAt(2, 10, "Nepostojanje prièuvnog raè.centra");
-		// setContentAt(2, 11, "Ugovor o isporuci informacijskog sustava ");
-		// setContentAt(2, 12,
-		// "Izjave o zaprimanju korisnièkih naziva i zaporki");
-
-		// 3 Column
-		setContentAt(3, 0, "Naziv Imovine");
-		setContentAt(3, 1, "PORTAL programski kod");
-		setContentAt(3, 2, "Ugovor o informatièkim uslugama - BANKSOFT");
-		setContentAt(3, 3, "Ugovor o informatièkim uslugama - BANKSOFT");
-		setContentAt(3, 4, "Banksoft rijeènik podataka (Data Dictionary)");
-		setContentAt(3, 5, "Elektronièka pošta djelatnika");
-		setContentAt(3, 6, "Kontrola pristupa");
-		setContentAt(3, 7, "Prièuvne kopije");
-		setContentAt(3, 8, "MREŽA (network)");
-		setContentAt(3, 9, "STARA oprema - neodložena");
-		setContentAt(3, 10, "SISTEM SALA - Data Centar");
-		// setContentAt(3, 11, "1020 - Papirnati Dokument");
-		// setContentAt(3, 12, "1020 - Papirnati Dokument");
-
-		// 4 Column
-		setContentAt(4, 0, "Vlasnik Imovine");
-		setContentAt(4, 1, "12000");
-		setContentAt(4, 2, "12000");
-		setContentAt(4, 3, "12000");
-		setContentAt(4, 4, "12000");
-		setContentAt(4, 5, "12000");
-		setContentAt(4, 6, "12000");
-		setContentAt(4, 7, "12000");
-		setContentAt(4, 8, "12000");
-		setContentAt(4, 9, "12000");
-		setContentAt(4, 10, "12000");
-		// setContentAt(4, 11, "Direkcija informatike");
-		// setContentAt(4, 12, "Direkcija informatike");
-
-		// 5 Column
-		setContentAt(5, 0, "Prijetnja");
-		setContentAt(5, 1, "Potpuni zastoj poslovnih procesa");
-		setContentAt(5, 2, "Kršenje regulatornih obveza");
-		setContentAt(5, 3, "Potpuni zastoj poslovnih procesa");
-		setContentAt(5, 4, "Gubitak integriteta nad podacima");
-		setContentAt(5, 5, "Neadekvatna zaštita informacija");
-		setContentAt(5, 6, "Ugrožena sukladnost sa normom, standardima itd.");
-		setContentAt(5, 7, "Pad kvalitete medija");
-		setContentAt(5, 8, "Ugrožavanje sigurnosti");
-		setContentAt(5, 9, "Curenje informacija");
-		setContentAt(5, 10, "Katastrofe (prirodne, ljudske)");
-		// setContentAt(5, 11, "4");
-		// setContentAt(5, 12, "2");
-
-		// Sixth Column
-		setContentAt(6, 0, "Ranjivost");
-		setContentAt(6, 1, "Loše dokumentirani softver");
-		setContentAt(6, 2, "Nepostojanje adekvatnog ugovora");
-		setContentAt(6, 3, "Loše dokumentiran softver");
-		setContentAt(6, 4, "Loše dokumentiran softver");
-		setContentAt(6, 5,
-				"Nepostojanje mehanizama ispravnog adresiranja i prijenosa poruka");
-		setContentAt(6, 6,
-				"Akti (procedure, pravilnici) neprikladni, zastarjeli, teško razumljivi");
-		setContentAt(6, 7, "Lokacija u podrucju podložnom poplavi");
-		setContentAt(6, 8, "Nedostatak mehanizama nadzora");
-		setContentAt(6, 9, "Nepostojanje pravila/procedura");
-		setContentAt(6, 10, "Nepostojanje off-site resursa");
-		// setContentAt(6, 11, "Visoka (tajno)");
-		// setContentAt(6, 12, "Niska (ogranièeno)");
-
-		// Seventh Column
-		setContentAt(7, 0, "RIZIK");
-		setContentAt(7, 1, "Visoki");
-		setContentAt(7, 2, "Srednji");
-		setContentAt(7, 3, "Visoki");
-		setContentAt(7, 4, "Srednji");
-		setContentAt(7, 5, "Nizak");
-		setContentAt(7, 6, "Nizak");
-		setContentAt(7, 7, "Srednji");
-		setContentAt(7, 8, "Srednji");
-		setContentAt(7, 9, "Nizak");
-		setContentAt(7, 10, "Nizak");
-		// setContentAt(7, 11, "Vrlo visoka");
-		// setContentAt(7, 12, "Niska");
-
-	}
-
-	public HashMap<String, String> getContentFromDB(String tableName,
-			String vrsta, String assetId) {
-		DatabaseConnection con = new DatabaseConnection();
-		con.doConnection();
-
-		try {
-
-			return con.getContentForTable(tableName, vrsta, assetId);
-
-		} catch (SQLException ex) {
-			System.out.println(ex.getMessage());
-			try {
-				con.connection.close();
-			} catch (SQLException e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
-			}
-
+		if (m_Vrsta == 3) {
+			setColumnWidth(1, 350);
+			setColumnWidth(2, 350);
 		}
-		System.out.println("Connection : " + con.doConnection());
-		try {
-			con.connection.close();
-		} catch (SQLException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
+
+		if (m_Vrsta == 4) {
+			setColumnWidth(1, 200);
+			setColumnWidth(2, 200);
+			setColumnWidth(3, 200);
 		}
-		return new HashMap<String, String>();
+
+		if (m_Vrsta == 5) {
+			setColumnWidth(1, 150);
+			setColumnWidth(2, 150);
+			setColumnWidth(3, 150);
+			setColumnWidth(4, 150);
+		}
 
 	}
+
+//	public HashMap<String, String> getContentFromDB(String tableName,
+//			String vrsta, String assetId) {
+//		DatabaseConnection con = new DatabaseConnection();
+//		con.doConnection();
+//
+//		try {
+//
+//			return con.getContentForTable(tableName, vrsta, assetId);
+//
+//		} catch (SQLException ex) {
+//			System.out.println(ex.getMessage());
+//			try {
+//				con.connection.close();
+//			} catch (SQLException e1) {
+//				// TODO Auto-generated catch block
+//				e1.printStackTrace();
+//			}
+//
+//		}
+//		System.out.println("Connection : " + con.doConnection());
+//		try {
+//			con.connection.close();
+//		} catch (SQLException e1) {
+//			// TODO Auto-generated catch block
+//			e1.printStackTrace();
+//		}
+//		return new HashMap<String, String>();
+//
+//	}
 
 	public HashMap getMeta() {
 		return meta;

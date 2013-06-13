@@ -1,7 +1,6 @@
 package hr.ante.isms.parts;
 
 import hr.ante.isms.connection.DatabaseConnection;
-import hr.ante.isms.parts.table.ASKTable;
 import hr.ante.isms.parts.table.ListAssetASKTableModel;
 import hr.ante.isms.parts.table.ListRiskASKTableModel;
 import hr.ante.isms.parts.table.NewASKTable;
@@ -12,16 +11,12 @@ import java.util.Hashtable;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
-import javax.inject.Inject;
 
 import org.eclipse.e4.ui.di.Focus;
-import org.eclipse.e4.ui.di.Persist;
-import org.eclipse.e4.ui.model.application.ui.MDirtyable;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.ScrolledComposite;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
-import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
@@ -29,29 +24,31 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
+import org.eclipse.wb.swt.ResourceManager;
+import org.mihalis.opal.notify.Notifier;
+import org.mihalis.opal.notify.NotifierColorsFactory.NotifierTheme;
+import org.mihalis.opal.opalDialog.Dialog;
 
-import de.kupzog.ktable.KTable;
-import de.kupzog.ktable.KTableCellSelectionListener;
-import de.kupzog.ktable.KTableClickInterceptionListener;
 import de.kupzog.ktable.KTableSortedModel;
 
-public class ThreatIdentification {
+public class ThreatIdentification implements ViewSelected {
 
-	@Inject
-	MDirtyable dirty;
 
 	private KTableSortedModel m_Model;
 	private KTableSortedModel m_ModelRisk;
 	private NewASKTable m_Table;
-	private int vrsta;
+	private String m_Riskid;
 	private int m_Row;
+	private String m_AssetId;
+	private int m_AssetRow;
+	private int m_RiskRow;
 	private int innerRow=0;
 	private int action=1;
 	private Combo comboVrstaPrijet_;
 	private Combo comboPrijetnja_;
 	private Composite mParent;
 	private NewASKTable table;
-	private ASTableModel4 model;
+//	private ASTableModel4 model;
 	private String assetName;
 
 	@PostConstruct
@@ -69,10 +66,9 @@ public class ThreatIdentification {
 
 		parent.getShell().setSize(759, 389);
 
-		m_Model = DataFromServer.listAssetASKTableModel;
 		m_ModelRisk = DataFromServer.listRiskASKTableModel;
-		m_Row = NewASKTable.clickedRow;
-		m_Table = NewASKTable.m_Table;
+		m_Model = DataFromServer.listAssetASKTableModel;
+		m_Row = NewASKTable.clickedAssetRow;
 
 		assetName = getDesiredColumnFromDB("as_asset", "name", "WHERE asset_id='"+m_Model.getContentAt(1, m_Row)+"'");
 		mParent.getShell().setText(
@@ -108,7 +104,8 @@ public class ThreatIdentification {
 		gd_compositeASKTable.horizontalIndent = 10;
 		compositeASKTable.setLayoutData(gd_compositeASKTable);
 		compositeASKTable.setLayout(new FillLayout());
-		table = new NewASKTable(compositeASKTable, new ListRiskASKTableModel(2, 2, m_Model.getContentAt(1,m_Row).toString()),
+
+		table = new NewASKTable(this,compositeASKTable, new ListRiskASKTableModel(2, 2,m_Model.getContentAt(1,m_Row).toString()),
 				717, compositeASKTable.getBounds().height);
 
 //		table = new ASKTable(compositeASKTable, new ThreatIdentASKTableModel(),
@@ -130,48 +127,8 @@ public class ThreatIdentification {
 			public void widgetSelected(SelectionEvent e) {
 				// TODO Auto-generated method stub
 //				dirty.setDirty(true);
-				Hashtable<String, String> data = new Hashtable<String, String>();
-
-				/**
-				 *
-				 *
-				 * UPDATE
-				 */
-				data.put("threat_id",getDesiredColumnFromDB("as_threat","threat_id", "WHERE name='"+comboPrijetnja_.getText().substring(3)+"'"));
-				data.put("asset_id",m_Model.getContentAt(1, m_Row).toString());
-				data.put("name", m_Model.getContentAt(2, m_Row).toString());
-				//data.put("threat_name", comboPrijetnja_.getText().substring(3));
-				data.put("assetsubcateg_id", m_Model.getContentAt(3, m_Row).toString());
-				data.put("owner", m_Model.getContentAt(4, m_Row).toString());
-				data.put("asset_value", m_Model.getContentAt(9, m_Row).toString());
-				data.put("confidentiality_level", m_Model.getContentAt(5, m_Row).toString());
-				data.put("integrity_level",m_Model.getContentAt(6, m_Row).toString());
-				data.put("accessibility_level", m_Model.getContentAt(7, m_Row).toString());
-				data.put("businessimpact_level",  m_Model.getContentAt(8, m_Row).toString());
-
-				System.out.println("Hashtable" + data);
-				try{
-//					if(action==2)
-//					{
-//
-//						insertDataInDB("as_threat", data, "update", m_Model.getContentAt(1, m_Row).toString());
-////
-////						MPart assetPart = partService.findPart("hr.ante.isms.part.asset");
-//						//assetPart.setDirty(true);
-//					}
-//					else
-						insertDataInDB("as_risk", data, "insert", "");
-
-					((ListAssetASKTableModel)m_Model).readAllFromDB();
-					((ListRiskASKTableModel)m_ModelRisk).readAllFromDB();
-
-
-				}
-				catch(Exception e1){
-					e1.printStackTrace();
-
-				}
-
+				saveAction();
+				action=2;
 			}
 		});
 		btnSpremi_.setText("Spremi");
@@ -181,6 +138,18 @@ public class ThreatIdentification {
 				false, 1, 1);
 		gd_btnNovo_.widthHint = 100;
 		btnNovo_.setLayoutData(gd_btnNovo_);
+		btnNovo_.addSelectionListener(new SelectionAdapter() {
+
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				// TODO Auto-generated method stub
+				table.m_Selection.clear();
+				m_Riskid=null;
+				comboPrijetnja_.setText("");
+				comboVrstaPrijet_.setText("");
+				fillForm();
+			}
+		});
 		btnNovo_.setText("Novo");
 
 		Button btnBrisi_ = new Button(compositeButtons_, SWT.CENTER);
@@ -188,6 +157,29 @@ public class ThreatIdentification {
 				false, 1, 1);
 		gd_btnBrisi_.widthHint = 100;
 		btnBrisi_.setLayoutData(gd_btnBrisi_);
+		btnBrisi_.addSelectionListener(new SelectionAdapter() {
+
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				// TODO Auto-generated method stub
+				boolean confirm = Dialog.isConfirmed(
+						"Je ste li sigurni da želite obrisati podatak?",
+						"Podatak æe biti obrisan");
+
+				if (confirm) {
+					try {
+						deleteDataFromDB("as_risk", "risk_id", m_Riskid);
+						refreshTable();
+
+					} catch (Exception e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+					}
+				}
+			}
+
+
+		});
 		btnBrisi_.setText("Bri\u0161i");
 
 		Button btnIzlaz_ = new Button(compositeButtons_, SWT.NONE);
@@ -211,6 +203,15 @@ public class ThreatIdentification {
 
 	}
 
+	private void refreshTable(){
+
+		((ListAssetASKTableModel)m_Model).readAllFromDB();
+		((ListRiskASKTableModel)table.getModel()).readAllFromDB();
+		((ListRiskASKTableModel) m_ModelRisk).readAllFromDB();
+		table.redraw();
+
+	}
+
 	private void fillForm() {
 		// TODO Auto-generated method stub
 
@@ -218,6 +219,8 @@ public class ThreatIdentification {
 		 * Dohvaæanje iz baze
 		 *
 		 */
+		action=1;
+		comboPrijetnja_.setEnabled(false);
 		comboVrstaPrijet_.setItems(getComboItemsFromDB("as_threat_type"));
 		comboVrstaPrijet_.addSelectionListener(new SelectionAdapter() {
 
@@ -232,89 +235,96 @@ public class ThreatIdentification {
 
 		});
 
-		if (!table.m_Selection.isEmpty()) {
-			action = 2;
-			table.addCellSelectionListener(new KTableCellSelectionListener() {
+		comboVrstaPrijet_.setText("");
+		comboPrijetnja_.setText("");
 
-				@Override
-				public void fixedCellSelected(int col, int row, int statemask) {
-					// TODO Auto-generated method stub
+		table.m_Selection.clear();
 
-				}
 
-				@Override
-				public void cellSelected(int col, int row, int statemask) {
-					// TODO Auto-generated method stub
-					comboPrijetnja_.setText(getDesiredColumnFromDB("as_threat","threat_id","WHERE name='"+m_Model.getContentAt(7, row).toString()+"'"));
-					comboVrstaPrijet_.setItems(getComboItemsFromDB("as_threat_type"));
-					comboVrstaPrijet_.setText(getDesiredColumnFromDB("as_threat", "threattype_id", "WHERE name="+m_Model.getContentAt(7, row).toString()+"'"));
+	}
 
-				}
-			});
+	@Override
+	public void rowSelected(int row) {
 
-		}
-
-		/**
-		 * KAD UPDATE RADIMO
-		 */
-		if (m_Row != 0 && !m_Table.m_Selection.isEmpty()) {
-			action = 3;
+		if (row!=0 && table.getModel().getContentAt(1, row).toString()!="") {
+			action=2;
+			m_Riskid=table.getModel().getContentAt(3, row).toString();
 			comboPrijetnja_.setEnabled(true);
-//			comboPrijetnja_.setText(getDesiredColumnFromDB("as_threat","threat_id","WHERE name='"+m_Model.getContentAt(7, m_Row).toString()+"'"));
-//			comboVrstaPrijet_.setItems(getComboItemsFromDB("as_threat_type"));
-//			comboVrstaPrijet_.setText(getDesiredColumnFromDB("as_threat", "threattype_id", "WHERE threat_id="+m_ModelRisk.getContentAt(1, m_Row).toString()+""));
-//
-//			table.addClickInterceptionListener(new KTableClickInterceptionListener() {
-//
-//				@Override
-//				public boolean cellClicked(int col, int row, Rectangle cellRect, int x,
-//						int y, int button, KTable table) {
-//					// TODO Auto-generated method stub
-//					comboPrijetnja_.setEnabled(true);
-//					comboPrijetnja_.setText(m_ModelRisk.getContentAt(2, m_Row).toString());
-//					comboVrstaPrijet_.setItems(getComboItemsFromDB("as_threat_type"));
-//					comboVrstaPrijet_.setText(getDesiredColumnFromDB("as_threat", "threattype_id", "WHERE threat_id="+m_ModelRisk.getContentAt(1, m_Row).toString()+""));
-//					return false;
-//				}
-//			});
 
+			String threatId = table.getModel().getContentAt(1, row).toString();
+			if(threatId!="" && threatId.length()>0){
+			String threat = getDesiredColumnFromDB("view_threat", "name", "WHERE threat_id="+threatId+"");
+			String threattypeId = getDesiredColumnFromDB("view_threat", "threattype_id", "WHERE threat_id="+threatId+"");
 
-//			textNaziv_.setText(m_Model.getContentAt(2, m_Row).toString());
-//			comboPodkateg_.setText(m_Model.getContentAt(3, m_Row).toString());
-//			comboKateg_.setText(getTextFromDB(
-//					"as_asset_type",
-//					"WHERE assettype_id="
-//							+ comboPodkateg_.getText().substring(0, 2) + ""));
-			// comboPodkateg_.select(2);
+			comboPrijetnja_.setItems(getComboItemsFromDB("as_threat",
+					"WHERE threattype_id="+threattypeId+ "",true));
 
-//			 comboPodkateg_.setItems(getComboItemsFromDB("as_subcateg",
-//			 "WHERE assubcateg_id LIKE '"+comboKateg_.getText().substring(0,1)+""));
+			comboPrijetnja_.setText(threatId +"-"+threat);
+			comboVrstaPrijet_.setText(threattypeId+"-"+getDesiredColumnFromDB("view_threat", "threat_type", "WHERE threat_id="+threatId+""));
 
-//			comboNoisteljorgjed_.setText(m_Model.getContentAt(4, m_Row)
-//					.toString());
-//			comboPovjerljivost_.setText(m_Model.getContentAt(5, m_Row)
-//					.toString());
-//			comboCjelovitost_
-//					.setText(m_Model.getContentAt(6, m_Row).toString());
-//			comboRaspolozivost_.setText(m_Model.getContentAt(7, m_Row)
-//					.toString());
-//			comboBi_.setText(m_Model.getContentAt(8, m_Row).toString());
-//
-//			String Opis_ = getDescriptionFromDB("as_asset", "WHERE name ='"
-//					+ textNaziv_.getText() + "'");
-//			if (Opis_ == null)
-//				Opis_ = " ";
-//			textOpis_.setText(Opis_);
-//
-//			String Objanjenjeostalo_ = getDescriptionFromDB(
-//					"as_business_impact", "WHERE businessimpact_level ='"
-//							+ m_Model.getContentAt(8, m_Row).toString() + "'");
-//			if (Objanjenjeostalo_ == null)
-//				Objanjenjeostalo_ = " ";
-//			textObjanjenjeostalo_.setText(Objanjenjeostalo_);
+			}
+		}
+		else
+		{
+			fillForm();
+		}
+	}
+
+	private void saveAction(){
+		if(comboPrijetnja_.getText()!="" && comboPrijetnja_.getText().length()>0 && comboVrstaPrijet_.getText()!="" && comboVrstaPrijet_.getText().length()>0){
+			Hashtable<String, String> data = new Hashtable<String, String>();
+
+			String temp = comboPrijetnja_.getText();
+			int t = temp.indexOf("-");
+			data.put(
+					"threat_id",
+					getDesiredColumnFromDB("as_threat", "threat_id",
+							"WHERE name='"
+									+ comboPrijetnja_.getText()
+											.substring(t+1) + "'"));
+			data.put("asset_id", m_Model.getContentAt(1, m_Row)
+					.toString());
+			data.put("name", m_Model.getContentAt(2, m_Row).toString());
+			// data.put("threat_name",
+			// comboPrijetnja_.getText().substring(3));
+			data.put("assetsubcateg_id", m_Model.getContentAt(3, m_Row)
+					.toString());
+			data.put("owner", m_Model.getContentAt(4, m_Row).toString());
+			data.put("asset_value", m_Model.getContentAt(9, m_Row)
+					.toString());
+			data.put("confidentiality_level",
+					m_Model.getContentAt(5, m_Row).toString());
+			data.put("integrity_level", m_Model.getContentAt(6, m_Row)
+					.toString());
+			data.put("accessibility_level",
+					m_Model.getContentAt(7, m_Row).toString());
+			data.put("businessimpact_level",
+					m_Model.getContentAt(8, m_Row).toString());
+
+			System.out.println("Hashtable" + data);
+			try {
+
+				if (action == 2) {
+					insertDataInDB("as_risk", data, "update", m_Riskid);
+
+				} else
+					insertDataInDB("as_risk", data, "insert", "");
+				refreshTable();
+
+			} catch (Exception e1) {
+				e1.printStackTrace();
+
+			}
+			Notifier.notify(ResourceManager.getPluginImage("hr.ante.isms",
+					"src/icons/tick.png"),"Spremanje uspješno", "Podaci su spremljeni", NotifierTheme.GREEN_THEME);
 
 		}
 
+		else
+			Notifier.notify(ResourceManager.getPluginImage("hr.ante.isms",
+					"src/icons/error.ico"),"Nemože se spremiti", "Niste unijeli sve potrebno podatke", NotifierTheme.RED_THEME);
+		refreshTable();
+		fillForm();
 	}
 
 	public String[] getComboItemsFromDB(String tableName) {
@@ -413,9 +423,9 @@ public class ThreatIdentification {
 		try {
 
 			if(updateOrInsert=="insert")
-				con.insertThretIdentData(tableName, data);
+				con.insertThreatIdentData(tableName, data);
 			if(updateOrInsert=="update")
-				con.updateAssetData(tableName, data, id);
+				con.updateThreatIdentData(tableName, data, id);
 
 		} catch (SQLException ex) {
 			System.out.println(ex.getMessage());
@@ -439,14 +449,13 @@ public class ThreatIdentification {
 
 	}
 
-
-	public String getTextFromDB(String tableName, String whereStatement){
+	public void deleteDataFromDB(String tableName, String idField, String id) throws Exception{
 		DatabaseConnection con = new DatabaseConnection();
 		con.doConnection();
 
 		try {
 
-			return con.getTextWithWhere(tableName, whereStatement);
+			con.deleteData(tableName,idField, id);
 
 		} catch (SQLException ex) {
 			System.out.println(ex.getMessage());
@@ -465,7 +474,8 @@ public class ThreatIdentification {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
-		return new String();
+
+
 
 	}
 
@@ -503,18 +513,18 @@ public class ThreatIdentification {
 		System.out.println("Closing application");
 	}
 
-	@Persist
-	public void save() {
-		System.out.println("Saving data");
-		// Save the data
-		// ...
-		// Now set the dirty flag to false
-		dirty.setDirty(false);
-	}
 
 	@Focus
 	public void setFocus() {
 
 		mParent.setFocus();
 	}
+
+
+
+
+
+
+
+
 }

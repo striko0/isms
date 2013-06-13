@@ -3,7 +3,7 @@
  * accompanying materials are made available under the terms of the Eclipse
  * Public License v1.0 which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors: Laurent CARON (laurent.caron at gmail dot com) - initial API
  * and implementation
  *******************************************************************************/
@@ -16,12 +16,12 @@ import org.eclipse.swt.widgets.Display;
 
 /**
  * This class creates the colors associated to a given theme
- * 
+ *
  */
 public class NotifierColorsFactory {
 
 	public enum NotifierTheme {
-		YELLOW_THEME, GRAY_THEME, BLUE_THEME
+		YELLOW_THEME, GRAY_THEME, BLUE_THEME, RED_THEME, GREEN_THEME
 	};
 
 	/**
@@ -51,6 +51,21 @@ public class NotifierColorsFactory {
 			colors.borderColor = new Color(Display.getDefault(), 208, 208, 208);
 			colors.leftColor = new Color(Display.getDefault(), 255, 255, 255);
 			colors.rightColor = new Color(Display.getDefault(), 208, 208, 208);
+			break;
+
+		case RED_THEME:
+			colors.textColor = Display.getDefault().getSystemColor(SWT.COLOR_BLACK);
+			colors.titleColor = Display.getDefault().getSystemColor(SWT.COLOR_DARK_RED);
+			colors.borderColor = new Color(Display.getDefault(), 208, 208, 208);
+			colors.leftColor = new Color(Display.getDefault(), 244,215,210);
+			colors.rightColor = new Color(Display.getDefault(), 237,207,206);
+			break;
+		case GREEN_THEME:
+			colors.textColor = Display.getDefault().getSystemColor(SWT.COLOR_BLACK);
+			colors.titleColor = Display.getDefault().getSystemColor(SWT.COLOR_DARK_RED);
+			colors.borderColor = new Color(Display.getDefault(), 208, 208, 208);
+			colors.leftColor = new Color(Display.getDefault(), 210,244,215);
+			colors.rightColor = new Color(Display.getDefault(), 206,237,207);
 			break;
 		default:
 			colors.textColor = Display.getDefault().getSystemColor(SWT.COLOR_BLACK);

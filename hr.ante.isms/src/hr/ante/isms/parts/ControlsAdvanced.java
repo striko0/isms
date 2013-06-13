@@ -33,13 +33,12 @@ public class ControlsAdvanced {
 	private Composite mParent;
 	 @Inject
 	  MDirtyable dirty;
-	 private Text textPodsj_;
-	 private Text textEvid_;
 	 private Text textHard_;
 	 private Text textSoft_;
 	 private Text textServis_;
 	 private Text textLjudi_;
 	 private Text textEduk_;
+	 private Text textOpisProvedbe_;
 
 
 	@PostConstruct
@@ -55,7 +54,7 @@ public class ControlsAdvanced {
 
 		scrollBox.setExpandHorizontal(true);
 		scrollBox.setExpandVertical(true);
-												
+
 														// Using 0 here ensures the horizontal scroll bar will never appear. If
 														// you want the horizontal bar to appear at some threshold (say 100
 		// pixels) then send that value instead.
@@ -79,8 +78,8 @@ public class ControlsAdvanced {
 		grpProvedba_.setText("Provedba");
 		grpProvedba_.setLayout(new GridLayout(2, false));
 
-		Label lblRokProv_ = new Label(grpProvedba_, SWT.NONE);
-		lblRokProv_.setText("Rok Provedbe:");
+		Label label = new Label(grpProvedba_, SWT.NONE);
+		label.setText("Datum Provedbe:");
 
 		DateTime dateTimeRokProv_ = new DateTime(grpProvedba_, SWT.BORDER
 				| SWT.DROP_DOWN);
@@ -89,31 +88,10 @@ public class ControlsAdvanced {
 		lblOpisProv_.setText("Opis Provedbe:");
 		new Label(grpProvedba_, SWT.NONE);
 
-		StyledText styleTxtOpisProv_ = new StyledText(grpProvedba_, SWT.BORDER);
-		GridData gd_styleTxtOpisProv_= new GridData(SWT.FILL, SWT.FILL, true, true,
-				2, 2);
-		gd_styleTxtOpisProv_.widthHint = 355;
-		gd_styleTxtOpisProv_.heightHint = 75;
-		styleTxtOpisProv_.setLayoutData(gd_styleTxtOpisProv_);
-
-		Label lblDatumProv_ = new Label(grpProvedba_, SWT.NONE);
-		lblDatumProv_.setText("Datum Provedbe:");
-
-		DateTime dateTimeDatumProv_ = new DateTime(grpProvedba_, SWT.BORDER
-				| SWT.DROP_DOWN);
-
-		Label lblPodsj_= new Label(grpProvedba_, SWT.NONE);
-		lblPodsj_.setText("Podsjetnik:");
-
-		textPodsj_ = new Text(grpProvedba_, SWT.BORDER);
-		textPodsj_.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, true, false, 1, 1));
-
-		Label lblEvid_ = new Label(grpProvedba_, SWT.NONE);
-		lblEvid_.setText("Evidencija:");
-
-		textEvid_ = new Text(grpProvedba_, SWT.BORDER);
-		textEvid_.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1,
-				1));
+		textOpisProvedbe_ = new Text(grpProvedba_, SWT.BORDER | SWT.WRAP | SWT.V_SCROLL);
+		GridData gd_text = new GridData(SWT.FILL, SWT.FILL, true, true, 2, 1);
+		gd_text.minimumHeight = 50;
+		textOpisProvedbe_.setLayoutData(gd_text);
 
 		Group grpCijenaProvedbe_ = new Group(composite1, SWT.NONE);
 		grpCijenaProvedbe_.setLayoutData(new GridData(SWT.FILL, SWT.FILL,
