@@ -3,7 +3,7 @@ package hr.ante.isms.parts;
 import hr.ante.isms.connection.DatabaseConnection;
 import hr.ante.isms.parts.table.ListAssetASKTableModel;
 import hr.ante.isms.parts.table.ListRiskASKTableModel;
-import hr.ante.isms.parts.table.NewASKTable;
+import hr.ante.isms.parts.table.NewASKTable1;
 import hr.ante.test.asktable.ASTableModel4;
 
 import java.sql.SQLException;
@@ -36,7 +36,7 @@ public class ThreatIdentification implements ViewSelected {
 
 	private KTableSortedModel m_Model;
 	private KTableSortedModel m_ModelRisk;
-	private NewASKTable m_Table;
+	private NewASKTable1 m_Table;
 	private String m_Riskid;
 	private int m_Row;
 	private String m_AssetId;
@@ -47,9 +47,10 @@ public class ThreatIdentification implements ViewSelected {
 	private Combo comboVrstaPrijet_;
 	private Combo comboPrijetnja_;
 	private Composite mParent;
-	private NewASKTable table;
-//	private ASTableModel4 model;
+	private NewASKTable1 table;
 	private String assetName;
+	private Button btnBrisi_;
+	private Button btnNovo_;
 
 	@PostConstruct
 	public void createComposite(final Composite parent) {
@@ -68,7 +69,7 @@ public class ThreatIdentification implements ViewSelected {
 
 		m_ModelRisk = DataFromServer.listRiskASKTableModel;
 		m_Model = DataFromServer.listAssetASKTableModel;
-		m_Row = NewASKTable.clickedAssetRow;
+		m_Row = NewASKTable1.clickedAssetRow;
 
 		assetName = getDesiredColumnFromDB("as_asset", "name", "WHERE asset_id='"+m_Model.getContentAt(1, m_Row)+"'");
 		mParent.getShell().setText(
@@ -85,11 +86,11 @@ public class ThreatIdentification implements ViewSelected {
 		Label lblVrstaPrijet_ = new Label(composite, SWT.NONE);
 		lblVrstaPrijet_.setText("Vrsta prijetnje:");
 
-		comboVrstaPrijet_ = new Combo(composite, SWT.NONE);
+		comboVrstaPrijet_ = new Combo(composite, SWT.READ_ONLY);
 
 		Label lblPrijetnja_ = new Label(composite, SWT.NONE);
 		lblPrijetnja_.setText("Prijetnja:");
-		comboPrijetnja_ = new Combo(composite, SWT.NONE);
+		comboPrijetnja_ = new Combo(composite, SWT.READ_ONLY);
 		comboPrijetnja_.setEnabled(false);
 
 		comboPrijetnja_.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true,
@@ -105,7 +106,7 @@ public class ThreatIdentification implements ViewSelected {
 		compositeASKTable.setLayoutData(gd_compositeASKTable);
 		compositeASKTable.setLayout(new FillLayout());
 
-		table = new NewASKTable(this,compositeASKTable, new ListRiskASKTableModel(2, 2,m_Model.getContentAt(1,m_Row).toString()),
+		table = new NewASKTable1(this,compositeASKTable, new ListRiskASKTableModel(2, 2,m_Model.getContentAt(1,m_Row).toString()),
 				717, compositeASKTable.getBounds().height);
 
 //		table = new ASKTable(compositeASKTable, new ThreatIdentASKTableModel(),
@@ -127,13 +128,18 @@ public class ThreatIdentification implements ViewSelected {
 			public void widgetSelected(SelectionEvent e) {
 				// TODO Auto-generated method stub
 //				dirty.setDirty(true);
-				saveAction();
-				action=2;
+//				if(action==2){
+
+					saveAction();
+					action=1;
+//
+//				}
+//				else
 			}
 		});
 		btnSpremi_.setText("Spremi");
 
-		Button btnNovo_ = new Button(compositeButtons_, SWT.NONE);
+		btnNovo_ = new Button(compositeButtons_, SWT.NONE);
 		GridData gd_btnNovo_ = new GridData(SWT.RIGHT, SWT.CENTER, false,
 				false, 1, 1);
 		gd_btnNovo_.widthHint = 100;
@@ -145,14 +151,14 @@ public class ThreatIdentification implements ViewSelected {
 				// TODO Auto-generated method stub
 				table.m_Selection.clear();
 				m_Riskid=null;
-				comboPrijetnja_.setText("");
-				comboVrstaPrijet_.setText("");
 				fillForm();
 			}
 		});
 		btnNovo_.setText("Novo");
 
-		Button btnBrisi_ = new Button(compositeButtons_, SWT.CENTER);
+		btnBrisi_ = new Button(compositeButtons_, SWT.CENTER);
+		btnBrisi_.setEnabled(false);
+		btnNovo_.setEnabled(false);
 		GridData gd_btnBrisi_ = new GridData(SWT.RIGHT, SWT.CENTER, false,
 				false, 1, 1);
 		gd_btnBrisi_.widthHint = 100;
@@ -214,13 +220,17 @@ public class ThreatIdentification implements ViewSelected {
 
 	private void fillForm() {
 		// TODO Auto-generated method stub
-
-		/**
-		 * Dohvaæanje iz baze
-		 *
-		 */
 		action=1;
+		initialSettings();
+		table.m_Selection.clear();
+
+
+	}
+
+	private void initialSettings(){
 		comboPrijetnja_.setEnabled(false);
+		btnBrisi_.setEnabled(false);
+		btnNovo_.setEnabled(false);
 		comboVrstaPrijet_.setItems(getComboItemsFromDB("as_threat_type"));
 		comboVrstaPrijet_.addSelectionListener(new SelectionAdapter() {
 
@@ -237,10 +247,6 @@ public class ThreatIdentification implements ViewSelected {
 
 		comboVrstaPrijet_.setText("");
 		comboPrijetnja_.setText("");
-
-		table.m_Selection.clear();
-
-
 	}
 
 	@Override
@@ -248,6 +254,8 @@ public class ThreatIdentification implements ViewSelected {
 
 		if (row!=0 && table.getModel().getContentAt(1, row).toString()!="") {
 			action=2;
+			btnBrisi_.setEnabled(true);
+			btnNovo_.setEnabled(true);
 			m_Riskid=table.getModel().getContentAt(3, row).toString();
 			comboPrijetnja_.setEnabled(true);
 
@@ -317,14 +325,15 @@ public class ThreatIdentification implements ViewSelected {
 			}
 			Notifier.notify(ResourceManager.getPluginImage("hr.ante.isms",
 					"src/icons/tick.png"),"Spremanje uspješno", "Podaci su spremljeni", NotifierTheme.GREEN_THEME);
+			fillForm();
+			refreshTable();
 
 		}
 
 		else
 			Notifier.notify(ResourceManager.getPluginImage("hr.ante.isms",
 					"src/icons/error.ico"),"Nemože se spremiti", "Niste unijeli sve potrebno podatke", NotifierTheme.RED_THEME);
-		refreshTable();
-		fillForm();
+
 	}
 
 	public String[] getComboItemsFromDB(String tableName) {

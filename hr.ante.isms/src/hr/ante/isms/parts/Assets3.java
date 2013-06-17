@@ -2,7 +2,7 @@ package hr.ante.isms.parts;
 
 import hr.ante.isms.connection.DatabaseConnection;
 import hr.ante.isms.parts.table.ListAssetASKTableModel;
-import hr.ante.isms.parts.table.NewASKTable;
+import hr.ante.isms.parts.table.NewASKTable1;
 
 import java.sql.SQLException;
 import java.util.Hashtable;
@@ -18,6 +18,7 @@ import org.eclipse.swt.custom.ScrolledComposite;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
+import org.eclipse.swt.internal.ole.win32.COMObject;
 import org.eclipse.swt.layout.FormAttachment;
 import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.layout.FormLayout;
@@ -39,7 +40,7 @@ import de.kupzog.ktable.KTableSortedModel;
 public class Assets3 {
 
 	private KTableSortedModel m_Model;
-	private NewASKTable m_Table;
+	private NewASKTable1 m_Table;
 	private int m_Row;
 	private String m_AssetId;
 	private int action=1;
@@ -81,9 +82,9 @@ public class Assets3 {
 
 		parent.getShell().setText("Unesi novu imovinu");
 
-		m_Table = NewASKTable.m_Table;
+		m_Table = NewASKTable1.m_TableAsset;
 		m_Model = DataFromServer.listAssetASKTableModel;
-		m_Row = NewASKTable.clickedAssetRow;
+		m_Row = NewASKTable1.clickedAssetRow;
 
 		Composite compositeLeft = new Composite(mParent, SWT.NONE);
 		compositeLeft.setLayout(new FormLayout());
@@ -97,8 +98,8 @@ public class Assets3 {
 		Label lblKategorija_ = new Label(compositeLeft, SWT.NONE);
 		lblKategorija_.setText("Kategorija:");
 
-		comboKateg_ = new Combo(compositeLeft, SWT.NONE);
-		comboPodkateg_ = new Combo(compositeLeft, SWT.NONE);
+		comboKateg_ = new Combo(compositeLeft, SWT.READ_ONLY);
+		comboPodkateg_ = new Combo(compositeLeft, SWT.READ_ONLY);
 		comboPodkateg_.setEnabled(false);
 
 		Label lblPodkateg_ = new Label(compositeLeft, SWT.NONE);
@@ -125,7 +126,7 @@ public class Assets3 {
 		lblPovjerljivost_.setSize(73, 13);
 		lblPovjerljivost_.setText("Povjerljivost:");
 
-		comboPovjerljivost_ = new Combo(grpVanostImovine, SWT.NONE);
+		comboPovjerljivost_ = new Combo(grpVanostImovine, SWT.READ_ONLY);
 		comboPovjerljivost_.setLocation(90, 40);
 		comboPovjerljivost_.setSize(180, 21);
 
@@ -134,7 +135,7 @@ public class Assets3 {
 		lblCjelovitost.setSize(65, 13);
 		lblCjelovitost.setText("Cjelovitost:");
 
-		comboCjelovitost_ = new Combo(grpVanostImovine, SWT.NONE);
+		comboCjelovitost_ = new Combo(grpVanostImovine, SWT.READ_ONLY);
 		comboCjelovitost_.setLocation(90, 70);
 		comboCjelovitost_.setSize(180, 21);
 
@@ -144,7 +145,7 @@ public class Assets3 {
 		lblRaspoloivost_.setSize(73, 13);
 		lblRaspoloivost_.setText("Raspolo\u017Eivost:");
 
-		comboRaspolozivost_ = new Combo(grpVanostImovine, SWT.NONE);
+		comboRaspolozivost_ = new Combo(grpVanostImovine, SWT.READ_ONLY);
 		comboRaspolozivost_.setLocation(90, 100);
 		comboRaspolozivost_.setSize(180, 21);
 
@@ -154,7 +155,7 @@ public class Assets3 {
 		lblBi_.setSize(65, 13);
 		lblBi_.setText("P. Utjecaj:");
 
-		comboBi_ = new Combo(grpVanostImovine, SWT.NONE);
+		comboBi_ = new Combo(grpVanostImovine, SWT.READ_ONLY);
 		comboBi_.setLocation(90, 130);
 		comboBi_.setSize(180, 21);
 
@@ -239,6 +240,8 @@ public class Assets3 {
 				// TODO Auto-generated method stub
 //				dirty.setDirty(true);
 				saveAction();
+				action=2;
+
 
 			}
 		});
@@ -380,20 +383,8 @@ public class Assets3 {
 		/**Dohvaæanje iz baze
 		 *
 		 */
-		comboKateg_.setItems(getComboItemsFromDB("as_asset_type"));
-		comboKateg_.addSelectionListener(new SelectionAdapter() {
 
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				// TODO Auto-generated method stub
-//				System.out.println(comboKateg_.getSelectionIndex());
-				int index = comboKateg_.getSelectionIndex()+1;
-				comboPodkateg_.setEnabled(true);
-//				if(comboKateg_.getText()!="")
-//					comboPodkateg_.setText(getTextFromDB("as_subcateg", "WHERE assubcateg_id ="+comboKateg_.getText().substring(0,2)+10+""));
-				comboPodkateg_.setItems(getComboItemsFromDB("as_subcateg", "WHERE assubcateg_id LIKE '"+index+"%'"));
-			}
-		});
+		initialSettings();
 
 		comboNoisteljorgjed_.setItems(getComboItemsFromDB("as_owner"));
 		comboPovjerljivost_.setItems(getComboItemsFromDB("as_confidentiality"));
@@ -404,6 +395,7 @@ public class Assets3 {
 
 
 		if(m_Row!=0/* && !m_Table.m_Selection.isEmpty()*/){
+			//initialSettings();
 			action=2;
 			comboPodkateg_.setEnabled(true);
 			m_AssetId=m_Model.getContentAt(10, m_Row).toString();
@@ -447,63 +439,127 @@ public class Assets3 {
 			textObjanjenjeostalo_.setText(Objanjenjeostalo_);
 
 		}
+		else
+		{
+			action=1;
+		}
+
 
 
 
 
 	}
 
+	private void initialSettings(){
+		comboKateg_.setItems(getComboItemsFromDB("as_asset_type"));
+		comboKateg_.addSelectionListener(new SelectionAdapter() {
+
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				// TODO Auto-generated method stub
+//				System.out.println(comboKateg_.getSelectionIndex());
+				int index = comboKateg_.getSelectionIndex()+1;
+				comboPodkateg_.setEnabled(true);
+//				if(comboKateg_.getText()!="")
+//					comboPodkateg_.setText(getTextFromDB("as_subcateg", "WHERE assubcateg_id ="+comboKateg_.getText().substring(0,2)+10+""));
+				comboPodkateg_.setItems(getComboItemsFromDB("as_subcateg", "WHERE assubcateg_id LIKE '"+index+"%'"));
+			}
+		});
+	}
+
 	private void saveAction(){
 
-		if(textNaziv_.getText()!="" && textNaziv_.getText().length()>0){
+		if (textNaziv_.getText() != "" && textNaziv_.getText().length() > 0
+				&& comboPodkateg_.getText() != ""
+				&& comboPodkateg_.getText().length() > 0
+				&& comboPovjerljivost_.getText() != ""
+				&& comboPovjerljivost_.getText().length() > 0
+				&& comboCjelovitost_.getText() != ""
+				&& comboCjelovitost_.getText().length() > 0
+				&& comboRaspolozivost_.getText() != ""
+				&& comboRaspolozivost_.getText().length() > 0
+				&& comboBi_.getText() != "" && comboBi_.getText().length() > 0) {
+
+			Hashtable<String, String> data = new Hashtable<String, String>();
+			/**
+			 *
+			 *
+			 * UPDATE
+			 */
+			data.put("assettype_id", comboKateg_.getText().substring(0,2));
+			data.put("name", textNaziv_.getText());
+			if(comboPodkateg_.getText().equals(""))
+				data.put("category", "");
+			else{
+				data.put("category", comboPodkateg_.getText().substring(0,4));
+			}
+
+			if(comboNoisteljorgjed_.getText().equals(""))
+				data.put("owner", "");
+			else{
+				data.put("owner", comboNoisteljorgjed_.getText().substring(0,5));
+			}
 
 
-		Hashtable<String, String> data = new Hashtable<String, String>();
-		/**
-		 *
-		 *
-		 * UPDATE
-		 */
-		data.put("assettype_id", comboKateg_.getText());
-		data.put("name", textNaziv_.getText());
-		data.put("category", comboPodkateg_.getText());
-		data.put("owner", comboNoisteljorgjed_.getText());
-		data.put("description", textOpis_.getText());
-		data.put("confidentiality_level", comboPovjerljivost_.getText()!=null ? comboPovjerljivost_.getText() : "");
-		data.put("integrity_level", comboCjelovitost_.getText() !=null ? comboCjelovitost_.getText(): "");
-		data.put("accessibility_level", comboRaspolozivost_.getText() !=null ? comboRaspolozivost_.getText(): "");
-		data.put("businessimpact_level", comboBi_.getText() !=null ? comboBi_.getText(): "");
-		data.put("bi_description", textObjanjenjeostalo_.getText());
+			if(textOpis_.getText().equals(""))
+				data.put("description", "");
+			else{
+				data.put("description", textOpis_.getText());
+			}
 
-		System.out.println("Hashtable" + data);
-		try{
-			if(action==2)
-			{
-				insertDataInDB("as_asset", data, "update",m_Model.getContentAt(1, m_Row).toString());
+			data.put(
+					"confidentiality_level",
+					comboPovjerljivost_.getText() != null ? comboPovjerljivost_
+							.getText().substring(0,1) : "");
+			data.put(
+					"integrity_level",
+					comboCjelovitost_.getText() != null ? comboCjelovitost_
+							.getText().substring(0,1) : "");
+			data.put(
+					"accessibility_level",
+					comboRaspolozivost_.getText() != null ? comboRaspolozivost_
+							.getText().substring(0,1) : "");
+			data.put("businessimpact_level",
+					comboBi_.getText() != null ? comboBi_.getText().substring(0,1) : "");
+
+			if(textObjanjenjeostalo_.getText().equals(""))
+				data.put("bi_description", "");
+			else{
+				data.put("bi_description", textObjanjenjeostalo_.getText());
+			}
+
+
+
+
+			System.out.println("Hashtable" + data);
+			try {
+				if (action == 2) {
+					insertDataInDB("as_asset", data, "update", m_Model
+							.getContentAt(1, m_Row).toString());
+
+				} else
+					insertDataInDB("as_asset", data, "insert", "");
+
+			} catch (Exception e1) {
+				e1.printStackTrace();
 
 			}
-			else
-				insertDataInDB("as_asset", data,"insert","");
-
-
-		}
-		catch(Exception e1){
-			e1.printStackTrace();
-
-		}
-		Notifier.notify(ResourceManager.getPluginImage("hr.ante.isms",
-				"src/icons/tick.png"),"Spremanje uspješno", "Podaci su spremljeni", NotifierTheme.GREEN_THEME);
-
-		}
-		else
 			Notifier.notify(ResourceManager.getPluginImage("hr.ante.isms",
-					"src/icons/error.ico"),"Nemože se spremiti", "Niste unijeli sve potrebno podatke", NotifierTheme.RED_THEME);
+					"src/icons/tick.png"), "Spremanje uspješno",
+					"Podaci su spremljeni", NotifierTheme.GREEN_THEME);
+
+		} else
+			Notifier.notify(ResourceManager.getPluginImage("hr.ante.isms",
+					"src/icons/error.ico"), "Nemože se spremiti",
+					"Niste unijeli sve potrebno podatke",
+					NotifierTheme.RED_THEME);
 
 		refreshTable();
 	}
 
 	private void refreshTable(){
 		((ListAssetASKTableModel)m_Model).readAllFromDB();
+		m_Table.redraw();
 	}
 
 

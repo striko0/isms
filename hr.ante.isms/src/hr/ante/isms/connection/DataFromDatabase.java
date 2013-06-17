@@ -35,6 +35,66 @@ public class DataFromDatabase {
 
 	}
 
+	public String[] getComboItemsFromDB(String tableName, String whereStatement) {
+		DatabaseConnection con = new DatabaseConnection();
+		con.doConnection();
+
+		try {
+
+			return con.getComboItemsWithWhere(tableName, whereStatement);
+
+		} catch (SQLException ex) {
+			System.out.println(ex.getMessage());
+			try {
+				con.connection.close();
+			} catch (SQLException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+
+		}
+		System.out.println("Connection : " + con.doConnection());
+		try {
+			con.connection.close();
+		} catch (SQLException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+		return new String[] {};
+
+	}
+
+	public String[] getComboItemsFromDB(String tableName,
+			String whereStatement, boolean valid) {
+		DatabaseConnection con = new DatabaseConnection();
+		con.doConnection();
+
+		try {
+			// if(type=="threat")
+			return con.getComboItemsThreatOrVulnerability(tableName,
+					whereStatement);
+
+		} catch (SQLException ex) {
+			System.out.println(ex.getMessage());
+			try {
+				con.connection.close();
+			} catch (SQLException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+
+		}
+		System.out.println("Connection : " + con.doConnection());
+		try {
+			con.connection.close();
+		} catch (SQLException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+		return new String[] {};
+
+	}
+
 
 	public String[] getThreatVulnerabilityItemsFromDB(String tableName,String whereStatement){
 		DatabaseConnection con = new DatabaseConnection();

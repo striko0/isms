@@ -3,7 +3,7 @@ package hr.ante.isms.parts;
 import hr.ante.isms.connection.DataFromDatabase;
 import hr.ante.isms.parts.table.ListAssetASKTableModel;
 import hr.ante.isms.parts.table.ListRiskASKTableModel;
-import hr.ante.isms.parts.table.NewASKTable;
+import hr.ante.isms.parts.table.NewASKTable1;
 
 import java.util.Hashtable;
 
@@ -38,7 +38,7 @@ public class MeasureEvaluation {
 	private int m_Row;
 	private String assetName;
 	private String riskName;
-	private NewASKTable table;
+	private NewASKTable1 table;
 	private DataFromDatabase dB;
 
 	private Composite mParent;
@@ -67,7 +67,7 @@ public class MeasureEvaluation {
 		mParent.getShell().setSize(450, 200);
 
 		m_Model = DataFromServer.listRiskASKTableModel;
-		m_Row = NewASKTable.clickedRiskRow;
+		m_Row = NewASKTable1.clickedRiskRow;
 		dB = new DataFromDatabase();
 
 		riskName = dB.getDesiredColumnFromDB("view_risk", "name",

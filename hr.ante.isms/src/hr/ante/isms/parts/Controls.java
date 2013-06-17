@@ -1,17 +1,15 @@
 package hr.ante.isms.parts;
 
-import hr.ante.isms.connection.DatabaseConnection;
+import hr.ante.isms.connection.DataFromDatabase;
 
-import java.sql.SQLException;
+import java.util.Hashtable;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import javax.inject.Inject;
 
 import org.eclipse.e4.ui.di.Focus;
-import org.eclipse.e4.ui.di.Persist;
 import org.eclipse.e4.ui.model.application.MApplication;
-import org.eclipse.e4.ui.model.application.ui.MDirtyable;
 import org.eclipse.e4.ui.model.application.ui.basic.MBasicFactory;
 import org.eclipse.e4.ui.model.application.ui.basic.MPart;
 import org.eclipse.e4.ui.model.application.ui.basic.MWindow;
@@ -28,20 +26,41 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
+import org.eclipse.wb.swt.ResourceManager;
+import org.mihalis.opal.notify.Notifier;
+import org.mihalis.opal.notify.NotifierColorsFactory.NotifierTheme;
 
-public class Controls {
+public class Controls{
 
 	private Composite mParent;
-	 @Inject
-	  MDirtyable dirty;
 
-     @Inject private MApplication app;
-	 private Text textNaziv_;
-	 private Text textOznaka_;
-	 private Text textOpis_;
-	 private Text textSmjerPrim_;
-	 private Text textStaPrim_;
-	 private Text textPrep_;
+	@Inject
+	private MApplication app;
+
+	private int action = 1;
+	private DataFromDatabase dB;
+
+	private Text textNaziv_;
+	private Text textOznaka_;
+	private Text textOpis_;
+	private Text textSmjerPrim_;
+	private Text textStaPrim_;
+	private Text textPrep_;
+
+	private Button btnRadAkt_;
+	private Button btnRadPlan_;
+	private Button btnRadNeAkt_;
+	private Button btnRadUprav_;
+	private Button btnRadLog_;
+	private Button btnRadFiz_;
+	private Button btnRadPrev_;
+	private Button btnRadDet_ ;
+	private Button btnRadReak_;
+	private Button btnSpremiIPripremi_;
+
+	private Combo comboOdgOsoba_;
+	private Combo comboOcjDjelot_;
+	private Combo comboSukl_;
 
 
 	@PostConstruct
@@ -56,16 +75,13 @@ public class Controls {
 		scrollBox.setExpandHorizontal(true);
 		scrollBox.setExpandVertical(true);
 
-		// Using 0 here ensures the horizontal scroll bar will never appear. If
-		// you want the horizontal bar to appear at some threshold (say 100
-		// pixels) then send that value instead.
-
 		mParent = new Composite(scrollBox, SWT.NONE);
 
-		// parent.setSize(new Point(759, 359));
 		mParent.getShell().setSize(675, 600);
-		mParent.getShell().setText("Evidencija Kontrole");
+		mParent.getShell().setText("Evidencija Kontrola");
 		mParent.setLayout(new GridLayout(2, false));
+
+		dB = new DataFromDatabase();
 
 		Composite composite1 = new Composite(mParent, SWT.NONE);
 		composite1.setLayout(new GridLayout(4, false));
@@ -106,45 +122,45 @@ public class Controls {
 		group.setText("Status");
 		group.setLayout(new GridLayout(3, false));
 
-		Button button = new Button(group, SWT.RADIO);
-		button.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
-		button.setText("Aktivno");
+		btnRadAkt_ = new Button(group, SWT.RADIO);
+		btnRadAkt_.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+		btnRadAkt_.setText("Aktivno");
 
-		Button button_1 = new Button(group, SWT.RADIO);
-		button_1.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
-		button_1.setText("Planirano");
+		btnRadPlan_= new Button(group, SWT.RADIO);
+		btnRadPlan_.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+		btnRadPlan_.setText("Planirano");
 
-		Button button_2 = new Button(group, SWT.RADIO);
-		button_2.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
-		button_2.setText("Neaktivno");
+		btnRadNeAkt_ = new Button(group, SWT.RADIO);
+		btnRadNeAkt_.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+		btnRadNeAkt_.setText("Neaktivno");
 
 		Group group_1 = new Group(composite1, SWT.NONE);
 		group_1.setLayoutData(new GridData(SWT.LEFT, SWT.FILL, false, true, 1, 1));
 		group_1.setText("Tip");
 		group_1.setLayout(new GridLayout(3, false));
 
-		Button button_3 = new Button(group_1, SWT.RADIO);
-		button_3.setText("Upravlja\u010Dka");
+		btnRadUprav_ = new Button(group_1, SWT.RADIO);
+		btnRadUprav_.setText("Upravlja\u010Dka");
 
-		Button button_4 = new Button(group_1, SWT.RADIO);
-		button_4.setText("Logi\u010Dka");
+		btnRadLog_ = new Button(group_1, SWT.RADIO);
+		btnRadLog_.setText("Logi\u010Dka");
 
-		Button button_5 = new Button(group_1, SWT.RADIO);
-		button_5.setText("Fizi\u010Dka");
+		btnRadFiz_ = new Button(group_1, SWT.RADIO);
+		btnRadFiz_.setText("Fizi\u010Dka");
 
 		Group group_2 = new Group(composite1, SWT.NONE);
 		group_2.setText("Vrsta");
 		group_2.setLayout(new GridLayout(3, false));
 
-		Button button_6 = new Button(group_2, SWT.RADIO);
-		button_6.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, true, 1, 1));
-		button_6.setText("Preventivna");
+		btnRadPrev_ = new Button(group_2, SWT.RADIO);
+		btnRadPrev_.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, true, 1, 1));
+		btnRadPrev_.setText("Preventivna");
 
-		Button button_7 = new Button(group_2, SWT.RADIO);
-		button_7.setText("Detekcijska");
+		btnRadDet_ = new Button(group_2, SWT.RADIO);
+		btnRadDet_.setText("Detekcijska");
 
-		Button button_8 = new Button(group_2, SWT.RADIO);
-		button_8.setText("Reakcijska");
+		btnRadReak_ = new Button(group_2, SWT.RADIO);
+		btnRadReak_.setText("Reakcijska");
 
 		Composite composite2 = new Composite(mParent, SWT.NONE);
 		composite2.setLayout(new GridLayout(6, false));
@@ -155,26 +171,26 @@ public class Controls {
 		lblOcjDjelot_.setText("Ocjena Djelotvornosti:");
 		lblOcjDjelot_.setBounds(0, 0, 32, 15);
 
-		Combo comboOcjDjelot_ = new Combo(composite2, SWT.NONE);
+		comboOcjDjelot_ = new Combo(composite2, SWT.READ_ONLY);
 		comboOcjDjelot_.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true,
 				false, 1, 1));
-		comboOcjDjelot_.setItems(getComboItemsFromDB("as_control_effectiveness"));
+
 
 		Label lblOdgOsoba_ = new Label(composite2, SWT.NONE);
 		lblOdgOsoba_.setText("Odgovorna Osoba:");
 
-		Combo comboOdgOsoba_ = new Combo(composite2, SWT.NONE);
+		comboOdgOsoba_ = new Combo(composite2, SWT.NONE);
 		comboOdgOsoba_.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true,
 				false, 1, 1));
-		comboOdgOsoba_.setItems(getComboItemsFromDB("as_owner"));
+
 
 		Label lblSukl_ = new Label(composite2, SWT.NONE);
 		lblSukl_.setText("Sukladnost:");
 
-		Combo comboSukl_ = new Combo(composite2, SWT.NONE);
+		comboSukl_ = new Combo(composite2, SWT.NONE);
 		comboSukl_.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true,
 				false, 1, 1));
-		comboSukl_.setItems(getComboItemsFromDB("as_control_compliance"));
+
 
 		Composite composite3 = new Composite(mParent, SWT.NONE);
 		composite3.setLayout(new GridLayout(1, false));
@@ -213,7 +229,7 @@ public class Controls {
 		compositeButtons_.setLayoutData(gd_compositeButtons_);
 		compositeButtons_.setLayout(new GridLayout(4, false));
 
-		Button btnSpremiIPripremi_ = new Button(compositeButtons_, SWT.NONE);
+		btnSpremiIPripremi_ = new Button(compositeButtons_, SWT.NONE);
 		btnSpremiIPripremi_.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
@@ -273,53 +289,124 @@ public class Controls {
 				mParent.getShell().close();
 			}
 		});
+
+		fillForm();
 		scrollBox.setContent(mParent);
 
 	}
 
-	public String[] getComboItemsFromDB(String tableName) {
-		DatabaseConnection con = new DatabaseConnection();
-		con.doConnection();
+	private void fillForm() {
+		// TODO Auto-generated method stub
 
-		try {
+		/**
+		 * Poèetno postavljanje controla
+		 *
+		 */
+		action=1;
+		initialSettings();
 
-			return con.getComboItems(tableName);
-
-		} catch (SQLException ex) {
-			System.out.println(ex.getMessage());
-			try {
-				con.connection.close();
-			} catch (SQLException e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
-			}
-
-		}
-		System.out.println("Connection : " + con.doConnection());
-		try {
-			con.connection.close();
-		} catch (SQLException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		}
-		return new String[] {};
 
 	}
+
+	private void initialSettings(){
+		comboOcjDjelot_.setItems(dB.getComboItemsFromDB("as_control_effectiveness"));
+		comboOdgOsoba_.setItems(dB.getComboItemsFromDB("as_owner"));
+		comboSukl_.setItems(dB.getComboItemsFromDB("as_control_compliance"));
+
+		textStaPrim_.setText("");
+		textSmjerPrim_.setText("");
+		textPrep_.setText("");
+		textOznaka_.setText("");
+		textOpis_.setText("");
+		textNaziv_.setText("");
+
+		btnRadAkt_.setSelection(false);
+		btnRadPlan_.setSelection(false);
+		btnRadNeAkt_.setSelection(false);
+
+		btnRadUprav_.setSelection(false);
+		btnRadLog_.setSelection(false);
+		btnRadFiz_.setSelection(false);
+
+		btnRadPrev_.setSelection(false);
+		btnRadDet_.setSelection(false);
+		btnRadReak_.setSelection(false);
+
+
+	}
+
+	public void saveAction(){
+//		if((textNaziv_.getText()!="" && textNaziv_.getText().length()>0 )
+//				&& (textOznaka_.getText()!="" && textOznaka_.getText().length()>0)
+//
+//
+//				){
+//			Hashtable<String, String> data = new Hashtable<String, String>();
+//
+//			String temp = comboVrsta_.getText();
+//			int t = temp.indexOf("-");
+//			data.put("vulnerabilitytype_id",comboVrsta_.getText().substring(0,t));
+//			data.put("name",textNaziv_.getText());
+//			if(!textOpis_.getText().equals("")){
+//				data.put("description",textOpis_.getText());
+//			}
+//			int radio = getRadioButtonSelection();
+//			switch (radio) {
+//			case 1:
+//				data.put("active", 1+"");
+//				break;
+//			case 2:
+//				data.put("active", 2+"");
+//				break;
+//			case 3:
+//				data.put("active", 3+"");
+//				break;
+//
+//			default:
+//				break;
+//			}
+//			if(!comboPosljedica_.getText().equals("")){
+//				temp = comboPosljedica_.getText();
+//				t = temp.indexOf("-");
+//				data.put("vulnerability_level", comboPosljedica_.getText().substring(0,t));
+//			}
+//
+//			if(textPrimjerPrijetnje_.getText().equals("")){
+//				data.put("example",textPrimjerPrijetnje_.getText());
+//			}
+//			System.out.println("Hashtable" + data);
+//			try {
+//
+//				if (action == 2) {
+//					dB.insertDataInDB("as_vulnerability", data, "update","Vulnerability", m_VulnerabilityId);
+//
+//				} else
+//					dB.insertDataInDB("as_vulnerability", data, "insert","Vulnerability", "");
+//
+//
+//			} catch (Exception e1) {
+//				e1.printStackTrace();
+//
+//			}
+			Notifier.notify(ResourceManager.getPluginImage("hr.ante.isms",
+					"src/icons/tick.png"),"Spremanje uspješno", "Podaci su spremljeni", NotifierTheme.GREEN_THEME);
+
+//			refreshTable();
+//			fillForm();
+//		}
+
+//		else
+//			Notifier.notify(ResourceManager.getPluginImage("hr.ante.isms",
+//					"src/icons/error.ico"),"Nemože se spremiti", "Niste unijeli sve potrebno podatke", NotifierTheme.RED_THEME);
+
+	}
+
+
 
 	@PreDestroy
 	public void dispose() throws Exception {
 		System.out.println("Closing application");
 	}
-
-	@Persist
-	  public void save() {
-	    System.out.println("Saving data");
-	    // Save the data
-	    // ...
-	    // Now set the dirty flag to false
-	    dirty.setDirty(false);
-	  }
-
 
 	@Focus
 	public void setFocus() {

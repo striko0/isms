@@ -2,13 +2,22 @@ package hr.ante.isms.parts;
 
 import hr.ante.isms.connection.DataFromDatabase;
 import hr.ante.isms.parts.table.ListThreatASKTableModel;
-import hr.ante.isms.parts.table.NewASKTable;
+import hr.ante.isms.parts.table.NewASKTable1;
 
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
+import java.util.HashMap;
 import java.util.Hashtable;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import javax.inject.Inject;
+
+import net.sf.jasperreports.engine.JRException;
+import net.sf.jasperreports.engine.JasperFillManager;
+import net.sf.jasperreports.engine.JasperPrint;
+import net.sf.jasperreports.view.JasperViewer;
 
 import org.eclipse.e4.ui.di.Focus;
 import org.eclipse.e4.ui.model.application.MApplication;
@@ -36,7 +45,7 @@ public class Threats implements ViewSelected {
 	private int action = 1;
 	private KTableSortedModel m_Model;
 	private String m_ThreatId;
-	private NewASKTable table;
+	private NewASKTable1 table;
 	private int m_Row;
 	private DataFromDatabase dB;
 
@@ -50,7 +59,7 @@ public class Threats implements ViewSelected {
 	private Combo comboNamjera_;
 	private Text textNaziv_;
 	private Text textOpis_;
-	private Text textMotivation;
+	private Text textMotivation_;
 	private Button btnNovo_;
 	private Button btnDupliciraj_;
 	private Button btnBrisi_;
@@ -82,7 +91,7 @@ public class Threats implements ViewSelected {
 		mParent = new Composite(scrollBox, SWT.NONE);
 
 		m_Model = DataFromServer.listThreatASKTableModel;
-		m_Row = NewASKTable.clickedThreatRow;
+		m_Row = NewASKTable1.clickedThreatRow;
 		dB = new DataFromDatabase();
 
 		mParent.getShell().setSize(760, 500);
@@ -130,11 +139,11 @@ public class Threats implements ViewSelected {
 		new Label(composite1, SWT.NONE);
 		new Label(composite1, SWT.NONE);
 
-		textMotivation = new Text(composite1, SWT.BORDER | SWT.WRAP
+		textMotivation_ = new Text(composite1, SWT.BORDER | SWT.WRAP
 				| SWT.V_SCROLL);
-		GridData gd_text = new GridData(SWT.FILL, SWT.FILL, true, true, 4, 2);
-		gd_text.heightHint = 44;
-		textMotivation.setLayoutData(gd_text);
+		GridData gd_textMotivation_ = new GridData(SWT.FILL, SWT.FILL, true, true, 4, 2);
+		gd_textMotivation_.heightHint = 44;
+		textMotivation_.setLayoutData(gd_textMotivation_);
 
 		Label lblVjerojatnost_ = new Label(composite1, SWT.NONE);
 		lblVjerojatnost_.setText("Vjerojatnost:");
@@ -198,7 +207,7 @@ public class Threats implements ViewSelected {
 		gd_compositeASKTable.heightHint = 72;
 		compositeASKTable.setLayoutData(gd_compositeASKTable);
 
-		table = new NewASKTable(this,compositeASKTable, new ListThreatASKTableModel(),
+		table = new NewASKTable1(this,compositeASKTable, new ListThreatASKTableModel(),
 				717, compositeASKTable.getBounds().height);
 
 //		new ASKTable(compositeASKTtable, new ThreatsASKTableModel(), 717,
@@ -225,7 +234,7 @@ public class Threats implements ViewSelected {
 			public void widgetSelected(SelectionEvent e) {
 				// TODO Auto-generated method stub
 				saveAction();
-				action=2;
+				action=1;
 			}
 		});
 		btnSpremi_.setText("Spremi");
@@ -311,6 +320,43 @@ public class Threats implements ViewSelected {
 		GridData gd_btnIspis_ = new GridData(SWT.LEFT, SWT.CENTER, false,
 				false, 1, 1);
 		gd_btnIspis_.widthHint = 100;
+		btnIspis_.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				HashMap hm = new HashMap();
+				try {
+
+					Connection connection = null;
+					String driverName = "com.microsoft.sqlserver.jdbc.SQLServerDriver";
+					String url = "jdbc:sqlserver://192.168.0.76"/* 192.168.0.70 */;
+					String username = "sa"; // You should modify this.
+					String password = "sa"; // You should modify this.
+					// Load the JDBC driver
+					try {
+						Class.forName(driverName);
+					} catch (ClassNotFoundException e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+					}
+					// Create a connection to the database
+					try {
+						connection = DriverManager.getConnection(url, username,
+								password);
+					} catch (SQLException e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+					}
+
+					JasperPrint print = JasperFillManager.fillReport("C:/Documents and Settings/Zrosko/git/isms/hr.ante.isms/src/reports/prijetnje.jasper", hm, /*new JREmptyDataSource()*/connection);
+
+					JasperViewer.viewReport(print,false);
+
+				} catch (JRException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+			}
+		});
 		btnIspis_.setLayoutData(gd_btnIspis_);
 
 		fillForm();
@@ -331,6 +377,14 @@ public class Threats implements ViewSelected {
 		 *
 		 */
 		action=1;
+		initialSettings();
+		table.m_Selection.clear();
+
+	}
+
+	private void initialSettings(){
+
+
 		comboVrsta_.setItems(dB.getComboItemsFromDB("as_threat_type"));
 		comboVjerojatnost_.setItems(dB.getComboItemsFromDB("as_probability"));
 		comboPorijeklo_.setItems(dB.getComboItemsFromDB("as_threat_origin"));
@@ -339,7 +393,12 @@ public class Threats implements ViewSelected {
 		comboIzvor_.setItems(dB.getComboItemsFromDB("as_threat_source"));
 		comboNamjera_.setItems(dB.getComboItemsFromDB("as_threat_intention"));
 
+		btnBrisi_.setEnabled(false);
+		btnDupliciraj_.setEnabled(false);
+		btnNovo_.setEnabled(false);
+
 		textNaziv_.setText("");
+		textMotivation_.setText("");
 		comboVrsta_.setText("");
 		textOpis_.setText("");
 		comboVjerojatnost_.setText("");
@@ -348,15 +407,15 @@ public class Threats implements ViewSelected {
 		comboRazorMoc_.setText("");
 		comboIzvor_.setText("");
 		comboNamjera_.setText("");
-
-		table.m_Selection.clear();
-
 	}
 
 	@Override
 	public void rowSelected(int row) {
 		// TODO Auto-generated method stub
 		if (row!=0 && !table.getModel().getContentAt(1, row).toString().equals("")) {
+			if(action==2){
+				initialSettings();
+			}
 			action=2;
 			btnBrisi_.setEnabled(true);
 			btnDupliciraj_.setEnabled(true);
@@ -376,7 +435,7 @@ public class Threats implements ViewSelected {
 
 			String motivation = table.getModel().getContentAt(8, row).toString();
 //			if(motivation!="")
-			textMotivation.setText(motivation);
+			textMotivation_.setText(motivation);
 //			else
 //				textMotivation.setText(" ");
 
@@ -492,27 +551,27 @@ public class Threats implements ViewSelected {
 //			else{
 //				data.put("motivation",textMotivation.getText());
 //			}
-			if(!textMotivation.getText().equals("")){
-				data.put("motivation",textMotivation.getText());
+			if(!textMotivation_.getText().equals("")){
+				data.put("motivation",textMotivation_.getText());
 			}
-			else
-				data.put("motivation","");
+//			else
+//				data.put("motivation","");
 
 			if(!comboRazorMoc_.getText().equals("")){
 				temp = comboRazorMoc_.getText();
 				t = temp.indexOf("-");
 				data.put("impact_level",comboRazorMoc_.getText().substring(0,t));
 			}
-			else
-				data.put("impact_level","");
+//			else
+//				data.put("impact_level","");
 
 			if(!comboUcestalost_.getText().equals("")){
 				temp = comboUcestalost_.getText();
 				t = temp.indexOf("-");
 				data.put("frequency",comboUcestalost_.getText().substring(0,t));
 			}
-			else
-				data.put("frequency","");
+//			else
+//				data.put("frequency","");
 
 
 			if(!comboVjerojatnost_.getText().equals("")){
@@ -520,24 +579,8 @@ public class Threats implements ViewSelected {
 				t = temp.indexOf("-");
 				data.put("probability",comboVjerojatnost_.getText().substring(0,t));
 			}
-			else
-				data.put("probability","");
-
-//			int radio = getRadioButtonSelection();
-//			switch (radio) {
-//			case 1:
-//				data.put("active", 1+"");
-//				break;
-//			case 2:
-//				data.put("active", 2+"");
-//				break;
-//			case 3:
-//				data.put("active", 3+"");
-//				break;
-//
-//			default:
-//				break;
-//			}
+//			else
+//				data.put("probability","");
 
 			System.out.println("Hashtable" + data);
 			try {
@@ -556,13 +599,15 @@ public class Threats implements ViewSelected {
 			Notifier.notify(ResourceManager.getPluginImage("hr.ante.isms",
 					"src/icons/tick.png"),"Spremanje uspješno", "Podaci su spremljeni", NotifierTheme.GREEN_THEME);
 
+			refreshTable();
+			fillForm();
+
 		}
 
 		else
 			Notifier.notify(ResourceManager.getPluginImage("hr.ante.isms",
 					"src/icons/error.ico"),"Nemože se spremiti", "Niste unijeli sve potrebno podatke", NotifierTheme.RED_THEME);
-		refreshTable();
-		fillForm();
+
 	}
 
 	@PreDestroy

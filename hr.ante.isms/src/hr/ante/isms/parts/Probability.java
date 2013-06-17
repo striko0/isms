@@ -3,7 +3,7 @@ package hr.ante.isms.parts;
 import hr.ante.isms.connection.DatabaseConnection;
 import hr.ante.isms.parts.table.ListAssetASKTableModel;
 import hr.ante.isms.parts.table.ListRiskASKTableModel;
-import hr.ante.isms.parts.table.NewASKTable;
+import hr.ante.isms.parts.table.NewASKTable1;
 
 import java.sql.SQLException;
 import java.util.Hashtable;
@@ -38,8 +38,8 @@ public class Probability implements ViewSelected {
 	private int action=1;
 	private KTableSortedModel m_Model;
 	private KTableSortedModel m_ModelRisk;
-	private NewASKTable m_Table;
-	private NewASKTable table;
+	private NewASKTable1 m_Table;
+	private NewASKTable1 table;
 	private String m_Riskid;
 	private int m_Row;
 	private String threatId;
@@ -70,7 +70,7 @@ public class Probability implements ViewSelected {
 
 		m_ModelRisk = DataFromServer.listRiskASKTableModel;
 		m_Model = DataFromServer.listAssetASKTableModel;
-		m_Row = NewASKTable.clickedAssetRow;
+		m_Row = NewASKTable1.clickedAssetRow;
 
 
 		assetName = getDesiredColumnFromDB("as_asset", "name", "WHERE asset_id='"+m_Model.getContentAt(1, m_Row)+"'");
@@ -153,7 +153,7 @@ public class Probability implements ViewSelected {
 		gd_compositeASKTable.horizontalIndent = 10;
 		compositeASKTable.setLayoutData(gd_compositeASKTable);
 
-		table = new NewASKTable(this, compositeASKTable, new ListRiskASKTableModel(3, 4, m_Model.getContentAt(1,m_Row).toString()), 717, 200);
+		table = new NewASKTable1(this, compositeASKTable, new ListRiskASKTableModel(3, 4, m_Model.getContentAt(1,m_Row).toString()), 717, 200);
 //		new ASKTable(compositeASKTable, new ProbabilityASKTableModel(), 717,compositeASKTable.getBounds().height );
 				new Label(mParent, SWT.NONE);
 
@@ -176,7 +176,7 @@ public class Probability implements ViewSelected {
 			public void widgetSelected(SelectionEvent e) {
 				// TODO Auto-generated method stub
 				saveAction();
-				action=2;
+				action=1;
 			}
 		});
 		btnSpremi_.setText("Spremi");
@@ -242,11 +242,20 @@ public class Probability implements ViewSelected {
 		 *
 		 */
 		action=1;
+		initialSettings();
+		table.m_Selection.clear();
+
+	}
+
+	private void initialSettings(){
+
+		btnBrisi_.setEnabled(false);
 		comboPrijet_.setItems(getThreatVulnerabilityItemsFromDB("as_threat",""));
 		comboRanjivost_.setItems(getThreatVulnerabilityItemsFromDB("as_vulnerability",""));
 
 		comboVjerojatnost_.setItems(getComboItemsFromDB("as_probability"));
 		comboVjerojatnostOtkrivanja_.setItems(getComboItemsFromDB("as_detection_probability"));
+
 
 		textOpisVjerojat_.setText("");
 		textVjerojatnostOtkrivanja_.setText("");
@@ -255,18 +264,15 @@ public class Probability implements ViewSelected {
 		comboVjerojatnost_.setText("");
 		comboVjerojatnostOtkrivanja_.setText("");
 
-		table.m_Selection.clear();
-
 	}
 
 	@Override
 	public void rowSelected(int row) {
 		// TODO Auto-generated method stub
-		fillForm();
 		if (row!=0 && table.getModel().getContentAt(1, row).toString()!=""/*!table.getModel().getContentAt(1, row).toString().equals("")*/) {
+			initialSettings();
 			action=2;
 			btnBrisi_.setEnabled(true);
-
 			m_Riskid=table.getModel().getContentAt(7, row).toString();
 
 			String vulnerabilityId = table.getModel().getContentAt(5, row).toString();
@@ -311,7 +317,7 @@ public class Probability implements ViewSelected {
 					String opisVjerojatnostOtkr = getDesiredColumnFromDB(
 							"view_risk", "description_detection_probability",
 							"WHERE risk_id=" + m_Riskid + "");
-					if(opisVjerojatnostOtkr!=null)
+					if(opisVjerojatnostOtkr!="")
 						textVjerojatnostOtkrivanja_.setText(opisVjerojatnostOtkr);
 					else
 						textVjerojatnostOtkrivanja_.setText("");
@@ -399,14 +405,15 @@ public class Probability implements ViewSelected {
 			Notifier.notify(ResourceManager.getPluginImage("hr.ante.isms",
 					"src/icons/tick.png"),"Spremanje uspješno", "Podaci su spremljeni", NotifierTheme.GREEN_THEME);
 
+			fillForm();
+			refreshTable();
 		}
 
 		else
 			Notifier.notify(ResourceManager.getPluginImage("hr.ante.isms",
 					"src/icons/error.ico"),"Nemože se spremiti", "Niste unijeli sve potrebno podatke", NotifierTheme.RED_THEME);
 
-		refreshTable();
-		fillForm();
+
 	}
 
 	public String[] getComboItemsFromDB(String tableName) {

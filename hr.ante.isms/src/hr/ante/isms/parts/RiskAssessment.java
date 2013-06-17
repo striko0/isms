@@ -3,7 +3,7 @@ package hr.ante.isms.parts;
 import hr.ante.isms.connection.DataFromDatabase;
 import hr.ante.isms.parts.table.ListAssetASKTableModel;
 import hr.ante.isms.parts.table.ListRiskASKTableModel;
-import hr.ante.isms.parts.table.NewASKTable;
+import hr.ante.isms.parts.table.NewASKTable1;
 
 import java.util.Hashtable;
 
@@ -35,6 +35,7 @@ public class RiskAssessment {
 	private int action = 1;
 	private KTableSortedModel m_Model;
 	private KTableSortedModel m_ModelAsset;
+	private NewASKTable1 m_Table;
 	private String m_RiskId;
 	private int m_Row;
 	private int m_AssetRow;
@@ -77,10 +78,11 @@ public class RiskAssessment {
 		mParent = new Composite(scrollBox, SWT.NONE);
 		mParent.getShell().setSize(760, 600);
 
+		m_Table = NewASKTable1.m_TableRisk;
 		m_Model = DataFromServer.listRiskASKTableModel;
 		m_ModelAsset = DataFromServer.listAssetASKTableModel;
-		m_AssetRow = NewASKTable.clickedAssetRow;
-		m_Row = NewASKTable.clickedRiskRow;
+		m_AssetRow = NewASKTable1.clickedAssetRow;
+		m_Row = NewASKTable1.clickedRiskRow;
 		dB = new DataFromDatabase();
 
 		riskName = dB.getDesiredColumnFromDB("view_risk", "name",
@@ -304,9 +306,9 @@ public class RiskAssessment {
 				false, 2, 1);
 		gd_compositeButtons_.heightHint = 42;
 		gd_compositeButtons_.horizontalIndent = 10;
-		gd_compositeButtons_.widthHint = 320;
+		gd_compositeButtons_.widthHint = 230;
 		compositeButtons_.setLayoutData(gd_compositeButtons_);
-		compositeButtons_.setLayout(new GridLayout(3, false));
+		compositeButtons_.setLayout(new GridLayout(2, false));
 
 		Button btnSpremi_ = new Button(compositeButtons_, SWT.NONE);
 		GridData gd_btnSpremi_ = new GridData(SWT.LEFT, SWT.CENTER, false,
@@ -339,13 +341,6 @@ public class RiskAssessment {
 		});
 		btnIzlaz_.setText("Izlaz");
 
-		Button btnIspis_ = new Button(compositeButtons_, SWT.NONE);
-		GridData gd_btnIspis_ = new GridData(SWT.LEFT, SWT.CENTER, false,
-				false, 1, 1);
-		gd_btnIspis_.widthHint = 100;
-		btnIspis_.setLayoutData(gd_btnIspis_);
-		btnIspis_.setText("Ispis");
-
 
 		fillForm();
 		scrollBox.setContent(mParent);
@@ -354,6 +349,7 @@ public class RiskAssessment {
 	public void refreshTable(){
 		((ListRiskASKTableModel)m_Model).readAllFromDB();
 		((ListAssetASKTableModel) m_ModelAsset).readAllFromDB();
+		m_Table.redraw();
 
 	}
 
@@ -522,13 +518,13 @@ public class RiskAssessment {
 			}
 			Notifier.notify(ResourceManager.getPluginImage("hr.ante.isms",
 					"src/icons/tick.png"),"Spremanje uspješno", "Podaci su spremljeni", NotifierTheme.GREEN_THEME);
-
+			refreshTable();
 		}
 
 		else
 			Notifier.notify(ResourceManager.getPluginImage("hr.ante.isms",
 					"src/icons/error.ico"),"Nemože se spremiti", "Niste unijeli sve potrebno podatke", NotifierTheme.RED_THEME);
-		refreshTable();
+
 	}
 
 

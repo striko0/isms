@@ -4,7 +4,7 @@ import hr.ante.isms.connection.DataFromDatabase;
 import hr.ante.isms.parts.table.ListAssetASKTableModel;
 import hr.ante.isms.parts.table.ListRiskASKTableModel;
 import hr.ante.isms.parts.table.ListControlRiskASKTableModel;
-import hr.ante.isms.parts.table.NewASKTable;
+import hr.ante.isms.parts.table.NewASKTable1;
 
 import java.util.Hashtable;
 
@@ -51,7 +51,7 @@ public class SuggestMeasures implements ViewSelected {
 	private int m_Row;
 	private String assetName;
 	private String riskName;
-	private NewASKTable table;
+	private NewASKTable1 table;
 	private DataFromDatabase dB;
 
 	private Combo comboKontrola_ ;
@@ -80,7 +80,7 @@ public class SuggestMeasures implements ViewSelected {
 
 		m_RiskModel = DataFromServer.listRiskASKTableModel;
 		m_Model = DataFromServer.listControlRiskASKTableModel;
-		m_Row = NewASKTable.clickedRiskRow;
+		m_Row = NewASKTable1.clickedRiskRow;
 		dB = new DataFromDatabase();
 
 		m_RiskId = m_RiskModel.getContentAt(1, m_Row).toString();
@@ -125,7 +125,7 @@ public class SuggestMeasures implements ViewSelected {
 		gd_compositeASKTtable.heightHint = 107;
 		compositeASKTtable.setLayoutData(gd_compositeASKTtable);
 
-		table = new NewASKTable(this, compositeASKTtable, new ListControlRiskASKTableModel(m_RiskId), 717, 200);
+		table = new NewASKTable1(this, compositeASKTtable, new ListControlRiskASKTableModel(m_RiskId), 717, 200);
 //		new ASKTable(compositeASKTtable, new ControlsAnalysisASKTableModel(), 717,compositeASKTtable.getBounds().height );
 
 		Composite compositeButtons_ = new Composite(mParent, SWT.NONE);
@@ -148,7 +148,7 @@ public class SuggestMeasures implements ViewSelected {
 			public void widgetSelected(SelectionEvent e) {
 				// TODO Auto-generated method stub
 				saveAction();
-				action=2;
+				action=1;
 			}
 		});
 		btnSpremi_.setText("Spremi");
@@ -248,12 +248,20 @@ public class SuggestMeasures implements ViewSelected {
 		 *
 		 */
 		action=1;
+		initialSettings();
+		table.m_Selection.clear();
+
+
+	}
+
+	private void initialSettings()
+	{
+
+		btnBrisi_.setEnabled(false);
+		btnNovo_.setEnabled(false);
 		comboKontrola_.setItems(dB.getControlItemsFromDB("as_control", ""));
 		textPrimjena_.setText("");
 		comboKontrola_.setText("");
-
-		table.m_Selection.clear();
-
 
 	}
 
@@ -320,14 +328,14 @@ public class SuggestMeasures implements ViewSelected {
 			}
 			Notifier.notify(ResourceManager.getPluginImage("hr.ante.isms",
 					"src/icons/tick.png"),"Spremanje uspješno", "Podaci su spremljeni", NotifierTheme.GREEN_THEME);
-
+			refreshTable();
+			fillForm();
 		}
 
 		else
 			Notifier.notify(ResourceManager.getPluginImage("hr.ante.isms",
 					"src/icons/error.ico"),"Nemože se spremiti", "Niste unijeli sve potrebno podatke", NotifierTheme.RED_THEME);
-		refreshTable();
-		fillForm();
+
 	}
 
 

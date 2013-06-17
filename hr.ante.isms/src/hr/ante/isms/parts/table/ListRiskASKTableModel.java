@@ -134,7 +134,7 @@ public class ListRiskASKTableModel extends KTableSortedModel {
 			if (m_Vrsta == 5) {
 				content = dB.getContentFromDB("view_risk", "ImpactAnalysis",
 						m_assetid);
-				if (content.size() == 4) {
+				if (content.size() == 5) {
 					Notifier.notify("Odreðivanje vjerojatnosti",
 							"Nema podataka za odreðivanje vjerojatnosti",
 							NotifierTheme.RED_THEME);

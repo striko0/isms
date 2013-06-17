@@ -33,11 +33,7 @@ public class ControlsAdvanced {
 	private Composite mParent;
 	 @Inject
 	  MDirtyable dirty;
-	 private Text textHard_;
-	 private Text textSoft_;
-	 private Text textServis_;
-	 private Text textLjudi_;
-	 private Text textEduk_;
+	 private Text textCijenaProvedbe_;
 	 private Text textOpisProvedbe_;
 
 
@@ -66,7 +62,7 @@ public class ControlsAdvanced {
 		mParent.setLayout(new GridLayout(2, false));
 
 		Composite composite1 = new Composite(mParent, SWT.NONE);
-		composite1.setLayout(new GridLayout(2, false));
+		composite1.setLayout(new GridLayout(1, false));
 		composite1.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true,
 				2, 1));
 
@@ -76,115 +72,37 @@ public class ControlsAdvanced {
 		gd_grpProvedba_.widthHint = 396;
 		grpProvedba_.setLayoutData(gd_grpProvedba_);
 		grpProvedba_.setText("Provedba");
-		grpProvedba_.setLayout(new GridLayout(2, false));
+		grpProvedba_.setLayout(new GridLayout(4, false));
 
-		Label label = new Label(grpProvedba_, SWT.NONE);
-		label.setText("Datum Provedbe:");
+				Label label = new Label(grpProvedba_, SWT.NONE);
+				label.setText("Datum Provedbe:");
 
-		DateTime dateTimeRokProv_ = new DateTime(grpProvedba_, SWT.BORDER
-				| SWT.DROP_DOWN);
+				DateTime dateTimeRokProv_ = new DateTime(grpProvedba_, SWT.BORDER
+						| SWT.DROP_DOWN);
+				new Label(grpProvedba_, SWT.NONE);
+						new Label(grpProvedba_, SWT.NONE);
 
-		Label lblOpisProv_ = new Label(grpProvedba_, SWT.NONE);
-		lblOpisProv_.setText("Opis Provedbe:");
+						Label lblHard_ = new Label(grpProvedba_, SWT.NONE);
+						lblHard_.setText("Cijena provedbe:");
+
+						textCijenaProvedbe_ = new Text(grpProvedba_, SWT.BORDER);
+						GridData gd_textCijenaProvedbe_ = new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1);
+						gd_textCijenaProvedbe_.widthHint = 111;
+						textCijenaProvedbe_.setLayoutData(gd_textCijenaProvedbe_);
+				new Label(grpProvedba_, SWT.NONE);
+				new Label(grpProvedba_, SWT.NONE);
+
+				Label lblOpisProv_ = new Label(grpProvedba_, SWT.NONE);
+				lblOpisProv_.setText("Opis Provedbe:");
+		new Label(grpProvedba_, SWT.NONE);
+		new Label(grpProvedba_, SWT.NONE);
 		new Label(grpProvedba_, SWT.NONE);
 
-		textOpisProvedbe_ = new Text(grpProvedba_, SWT.BORDER | SWT.WRAP | SWT.V_SCROLL);
-		GridData gd_text = new GridData(SWT.FILL, SWT.FILL, true, true, 2, 1);
-		gd_text.minimumHeight = 50;
-		textOpisProvedbe_.setLayoutData(gd_text);
-
-		Group grpCijenaProvedbe_ = new Group(composite1, SWT.NONE);
-		grpCijenaProvedbe_.setLayoutData(new GridData(SWT.FILL, SWT.FILL,
-				true, true, 1, 1));
-		grpCijenaProvedbe_.setText("Cijena Provedbe");
-		grpCijenaProvedbe_.setLayout(new GridLayout(2, false));
-
-		Label lblHard_ = new Label(grpCijenaProvedbe_, SWT.NONE);
-		lblHard_.setText("Hardver:");
-
-		textHard_ = new Text(grpCijenaProvedbe_, SWT.BORDER);
-		textHard_.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1,
-				1));
-
-		Label lblSoft_ = new Label(grpCijenaProvedbe_, SWT.NONE);
-		lblSoft_.setText("Softver:");
-
-		textSoft_ = new Text(grpCijenaProvedbe_, SWT.BORDER);
-		textSoft_.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1,
-				1));
-
-		Label lblServis_ = new Label(grpCijenaProvedbe_, SWT.NONE);
-		lblServis_.setText("Servis:");
-
-		textServis_ = new Text(grpCijenaProvedbe_, SWT.BORDER);
-		textServis_.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1,
-				1));
-
-		Label lblLjudi_ = new Label(grpCijenaProvedbe_, SWT.NONE);
-		lblLjudi_.setText("Ljudi");
-
-		textLjudi_ = new Text(grpCijenaProvedbe_, SWT.BORDER);
-		textLjudi_.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1,
-				1));
-
-		Label lblEduk_ = new Label(grpCijenaProvedbe_, SWT.NONE);
-		lblEduk_.setText("Edukacija:");
-
-		textEduk_ = new Text(grpCijenaProvedbe_, SWT.BORDER);
-		textEduk_.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1,
-				1));
-		new Label(composite1, SWT.NONE);
-
-		Composite composite2 = new Composite(mParent, SWT.NONE);
-		composite2.setLayout(new GridLayout(1, false));
-		GridData gd_composite2 = new GridData(SWT.FILL, SWT.FILL, true,
-				true, 2, 1);
-		gd_composite2.heightHint = 114;
-		gd_composite2.widthHint = 560;
-		composite2.setLayoutData(gd_composite2);
-
-		Label lblTest_ = new Label(composite2, SWT.NONE);
-		lblTest_.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
-		lblTest_.setText("Testiranje:");
-
-		StyledText styleTxtTest_ = new StyledText(composite2, SWT.BORDER);
-		GridData gd_styleTxtTest_ = new GridData(SWT.FILL, SWT.FILL, true, true,
-				1, 1);
-		gd_styleTxtTest_.heightHint = 73;
-		gd_styleTxtTest_.widthHint = 567;
-		styleTxtTest_.setLayoutData(gd_styleTxtTest_);
-
-		Group grpRazinaRiz_ = new Group(mParent, SWT.NONE);
-		grpRazinaRiz_.setText("Razina Rizika");
-		grpRazinaRiz_.setLayout(new GridLayout(4, false));
-
-		Button btnRadNemRiz_ = new Button(grpRazinaRiz_, SWT.RADIO);
-		btnRadNemRiz_.setText("Nema rizika");
-
-		Button btnRadNizak_ = new Button(grpRazinaRiz_, SWT.RADIO);
-		btnRadNizak_.setText("Nizak");
-
-		Button btnRadSred_ = new Button(grpRazinaRiz_, SWT.RADIO);
-		btnRadSred_.setText("Srednji");
-
-		Button btnRadVisok_ = new Button(grpRazinaRiz_, SWT.RADIO);
-		btnRadVisok_.setText("Visok");
-		new Label(mParent, SWT.NONE);
-
-		Composite composite3 = new Composite(mParent, SWT.NONE);
-		composite3.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
-		composite3.setLayout(new GridLayout(1, false));
-
-		Label lblRizici = new Label(composite3, SWT.NONE);
-		lblRizici.setText("Rizici:");
-
-		StyledText styleTxtRizici_ = new StyledText(composite3, SWT.BORDER);
-		GridData gd_styleTxtRizici_ = new GridData(SWT.FILL, SWT.FILL, true, true,
-				1, 1);
-		gd_styleTxtRizici_.widthHint = 567;
-		gd_styleTxtRizici_.heightHint = 73;
-		styleTxtRizici_.setLayoutData(gd_styleTxtRizici_);
-		new Label(mParent, SWT.NONE);
+				textOpisProvedbe_ = new Text(grpProvedba_, SWT.BORDER | SWT.WRAP | SWT.V_SCROLL);
+				GridData gd_text = new GridData(SWT.FILL, SWT.FILL, true, true, 4, 1);
+				gd_text.heightHint = 37;
+				gd_text.minimumHeight = 50;
+				textOpisProvedbe_.setLayoutData(gd_text);
 		new Label(mParent, SWT.NONE);
 		new Label(mParent, SWT.NONE);
 
@@ -196,17 +114,17 @@ public class ControlsAdvanced {
 		compositeButtons_.setLayoutData(gd_compositeButtons_);
 		compositeButtons_.setLayout(new GridLayout(2, false));
 
-		Button btnPrihvati_ = new Button(compositeButtons_, SWT.NONE);
-		btnPrihvati_.addSelectionListener(new SelectionAdapter() {
+		Button btnSpremi_ = new Button(compositeButtons_, SWT.NONE);
+		btnSpremi_.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
 			}
 		});
-		GridData gd_btnPrihvati_ = new GridData(SWT.LEFT, SWT.CENTER, false, false,
+		GridData gd_btnSpremi_ = new GridData(SWT.LEFT, SWT.CENTER, false, false,
 				1, 1);
-		gd_btnPrihvati_.widthHint = 100;
-		btnPrihvati_.setLayoutData(gd_btnPrihvati_);
-		btnPrihvati_.setText("Nastavak");
+		gd_btnSpremi_.widthHint = 100;
+		btnSpremi_.setLayoutData(gd_btnSpremi_);
+		btnSpremi_.setText("Spremi");
 
 		Button btnIzlaz_ = new Button(compositeButtons_, SWT.NONE);
 		GridData gd_btnIzlaz_ = new GridData(SWT.LEFT, SWT.CENTER, false,

@@ -537,24 +537,37 @@ public class DatabaseConnection {
        }
 
         if(tableName == "view_control" && tableModel== "ListControlASKTableModel"){
+
         	rowCount=1;
             //content.put(1 + "/" + 0, /*rsmd.getColumnLabel(2).toLowerCase()*/"ID");
-            content.put(1 + "/" + 0, "Oznaka Kontrole");
-            content.put(2 + "/" + 0, "Naziv Kontrole");
-            content.put(3 + "/" + 0, "Status Kontrole");
+            content.put(1 + "/" + 0, "ID");
+            content.put(2 + "/" + 0, "Vrsta");
+            content.put(3 + "/" + 0, "Tip");
+            content.put(4 + "/" + 0, "Naziv");
+            content.put(3 + "/" + 0, "Oznaka");
+            content.put(3 + "/" + 0, "Status");
+            content.put(3 + "/" + 0, "Odgovorna osoba");
+            content.put(3 + "/" + 0, "Cijena");
             content.put("@@brojac", rowCount+"");
             while (rs.next()) {
 
-            	if ((rs.getString(2) != null && rs.getString(2).length() > 0 ))	{
+            	if ((rs.getString(2) != null && rs.getString(2).length() > 0 )
+            			&& (rs.getString(18) != null && rs.getString(18).length() > 0 )
+            			&& (rs.getString(10) != null && rs.getString(10).length() > 0 )
+            			)	{
 
 
-					content.put(1 + "/" + rowCount, rs.getString(10));
-					content.put(2 + "/" + rowCount, rs.getString(2));
-					content.put(3 + "/" + rowCount, rs.getString(19));
-					// ID
-					content.put(4 + "/" + rowCount, rs.getInt(1) + "");
+					content.put(1 + "/" + rowCount, rs.getInt(1)+"");
+					content.put(2 + "/" + rowCount, rs.getInt(4)+"");
+					content.put(3 + "/" + rowCount, rs.getInt(3)+"");
+					content.put(4 + "/" + rowCount, rs.getString(2));
+					content.put(5 + "/" + rowCount, rs.getString(10));
+					content.put(6 + "/" + rowCount, rs.getInt(8)+"");
+					content.put(7 + "/" + rowCount, rs.getInt(11)+"");
+					//Cijena
+					content.put(8 + "/" + rowCount, rs.getDouble(20)+"");
 					// Description
-					content.put(5 + "/" + rowCount, rs.getString(6));
+					content.put(9 + "/" + rowCount, rs.getString(6));
 
 
 
@@ -919,13 +932,13 @@ public class DatabaseConnection {
         int counter=1;
         stmt.setObject(counter++, data.get("assettype_id"));
         stmt.setObject(counter++, data.get("name"));
-        stmt.setObject(counter++, data.get("category").substring(0,4));
-        stmt.setObject(counter++, data.get("owner").substring(0,4));
+        stmt.setObject(counter++, data.get("category"));
+        stmt.setObject(counter++, data.get("owner"));
         stmt.setObject(counter++, data.get("description"));
-        stmt.setObject(counter++, data.get("confidentiality_level").substring(0,1));
-        stmt.setObject(counter++, data.get("integrity_level").substring(0,1));
-        stmt.setObject(counter++, data.get("accessibility_level").substring(0,1));
-        stmt.setObject(counter++, data.get("businessimpact_level").substring(0,1));
+        stmt.setObject(counter++, data.get("confidentiality_level"));
+        stmt.setObject(counter++, data.get("integrity_level"));
+        stmt.setObject(counter++, data.get("accessibility_level"));
+        stmt.setObject(counter++, data.get("businessimpact_level"));
         stmt.setObject(counter++, data.get("bi_description"));
         int rs = stmt.executeUpdate();
         if (rs!=1){
@@ -948,15 +961,15 @@ public class DatabaseConnection {
         String query = "UPDATE ASISMS.dbo."+tableName+" SET assettype_id=?, name=?, category=?, owner=?, description=?, confidentiality_level=?, integrity_level=?, accessibility_level=?, businessimpact_level=?,bi_description=? WHERE asset_id=?";
         stmt = connection.prepareStatement(query);
         int counter=1;
-        stmt.setObject(counter++, data.get("assettype_id").substring(0,2));
+        stmt.setObject(counter++, data.get("assettype_id"));
         stmt.setObject(counter++, data.get("name"));
-        stmt.setObject(counter++, data.get("category").substring(0,4));
-        stmt.setObject(counter++, data.get("owner").substring(0,5));
+        stmt.setObject(counter++, data.get("category"));
+        stmt.setObject(counter++, data.get("owner"));
         stmt.setObject(counter++, data.get("description"));
-        stmt.setObject(counter++, data.get("confidentiality_level").substring(0,1));
-        stmt.setObject(counter++, data.get("integrity_level").substring(0,1));
-        stmt.setObject(counter++, data.get("accessibility_level").substring(0,1));
-        stmt.setObject(counter++, data.get("businessimpact_level").substring(0,1));
+        stmt.setObject(counter++, data.get("confidentiality_level"));
+        stmt.setObject(counter++, data.get("integrity_level"));
+        stmt.setObject(counter++, data.get("accessibility_level"));
+        stmt.setObject(counter++, data.get("businessimpact_level"));
         stmt.setObject(counter++, data.get("bi_description"));
         stmt.setObject(counter++, id);
         int rs = stmt.executeUpdate();

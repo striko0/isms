@@ -156,7 +156,7 @@ public class ASKTable {
 		});
 
 
-		new ASKTableContextMenu(m_Table,(KTableSortedModel)m_Table.getModel());
+		new ASKTableContextMenu1(m_Table,(KTableSortedModel)m_Table.getModel());
 		m_Table.addCellSelectionListener(new KTableCellSelectionListener() {
 
 			@Override

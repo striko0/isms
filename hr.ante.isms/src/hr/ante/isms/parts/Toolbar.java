@@ -1,8 +1,11 @@
 package hr.ante.isms.parts;
 
 import hr.ante.isms.parts.table.ListRiskASKTableModel;
-import hr.ante.isms.parts.table.NewASKTable;
+import hr.ante.isms.parts.table.NewASKTable1;
 
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
 import java.util.HashMap;
 
 import javax.annotation.PostConstruct;
@@ -11,8 +14,10 @@ import javax.inject.Inject;
 
 import net.sf.jasperreports.engine.JREmptyDataSource;
 import net.sf.jasperreports.engine.JRException;
+import net.sf.jasperreports.engine.JasperCompileManager;
 import net.sf.jasperreports.engine.JasperFillManager;
 import net.sf.jasperreports.engine.JasperPrint;
+import net.sf.jasperreports.engine.JasperReport;
 import net.sf.jasperreports.view.JasperViewer;
 
 import org.eclipse.e4.core.contexts.IEclipseContext;
@@ -45,7 +50,7 @@ import de.kupzog.ktable.KTableSortedModel;
 public class Toolbar {
 
 	private KTableSortedModel m_Model;
-	private NewASKTable m_Table;
+	private NewASKTable1 m_Table;
 	public ToolItem tltmIdentifikacijaRanjivosti;
 	private int m_Row;
 	private Composite m_Parent;
@@ -84,7 +89,7 @@ public class Toolbar {
 		expandBar.setBounds(0, 0, 165, 177);
 		expandBar.setSpacing(8);
 
-		m_Table = NewASKTable.m_Table;
+		m_Table = NewASKTable1.m_Table;
 		m_Model = DataFromServer.listRiskASKTableModel;
 
 		final ExpandItem xpndtmPostavke = new ExpandItem(expandBar, SWT.NONE);
@@ -127,7 +132,7 @@ public class Toolbar {
 			System.out.println(e.getMessage());
 			System.exit(1);
 		}
-		tltmKontrole_.setText("Dodaj Kontrole");
+		tltmKontrole_.setText("Evidencija Kontrola");
 		xpndtmPostavke.setHeight(130);
 
 		ToolItem tltmDodajRanjivosti = new ToolItem(bar1, SWT.NONE);
@@ -145,7 +150,7 @@ public class Toolbar {
 				app.getChildren().add(window);
 			}
 		});
-		tltmDodajRanjivosti.setText("Dodaj Ranjivosti");
+		tltmDodajRanjivosti.setText("Evidencija Ranjivosti");
 		try {
 			tltmDodajRanjivosti.setImage(ResourceManager.getPluginImage(
 					"hr.ante.isms", "bin/icons/document2_add.png"));
@@ -178,7 +183,7 @@ public class Toolbar {
 			System.out.println(e.getMessage());
 			System.exit(1);
 		}
-		tltmDodajPrijetnje.setText("Dodaj Prijetnje");
+		tltmDodajPrijetnje.setText("Evidencija Prijetnji");
 
 		final ExpandItem xpndtmProcjenaRizika = new ExpandItem(expandBar,
 				SWT.NONE);
@@ -220,7 +225,7 @@ public class Toolbar {
 					public void widgetSelected(SelectionEvent e) {
 //						if(m_Row!=0 && !m_Table.m_Selection.isEmpty()){
 //
-						m_Row = NewASKTable.clickedAssetRow;
+						m_Row = NewASKTable1.clickedAssetRow;
 						if(m_Row!=0){
 						final MWindow window = MBasicFactory.INSTANCE
 								.createWindow();
@@ -251,7 +256,7 @@ public class Toolbar {
 				.addSelectionListener(new SelectionAdapter() {
 					@Override
 					public void widgetSelected(SelectionEvent e) {
-						m_Row = NewASKTable.clickedAssetRow;
+						m_Row = NewASKTable1.clickedAssetRow;
 						if(m_Row!=0){
 						final MWindow window = MBasicFactory.INSTANCE
 								.createWindow();
@@ -300,7 +305,7 @@ public class Toolbar {
 					@Override
 					public void widgetSelected(SelectionEvent e) {
 						// System.out.println("utvrdVjerojatnosti_");
-						m_Row = NewASKTable.clickedAssetRow;
+						m_Row = NewASKTable1.clickedAssetRow;
 						if(m_Row!=0){
 						final MWindow window = MBasicFactory.INSTANCE
 								.createWindow();
@@ -329,7 +334,7 @@ public class Toolbar {
 		tltmAnalizaUinka.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				m_Row = NewASKTable.clickedAssetRow;
+				m_Row = NewASKTable1.clickedAssetRow;
 				if (m_Row != 0) {
 					final MWindow window = MBasicFactory.INSTANCE
 							.createWindow();
@@ -465,13 +470,13 @@ public class Toolbar {
 		ToolBar bar3 = new ToolBar(expandBar, SWT.FLAT | SWT.RIGHT
 				| SWT.SHADOW_OUT | SWT.VERTICAL);
 		xpndtmSmanjivanjeRizika.setControl(bar3);
-		xpndtmSmanjivanjeRizika.setHeight(150);
+		xpndtmSmanjivanjeRizika.setHeight(100);
 
 		ToolItem tltmUtvrivanjeRizika = new ToolItem(bar3, SWT.NONE);
 		tltmUtvrivanjeRizika.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				m_Row = NewASKTable.clickedRiskRow;
+				m_Row = NewASKTable1.clickedRiskRow;
 				if (m_Row != 0) {
 					final MWindow window = MBasicFactory.INSTANCE
 							.createWindow();
@@ -499,7 +504,7 @@ public class Toolbar {
 		tltmPredlaganjeMjera.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				m_Row = NewASKTable.clickedRiskRow;
+				m_Row = NewASKTable1.clickedRiskRow;
 				if (m_Row != 0) {
 					final MWindow window = MBasicFactory.INSTANCE
 							.createWindow();
@@ -524,7 +529,7 @@ public class Toolbar {
 		tltmOcjenaMjera.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				m_Row = NewASKTable.clickedRiskRow;
+				m_Row = NewASKTable1.clickedRiskRow;
 				if (m_Row != 0) {
 					final MWindow window = MBasicFactory.INSTANCE
 							.createWindow();
@@ -545,27 +550,47 @@ public class Toolbar {
 				"src/icons/to_do_list_checked1 (1).png"));
 		tltmOcjenaMjera.setText("Procjena Predlo\u017Eenih Mjera");
 
-		ToolItem tltmPotvrdaProcjene = new ToolItem(bar3, SWT.NONE);
-		tltmPotvrdaProcjene.setImage(ResourceManager.getPluginImage(
-				"hr.ante.isms", "src/icons/form_input_button_ok.png"));
-		tltmPotvrdaProcjene.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				HashMap hm = new HashMap();
-				try {
-
-
-					JasperPrint print = JasperFillManager.fillReport("C:/Documents and Settings/Zrosko/git/isms/hr.ante.isms/src/hr/ante/isms/parts/registar_imovine.jasper", hm, new JREmptyDataSource());
-					JasperViewer.viewReport(print);
-
-				} catch (JRException e1) {
-					// TODO Auto-generated catch block
-					e1.printStackTrace();
-				}
-
-			}
-		});
-		tltmPotvrdaProcjene.setText("Potvrda Procjene");
+//		ToolItem tltmPotvrdaProcjene = new ToolItem(bar3, SWT.NONE);
+//		tltmPotvrdaProcjene.setImage(ResourceManager.getPluginImage(
+//				"hr.ante.isms", "src/icons/form_input_button_ok.png"));
+//		tltmPotvrdaProcjene.addSelectionListener(new SelectionAdapter() {
+//			@Override
+//			public void widgetSelected(SelectionEvent e) {
+//				HashMap hm = new HashMap();
+//				try {
+//
+//					Connection connection = null;
+//					String driverName = "com.microsoft.sqlserver.jdbc.SQLServerDriver";
+//					String url = "jdbc:sqlserver://192.168.0.76"/* 192.168.0.70 */;
+//					String username = "sa"; // You should modify this.
+//					String password = "sa"; // You should modify this.
+//					// Load the JDBC driver
+//					try {
+//						Class.forName(driverName);
+//					} catch (ClassNotFoundException e1) {
+//						// TODO Auto-generated catch block
+//						e1.printStackTrace();
+//					}
+//					// Create a connection to the database
+//					try {
+//						connection = DriverManager.getConnection(url, username,
+//								password);
+//					} catch (SQLException e1) {
+//						// TODO Auto-generated catch block
+//						e1.printStackTrace();
+//					}
+//
+//					JasperPrint print = JasperFillManager.fillReport("C:/Documents and Settings/Zrosko/git/isms/hr.ante.isms/bin/reports/registar_imovine.jasper", hm, /*new JREmptyDataSource()*/connection);
+//					JasperViewer.viewReport(print,false);
+//
+//				} catch (JRException e1) {
+//					// TODO Auto-generated catch block
+//					e1.printStackTrace();
+//				}
+//
+//			}
+//		});
+//		tltmPotvrdaProcjene.setText("Potvrda Procjene");
 
 	}
 

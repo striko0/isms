@@ -3,7 +3,7 @@ package hr.ante.isms.parts;
 import hr.ante.isms.connection.DatabaseConnection;
 import hr.ante.isms.parts.table.ListAssetASKTableModel;
 import hr.ante.isms.parts.table.ListRiskASKTableModel;
-import hr.ante.isms.parts.table.NewASKTable;
+import hr.ante.isms.parts.table.NewASKTable1;
 
 import java.sql.SQLException;
 import java.util.Hashtable;
@@ -38,8 +38,8 @@ public class ImpactAnalysis implements ViewSelected{
 	private int action=1;
 	private KTableSortedModel m_Model;
 	private KTableSortedModel m_ModelRisk;
-	private NewASKTable m_Table;
-	private NewASKTable table;
+	private NewASKTable1 m_Table;
+	private NewASKTable1 table;
 	private String m_Riskid;
 	private int m_Row;
 
@@ -72,7 +72,7 @@ public class ImpactAnalysis implements ViewSelected{
 
 		m_ModelRisk = DataFromServer.listRiskASKTableModel;
 		m_Model = DataFromServer.listAssetASKTableModel;
-		m_Row = NewASKTable.clickedAssetRow;
+		m_Row = NewASKTable1.clickedAssetRow;
 
 		assetName = getDesiredColumnFromDB("as_asset", "name", "WHERE asset_id='"+m_Model.getContentAt(1, m_Row)+"'");
 		mParent.getShell().setText(
@@ -175,7 +175,7 @@ public class ImpactAnalysis implements ViewSelected{
 		gd_compositeASKTable.horizontalIndent = 10;
 		compositeASKTable.setLayoutData(gd_compositeASKTable);
 
-		table = new NewASKTable(this, compositeASKTable, new ListRiskASKTableModel(4, 5, m_Model.getContentAt(1,m_Row).toString()), 717, 200);
+		table = new NewASKTable1(this, compositeASKTable, new ListRiskASKTableModel(4, 5, m_Model.getContentAt(1,m_Row).toString()), 717, 200);
 //		new ASKTable(compositeASKTable,new ImpactAnalysisASKTableModel(), 717,compositeASKTable.getBounds().height );
 				new Label(mParent, SWT.NONE);
 
@@ -198,7 +198,7 @@ public class ImpactAnalysis implements ViewSelected{
 			public void widgetSelected(SelectionEvent e) {
 				// TODO Auto-generated method stub
 				saveAction();
-				action=2;
+				action=1;
 			}
 		});
 		btnSpremi_.setText("Spremi");
@@ -264,21 +264,23 @@ public class ImpactAnalysis implements ViewSelected{
 		 *
 		 */
 		action=1;
+		initialSettings();
+		table.m_Selection.clear();
+
+	}
+
+	private void initialSettings(){
+
 		comboPrijet_.setItems(getThreatVulnerabilityItemsFromDB("as_threat",""));
 		comboRanjivost_.setItems(getThreatVulnerabilityItemsFromDB("as_vulnerability",""));
-
-
 		comboVjerojatnost_.setItems(getComboItemsFromDB("as_probability"));
 		comboUcinak_.setItems(getComboItemsFromDB("as_threat_impact"));
-
 		comboPrijet_.setText("");
 		comboRanjivost_.setText("");
 		comboVjerojatnost_.setText("");
 		comboUcinak_.setText("");
 		textOpisUcinka_.setText("");
 		textOpisVjerojat_.setText("");
-
-		table.m_Selection.clear();
 
 	}
 
@@ -287,6 +289,8 @@ public class ImpactAnalysis implements ViewSelected{
 		// TODO Auto-generated method stub
 		if (row!=0 && !table.getModel().getContentAt(1, row).toString().equals("")) {
 			action=2;
+			initialSettings();
+
 			btnBrisi_.setEnabled(true);
 			m_Riskid=table.getModel().getContentAt(7, row).toString();
 
@@ -404,13 +408,14 @@ public class ImpactAnalysis implements ViewSelected{
 			Notifier.notify(ResourceManager.getPluginImage("hr.ante.isms",
 					"src/icons/tick.png"),"Spremanje uspješno", "Podaci su spremljeni", NotifierTheme.GREEN_THEME);
 
+			fillForm();
+			refreshTable();
 		}
 
 		else
 			Notifier.notify(ResourceManager.getPluginImage("hr.ante.isms",
 					"src/icons/error.ico"),"Nemože se spremiti", "Niste unijeli sve potrebno podatke", NotifierTheme.RED_THEME);
-		refreshTable();
-		fillForm();
+
 	}
 
 	public String[] getComboItemsFromDB(String tableName) {
