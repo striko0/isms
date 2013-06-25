@@ -1,12 +1,16 @@
 package hr.ante.isms.parts.table;
 
 import hr.ante.isms.parts.AssetRowSelected;
-import hr.ante.isms.parts.ListAssets;
+import hr.ante.isms.parts.Controls;
+import hr.ante.isms.parts.ImpactAnalysis;
 import hr.ante.isms.parts.ListRisks;
+import hr.ante.isms.parts.Probability;
 import hr.ante.isms.parts.SuggestMeasures;
+import hr.ante.isms.parts.ThreatIdentification;
 import hr.ante.isms.parts.Threats;
 import hr.ante.isms.parts.ViewSelected;
 import hr.ante.isms.parts.Vulnerability;
+import hr.ante.isms.parts.VulnerabilityIdentification;
 
 import javax.inject.Inject;
 
@@ -55,7 +59,8 @@ public class NewASKTable1 extends KTable{
 	private ViewSelected m_ViewControl;
 	private ViewSelected m_ViewControlRisk;
 	private AssetRowSelected m_AssetRow;
-	private int cRow = 0;
+	private int cRow = -1;
+	private int cCol = -1;
 
 	@Inject
 	protected EPartService partService;
@@ -70,7 +75,7 @@ public class NewASKTable1 extends KTable{
 	KTableActionHandler handler;
 	Menu menu;
 	int sortingColumn = -1;
-
+	KTableCellSelectionListener cellSelListner;
 
 
 //	@PostConstruct
@@ -97,9 +102,22 @@ public class NewASKTable1 extends KTable{
 		if(view instanceof Threats){
 			m_ViewThreat=view;
 		}
+		
+		if(view instanceof Controls){
+			m_ViewControl=view;
+		}
 
 		if(view instanceof SuggestMeasures){
 			m_ViewControlRisk=view;
+		}
+		
+		if(view instanceof ThreatIdentification 
+				|| view instanceof VulnerabilityIdentification 
+				|| view instanceof Probability
+				|| view instanceof ImpactAnalysis
+				|| view instanceof ListRisks)
+		{
+			m_ViewRisk=view;
 		}
 
 //		if(view instanceof ListRisks){
@@ -154,6 +172,38 @@ public class NewASKTable1 extends KTable{
 //		table.addListener(SWT.MouseDown, new HeaderListener2(table));
 //		table.addListener(SWT.MouseMove, new HeaderListener2(table));
 
+		
+
+
+		new ASKTableContextMenu1(this,(KTableSortedModel)this.getModel());
+
+		addTraverseListener(new TraverseListener() {
+//
+			@Override
+			public void keyTraversed(TraverseEvent e) {
+//				// TODO Auto-generated method stub
+//				if (e.keyCode == SWT.ARROW_DOWN) {
+//					cRow=clickedRow;					
+//					cRow++;
+//					setClickedRow(cRow);
+////					removeCellSelectionListener(cellSelListner);
+//					updateStatus(cCol, cRow);
+//					
+//				}
+//
+//				if (e.keyCode == SWT.ARROW_UP) {
+//					cRow=clickedRow;
+//					cRow--;
+//					setClickedRow(cRow);
+//					updateStatus(cCol, cRow);
+//				}
+//				
+				if(e.keyCode == SWT.CTRL)
+					selection=false;
+//
+			}
+		});
+		
 		addClickInterceptionListener(new KTableClickInterceptionListener() {
 
 			@Override
@@ -188,7 +238,14 @@ public class NewASKTable1 extends KTable{
 				{
 
 
+					cCol=col;
+//					if(!table.m_Selection.isEmpty())
+//					
+				
+					// TODO Auto-generated method stub
 					setClickedRow(row);
+							
+				
 //					if (selection==true) {
 //						if(table.getModel() instanceof ListAssetASKTableModel){
 //
@@ -213,26 +270,7 @@ public class NewASKTable1 extends KTable{
 
 
 		});
-
-
-		new ASKTableContextMenu1(this,(KTableSortedModel)this.getModel());
-
-		addTraverseListener(new TraverseListener() {
-
-			@Override
-			public void keyTraversed(TraverseEvent e) {
-				// TODO Auto-generated method stub
-				if (e.keyCode == SWT.ARROW_DOWN) {
-					setClickedRow(++cRow);
-				}
-
-				if (e.keyCode == SWT.ARROW_UP) {
-					setClickedRow(--cRow);
-				}
-
-			}
-		});
-
+//
 		addKeyListener(new KeyListener() {
 
 			@Override
@@ -246,16 +284,19 @@ public class NewASKTable1 extends KTable{
 				// TODO Auto-generated method stub
 				if ((e.stateMask & SWT.CTRL) == 0) {
 
-						selection=false;
+					selection = false;
 
-
-					}
+				} else
+					selection = true;
 				}
+			
 
 
 
 		});
-
+		
+		
+		
 		addCellSelectionListener(new KTableCellSelectionListener() {
 
 			@Override
@@ -270,9 +311,13 @@ public class NewASKTable1 extends KTable{
 				// TODO Auto-generated method stub
 				// the idea is to map the row index back to the model index since the given row index
 		    	// changes when sorting is done.
+			
 				int modelRow = model.mapRowIndexToModel(row);
-
-				setClickedRow(row);
+				setClickedRow(row);		
+				updateStatus(col, row);
+				System.out.println("Cell [" + col + ";" + row
+						+ "] selected. - Model row: " + modelRow);
+				System.out.println("ovo " + m_Table.m_Selection);
 
 
 //				new KTableActionHandler(table);
@@ -289,13 +334,11 @@ public class NewASKTable1 extends KTable{
 //					clickedRow = row;
 //				}
 				//new ASMenu(table,1);
-				System.out.println("Cell [" + col + ";" + row
-						+ "] selected. - Model row: " + modelRow);
-				System.out.println("ovo " + m_Table.m_Selection);
+			
 
 			}
 		});
-
+//
 
 
 
@@ -431,82 +474,99 @@ public class NewASKTable1 extends KTable{
 		}
 
 	private void setClickedRow(int row){
-		cRow=row;
-		if (selection==true) {
-			if(getModel() instanceof ListAssetASKTableModel){
+//		cRow=row;
+		
+			if (selection == true) {
+				System.out.println("CLICKDEEEED ROW " + row);
+				if (getModel() instanceof ListAssetASKTableModel) {
 
-				clickedAssetRow=row;
+					clickedAssetRow = row;
 
-//				m_ViewAsset.rowSelected(row);
+					// m_ViewAsset.rowSelected(row);
+				}
+
+				if (getModel() instanceof ListVulnerabilityASKTableModel) {
+
+					clickedVulnerabilityRow = row;
+					m_ViewVulnerability.rowSelected(row);
+				}
+
+				if (getModel() instanceof ListThreatASKTableModel) {
+
+					clickedThreatRow = row;
+					m_ViewThreat.rowSelected(row);
+				}
+
+				if (getModel() instanceof ListControlRiskASKTableModel) {
+
+					clickedControlRiskRow = row;
+					m_ViewControlRisk.rowSelected(row);
+				}
+				
+				if (getModel() instanceof ListControlASKTableModel) {
+
+					clickedControlRow = row;
+					m_ViewControl.rowSelected(row);
+				}
+
+				if (getModel() instanceof ListRiskASKTableModel) {
+
+					clickedRiskRow = row;
+					m_ViewRisk.rowSelected(row);
+				}
+				else{
+					clickedRow = row;
+//					if ((getModel() instanceof ListControlRiskASKTableModel) == false)
+//						m_View.rowSelected(row);
+					
+				}
+				
 			}
 
-			if(getModel() instanceof ListVulnerabilityASKTableModel){
+			else {
+				clickedRow = 0;
+				if ((getModel() instanceof ListControlRiskASKTableModel) == false)
+					m_View.rowSelected(0);
 
-				clickedVulnerabilityRow=row;
-				m_ViewVulnerability.rowSelected(row);
+				if (getModel() instanceof ListAssetASKTableModel) {
+
+					clickedAssetRow = 0;
+					// m_ViewAsset.rowSelected(0);
+				}
+
+				if (getModel() instanceof ListVulnerabilityASKTableModel) {
+
+					clickedVulnerabilityRow = 0;
+					m_ViewVulnerability.rowSelected(0);
+				}
+
+				if (getModel() instanceof ListThreatASKTableModel) {
+
+					clickedThreatRow = 0;
+					m_ViewThreat.rowSelected(0);
+				}
+				
+				if (getModel() instanceof ListControlASKTableModel) {
+
+					clickedControlRow = 0;
+					m_ViewControl.rowSelected(0);
+				}
+
+				if (getModel() instanceof ListControlRiskASKTableModel) {
+
+					clickedControlRiskRow = 0;
+					m_ViewControlRisk.rowSelected(0);
+				}
+
+				if (getModel() instanceof ListRiskASKTableModel) {
+
+					clickedRiskRow = 0;
+					m_View.rowSelected(0);
+					// m_ViewRisk.rowSelected(0);
+				}
+				selection = true;
 			}
-
-			if(getModel() instanceof ListThreatASKTableModel){
-
-				clickedThreatRow=row;
-				m_ViewThreat.rowSelected(row);
-			}
-
-			if(getModel() instanceof ListControlRiskASKTableModel){
-
-				clickedControlRiskRow=row;
-				m_ViewControlRisk.rowSelected(row);
-			}
-
-
-			if(getModel() instanceof ListRiskASKTableModel){
-
-				clickedRiskRow=row;
-//				m_ViewRisk.rowSelected(row);
-			}
-			clickedRow = row;
-			if((getModel() instanceof ListControlRiskASKTableModel)==false)
-				m_View.rowSelected(row);
-			}
-
-		else {
-			clickedRow = 0;
-			if((getModel() instanceof ListControlRiskASKTableModel)==false)
-				m_View.rowSelected(0);
-
-			if (getModel() instanceof ListAssetASKTableModel) {
-
-				clickedAssetRow = 0;
-//				m_ViewAsset.rowSelected(0);
-			}
-
-			if(getModel() instanceof ListVulnerabilityASKTableModel){
-
-				clickedVulnerabilityRow=0;
-				m_ViewVulnerability.rowSelected(0);
-			}
-
-			if(getModel() instanceof ListThreatASKTableModel){
-
-				clickedThreatRow=0;
-				m_ViewThreat.rowSelected(0);
-			}
-
-			if(getModel() instanceof ListControlRiskASKTableModel){
-
-				clickedControlRiskRow=0;
-				m_ViewControlRisk.rowSelected(0);
-			}
-
-			if (getModel() instanceof ListRiskASKTableModel) {
-
-				clickedRiskRow = 0;
-				m_View.rowSelected(0);
-//				m_ViewRisk.rowSelected(0);
-			}
-			selection=true;
-		}
-
+		
 	}
 	private void updateStatus(int col, int row) {
 		// TODO Auto-generated method stub

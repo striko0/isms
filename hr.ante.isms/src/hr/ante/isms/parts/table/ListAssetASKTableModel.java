@@ -2,8 +2,9 @@ package hr.ante.isms.parts.table;
 
 
 import hr.ante.isms.connection.DataFromDatabase;
-import hr.ante.isms.connection.DatabaseConnection;
+import hr.ante.isms.connection.DatabaseConnectionDoma;
 import hr.ante.isms.parts.DataFromServer;
+import hr.ante.isms.parts.ListAssets;
 import hr.ante.test.renderers.ASCurrencyTextCellRenderer;
 import hr.ante.test.renderers.ASFixedCellRenderer;
 
@@ -35,6 +36,7 @@ public class ListAssetASKTableModel extends KTableSortedModel {
 	public HashMap meta = new HashMap();
 	private int[] colWidths;
 	private DataFromDatabase dB;
+	private boolean canDeleteAsset=false;
 
 	private int rowHeight;
 

@@ -34,7 +34,7 @@ import org.mihalis.opal.utils.SWTGraphicUtil;
 public class Notifier {
 	private static final int FONT_SIZE = 10;
 	private static final int MAX_DURATION_FOR_OPENING = 500;
-	private static final int DISPLAY_TIME = 4500;
+	private static final int DISPLAY_TIME = 1000;
 
 	private static final int FADE_TIMER = 50;
 	private static final int FADE_OUT_STEP = 8;

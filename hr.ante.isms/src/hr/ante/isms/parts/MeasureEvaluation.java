@@ -64,7 +64,7 @@ public class MeasureEvaluation {
 		scrollBox.setExpandVertical(true);
 
 		mParent = new Composite(scrollBox, SWT.NONE);
-		mParent.getShell().setSize(450, 200);
+		mParent.getShell().setSize(450, 220);
 
 		m_Model = DataFromServer.listRiskASKTableModel;
 		m_Row = NewASKTable1.clickedRiskRow;
@@ -159,6 +159,7 @@ public class MeasureEvaluation {
 
 		fillForm();
 		scrollBox.setContent(mParent);
+		mParent.getShell().setDefaultButton(btnSpremi_);
 	}
 
 	private void fillForm() {
@@ -196,13 +197,11 @@ public class MeasureEvaluation {
 					"name", "WHERE asriskmitigation_id='" + mitigationId + "'");
 			comboNacinSmanjivanja_.setText(mitigationId+"-"+mitigation);
 		}
+		else
+			comboNacinSmanjivanja_.setText("");
+		
 		comboVjerojatnost_.setText(probabilityId+"-"+probability);
-
 		comboUcinak_.setText(impactId+"-"+impact);
-
-
-
-
 	}
 	}
 
@@ -218,20 +217,13 @@ public class MeasureEvaluation {
 				){
 			Hashtable<String, String> data = new Hashtable<String, String>();
 
-//			String temp = comboPrijetnja_.getText();
-//			int t = temp.indexOf("-");
 			data.put("risk_probability", comboVjerojatnost_.getText());
 			data.put("impact", comboUcinak_.getText());
 			data.put("mitigation_id", comboNacinSmanjivanja_.getText());
 
 			System.out.println("Hashtable" + data);
 			try {
-//
-//				if (action == 2) {
 					dB.insertDataInDB("as_risk", data, "update","MeasureEvaluation", m_RiskId);
-
-//				} else
-//					dB.insertDataInDB("as_risk", data, "insert","RiskAssessment", "");
 
 
 			} catch (Exception e1) {

@@ -23,7 +23,9 @@ Require-Bundle: javax.inject;bundle-version="1.0.0",
  com.ibm.icu,
  org.eclipse.ui;bundle-version="3.104.0",
  hr.ante.isms.jdbc;bundle-version="1.0.0",
- hr.ante.isms.jasperreports;bundle-version="1.0.0"
+ hr.ante.isms.jasperreports;bundle-version="1.0.0",
+ org.eclipse.core.expressions;bundle-version="3.4.401",
+ org.eclipse.emf.databinding
 Import-Package: javax.annotation;version="1.0.0"
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Bundle-ClassPath: .,

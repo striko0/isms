@@ -7,7 +7,7 @@ import java.util.Hashtable;
 public class DataFromDatabase {
 
 	public String[] getComboItemsFromDB(String tableName) {
-		DatabaseConnection con = new DatabaseConnection();
+		DatabaseConnectionDoma con = new DatabaseConnectionDoma();
 		con.doConnection();
 
 		try {
@@ -36,7 +36,7 @@ public class DataFromDatabase {
 	}
 
 	public String[] getComboItemsFromDB(String tableName, String whereStatement) {
-		DatabaseConnection con = new DatabaseConnection();
+		DatabaseConnectionDoma con = new DatabaseConnectionDoma();
 		con.doConnection();
 
 		try {
@@ -66,7 +66,7 @@ public class DataFromDatabase {
 
 	public String[] getComboItemsFromDB(String tableName,
 			String whereStatement, boolean valid) {
-		DatabaseConnection con = new DatabaseConnection();
+		DatabaseConnectionDoma con = new DatabaseConnectionDoma();
 		con.doConnection();
 
 		try {
@@ -97,7 +97,7 @@ public class DataFromDatabase {
 
 
 	public String[] getThreatVulnerabilityItemsFromDB(String tableName,String whereStatement){
-		DatabaseConnection con = new DatabaseConnection();
+		DatabaseConnectionDoma con = new DatabaseConnectionDoma();
 		con.doConnection();
 
 		try {
@@ -126,7 +126,7 @@ public class DataFromDatabase {
 	}
 
 	public String[] getControlItemsFromDB(String tableName,String whereStatement){
-		DatabaseConnection con = new DatabaseConnection();
+		DatabaseConnectionDoma con = new DatabaseConnectionDoma();
 		con.doConnection();
 
 		try {
@@ -155,7 +155,7 @@ public class DataFromDatabase {
 	}
 
 	public String getDesiredColumnFromDB(String tableName, String columnName, String whereStatement){
-		DatabaseConnection con = new DatabaseConnection();
+		DatabaseConnectionDoma con = new DatabaseConnectionDoma();
 		con.doConnection();
 
 		try {
@@ -184,11 +184,39 @@ public class DataFromDatabase {
 	}
 
 	public void insertDataInDB(String tableName, Hashtable data, String updateOrInsert, String type, String id) throws Exception{
-		DatabaseConnection con = new DatabaseConnection();
+		DatabaseConnectionDoma con = new DatabaseConnectionDoma();
 		con.doConnection();
 
 		try {
+			if (type == "Assets") {
+				if (updateOrInsert == "insert")
+					con.insertAssetData(tableName, data);
+				if (updateOrInsert == "update")
+					con.updateAssetData(tableName, data, id);
+			}
+			
+			if(type=="ThreatIdentification"){
+				if(updateOrInsert=="insert")
+					con.insertThreatIdentData(tableName, data);
+				if(updateOrInsert=="update")
+					con.updateThreatIdentData(tableName, data, id);
 
+			}
+			if (type == "VulnerabilityIdentification") {
+
+				if (updateOrInsert == "insert")
+					con.insertVulnerabilityIdentData(tableName, data);
+				if (updateOrInsert == "update")
+					con.updateVulnerabilityIdentData(tableName, data, id);
+			}
+
+			if (type == "Probability") {
+				if (updateOrInsert == "insert")
+					con.insertProbabilityData(tableName, data);
+				if (updateOrInsert == "update")
+					con.updateProbabilityData(tableName, data, id);
+
+			}
 			if (type == "ImpactAnalysis") {
 				if (updateOrInsert == "insert")
 					con.insertImpactAnalysisData(tableName, data);
@@ -202,6 +230,15 @@ public class DataFromDatabase {
 				if (updateOrInsert == "update")
 					con.updateRiskAssessmentData(tableName, data, id);
 			}
+			
+			if(type=="SuggestMeasures"){
+				if (updateOrInsert == "insert")
+					con.insertSuggestMeasuresData(tableName, data);
+				if (updateOrInsert == "update")
+					con.updateSuggestMeasuresData(tableName, data, id);
+
+			}
+
 
 			if(type=="MeasureEvaluation"){
 //				if (updateOrInsert == "insert")
@@ -225,15 +262,22 @@ public class DataFromDatabase {
 					con.updateThreatData(tableName, data, id);
 
 			}
-
-			if(type=="SuggestMeasures"){
+			
+			if (type == "Control") {
 				if (updateOrInsert == "insert")
-					con.insertSuggestMeasuresData(tableName, data);
+					con.insertControlData(tableName, data);
 				if (updateOrInsert == "update")
-					con.updateSuggestMeasuresData(tableName, data, id);
-
+					con.updateControlData(tableName, data, id);
+			}
+			
+			if (type == "ControlAdvanced") {
+				if (updateOrInsert == "insert")
+					con.insertControlAdvancedData(tableName, data);
+				if (updateOrInsert == "update")
+					con.updateControlAdvancedData(tableName, data, id);
 			}
 
+		
 		} catch (SQLException ex) {
 			System.out.println(ex.getMessage());
 			try {
@@ -257,7 +301,7 @@ public class DataFromDatabase {
 	}
 
 	public HashMap<String, String> getContentFromDB(String tableName, String tableModel){
-		DatabaseConnection con = new DatabaseConnection();
+		DatabaseConnectionDoma con = new DatabaseConnectionDoma();
 		con.doConnection();
 
 
@@ -290,7 +334,7 @@ public class DataFromDatabase {
 
 	public HashMap<String, String> getContentFromDB(String tableName,
 			String vrsta, String assetId) {
-		DatabaseConnection con = new DatabaseConnection();
+		DatabaseConnectionDoma con = new DatabaseConnectionDoma();
 		con.doConnection();
 
 		try {
@@ -320,7 +364,7 @@ public class DataFromDatabase {
 
 
 	public void deleteDataFromDB(String tableName, String idField, String id) throws Exception{
-		DatabaseConnection con = new DatabaseConnection();
+		DatabaseConnectionDoma con = new DatabaseConnectionDoma();
 		con.doConnection();
 
 		try {

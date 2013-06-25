@@ -1,8 +1,8 @@
 package hr.ante.isms.parts;
 
-import hr.ante.isms.connection.DatabaseConnection;
-
-import java.sql.SQLException;
+import com.ibm.icu.text.DateFormat;
+import java.util.Date;
+import java.util.Locale;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
@@ -14,13 +14,10 @@ import org.eclipse.e4.ui.model.application.ui.MDirtyable;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CLabel;
 import org.eclipse.swt.custom.ScrolledComposite;
-import org.eclipse.swt.events.SelectionAdapter;
-import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.layout.FormAttachment;
 import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
-import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.wb.swt.SWTResourceManager;
@@ -49,7 +46,7 @@ public class StartPage {
 		// you want the horizontal bar to appear at some threshold (say 100
 		// pixels) then send that value instead.
 
-		mParent = new Composite(scrollBox, SWT.BORDER);
+		mParent = new Composite(scrollBox, SWT.NONE);
 		mParent.setBackground(SWTResourceManager.getColor(SWT.COLOR_WIDGET_BACKGROUND));
 		//parent.setSize(new Point(759, 359));
 
@@ -93,9 +90,10 @@ public class StartPage {
 
 		CLabel label_2 = new CLabel(composite, SWT.NONE);
 		GridData gd_label_2 = new GridData(SWT.RIGHT, SWT.TOP, true, false, 1, 1);
-		gd_label_2.widthHint = 151;
+		gd_label_2.widthHint = 150;
 		label_2.setLayoutData(gd_label_2);
-		label_2.setText("ponedjeljak, 27. svibanj 2013");
+//		label_2.setText("Petak, 21. Lipanj 2013");
+		label_2.setText(getCurrentDate());
 		label_2.setBackground(SWTResourceManager.getColor(SWT.COLOR_TITLE_INACTIVE_BACKGROUND_GRADIENT));
 		new Label(composite, SWT.NONE);
 		new Label(composite, SWT.NONE);
@@ -116,10 +114,20 @@ public class StartPage {
 
 
 	}
+	
+	private String getCurrentDate()
+	{
+		Locale currentLocale = new Locale("hr","HR");
+		DateFormat dateFormatter = DateFormat.getDateInstance(DateFormat.FULL,currentLocale);
+		Date today = new Date();
+		String dateOut = dateFormatter.format(today);
+		return dateOut;
+		
+	}	
 
 	@PreDestroy
 	public void dispose() throws Exception {
-	  System.out.println("Closing application");
+	  System.out.println("Closing Administration");
 	}
 
 	 @Persist

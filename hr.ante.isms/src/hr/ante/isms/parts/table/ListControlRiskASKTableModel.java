@@ -2,7 +2,7 @@ package hr.ante.isms.parts.table;
 
 
 import hr.ante.isms.connection.DataFromDatabase;
-import hr.ante.isms.connection.DatabaseConnection;
+import hr.ante.isms.connection.DatabaseConnectionDoma;
 import hr.ante.isms.parts.DataFromServer;
 import hr.ante.test.renderers.ASCurrencyTextCellRenderer;
 import hr.ante.test.renderers.ASFixedCellRenderer;

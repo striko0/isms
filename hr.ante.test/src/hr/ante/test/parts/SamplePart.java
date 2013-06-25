@@ -33,6 +33,7 @@ import org.mihalis.opal.propertyTable.PropertyTable;
 import org.mihalis.opal.propertyTable.editor.PTDateEditor;
 import org.mihalis.opal.textAssist.TextAssistContentProvider;
 import org.mihalis.opal.tipOfTheDay.TipOfTheDay;
+import org.eclipse.swt.widgets.Button;
 
 public class SamplePart {
 
@@ -43,6 +44,7 @@ public class SamplePart {
 	private OButton button;
 	private PropertyTable propertyTable;
 	private DateTime dateTime_2;
+	private Button btnNewButton;
 
 
 	@PostConstruct
@@ -89,8 +91,13 @@ public class SamplePart {
 		
 		dateTime_1 = new DateTime(parent, SWT.BORDER | SWT.DROP_DOWN);
 		
-		button = new OButton(parent, SWT.NONE);
+		btnNewButton = new Button(parent, SWT.NONE);
+		btnNewButton.setText("New Button");
+		
+		button = new OButton(parent, SWT.ARROW);
+		button.setBackground(SWTResourceManager.getColor(SWT.COLOR_DARK_CYAN));
 		button.setWidth(100);
+//		button.setButtonRenderer(buttonRenderer)
 		button.setText("Obuton");
 		
 		propertyTable = new PropertyTable(parent, SWT.NONE);

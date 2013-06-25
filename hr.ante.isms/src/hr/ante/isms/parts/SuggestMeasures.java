@@ -105,7 +105,7 @@ public class SuggestMeasures implements ViewSelected {
 		Label lblKontrola_ = new Label(composite, SWT.NONE);
 		lblKontrola_.setText("Kontrola:");
 
-		comboKontrola_ = new Combo(composite, SWT.NONE);
+		comboKontrola_ = new Combo(composite, SWT.READ_ONLY);
 		comboKontrola_.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
 
 		Label lblPrijedlog_ = new Label(composite, SWT.NONE);
@@ -148,7 +148,7 @@ public class SuggestMeasures implements ViewSelected {
 			public void widgetSelected(SelectionEvent e) {
 				// TODO Auto-generated method stub
 				saveAction();
-				action=1;
+				//action=1;
 			}
 		});
 		btnSpremi_.setText("Spremi");
@@ -180,7 +180,6 @@ public class SuggestMeasures implements ViewSelected {
 		btnNovo_.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				table.m_Selection.clear();
 				m_ControlRiskId=null;
 				fillForm();
 			}
@@ -202,6 +201,7 @@ public class SuggestMeasures implements ViewSelected {
 				if (confirm) {
 					try {
 						dB.deleteDataFromDB("as_control_risk", "ascontrolrisk_id", m_ControlRiskId);
+						fillForm();
 						refreshTable();
 
 					} catch (Exception e1) {
@@ -231,6 +231,7 @@ public class SuggestMeasures implements ViewSelected {
 
 		fillForm();
 		scrollBox.setContent(mParent);
+		mParent.getShell().setDefaultButton(btnSpremi_);
 	}
 
 	public void refreshTable(){
@@ -249,7 +250,8 @@ public class SuggestMeasures implements ViewSelected {
 		 */
 		action=1;
 		initialSettings();
-		table.m_Selection.clear();
+		table.setSelection(null, false);
+
 
 
 	}
@@ -281,10 +283,11 @@ public class SuggestMeasures implements ViewSelected {
 			String control = table.getModel().getContentAt(2, row).toString();
 
 			String description = table.getModel().getContentAt(5, row).toString();
-			textPrimjena_.setText(description);
-//			else
+			
+//			if (description == null)
 //				textPrimjena_.setText("");
-
+//			else
+				textPrimjena_.setText(description);
 			comboKontrola_.setText(m_ControlId+"-"+control);
 
 		}
@@ -303,38 +306,52 @@ public class SuggestMeasures implements ViewSelected {
 			String temp = comboKontrola_.getText();
 			int t = temp.indexOf("-");
 			data.put("control_id",comboKontrola_.getText().substring(0,t));
-			data.put("risk_id",m_RiskId);
-			data.put("vulnerability_id",m_VulnerabilityId);
-			data.put("threat_id",m_ThreatId);
-			if(!textPrimjena_.getText().equals("")){
+			data.put("risk_id",m_RiskId);		
+//			if(textPrimjena_.getText().equals("")){
+//				data.put("application","");
+//			}
+//			else{
 				data.put("application", textPrimjena_.getText());
-			}
-
-
-
-			System.out.println("Hashtable" + data);
-			try {
-
-				if (action == 2) {
+//			}
+			
+			if (action == 2) {
+				try {
+					System.out.println("Hashtable" + data);
 					dB.insertDataInDB("as_control_risk", data, "update","SuggestMeasures", m_ControlRiskId);
+				} catch (Exception e1) {
+					e1.printStackTrace();
 
-				} else
+				}
+			} else {
+				
+				data.put("vulnerability_id",m_VulnerabilityId);
+				data.put("threat_id",m_ThreatId);
+
+				System.out.println("Hashtable" + data);
+				try {
 					dB.insertDataInDB("as_control_risk", data, "insert","SuggestMeasures", "");
 
 
-			} catch (Exception e1) {
-				e1.printStackTrace();
+				} catch (Exception e1) {
+					e1.printStackTrace();
 
+				}
+				
+				
 			}
+			
 			Notifier.notify(ResourceManager.getPluginImage("hr.ante.isms",
 					"src/icons/tick.png"),"Spremanje uspješno", "Podaci su spremljeni", NotifierTheme.GREEN_THEME);
-			refreshTable();
-			fillForm();
+			fillForm();	
+
+		
 		}
 
 		else
 			Notifier.notify(ResourceManager.getPluginImage("hr.ante.isms",
 					"src/icons/error.ico"),"Nemože se spremiti", "Niste unijeli sve potrebno podatke", NotifierTheme.RED_THEME);
+		
+		refreshTable();
 
 	}
 

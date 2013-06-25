@@ -5,10 +5,12 @@ import hr.ante.isms.parts.table.ListAssetASKTableModel;
 import hr.ante.isms.parts.table.NewASKTable1;
 
 import java.sql.Connection;
-import java.sql.Date;
 import java.sql.DriverManager;
 import java.sql.SQLException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashMap;
+import java.util.Locale;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
@@ -39,8 +41,9 @@ import org.eclipse.wb.swt.SWTResourceManager;
 import org.mihalis.opal.notify.Notifier;
 import org.mihalis.opal.notify.NotifierColorsFactory.NotifierTheme;
 import org.mihalis.opal.opalDialog.Dialog;
+import org.mihalis.opal.utils.SWTGraphicUtil;
 
-import com.ibm.icu.util.Calendar;
+import com.ibm.icu.text.DateFormat;
 
 import de.kupzog.ktable.KTableSortedModel;
 
@@ -71,7 +74,7 @@ public class ListAssets implements ViewSelected{
 	public void createComposite(final Composite parent) {
 
 		final ScrolledComposite scrollBox = new ScrolledComposite(parent,
-				SWT.BORDER | SWT.H_SCROLL | SWT.V_SCROLL);
+				SWT.H_SCROLL | SWT.V_SCROLL);
 		scrollBox.setBackground(SWTResourceManager.getColor(SWT.COLOR_WHITE));
 		scrollBox.setBounds(0, 0, 490, 537);
 		scrollBox.setMinHeight(470);
@@ -97,8 +100,10 @@ public class ListAssets implements ViewSelected{
 
 		Composite composite = new Composite(mParent, SWT.NONE);
 		composite.setBackground(SWTResourceManager.getColor(SWT.COLOR_TITLE_BACKGROUND_GRADIENT));
-		composite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, false, false, 1, 1));
-		composite.setLayout(new GridLayout(3, false));
+		GridData gd_composite = new GridData(SWT.FILL, SWT.FILL, false, false, 1, 1);
+		gd_composite.heightHint = 50;
+		composite.setLayoutData(gd_composite);
+		composite.setLayout(new GridLayout(4, false));
 
 				Label naslov_ = new Label (composite, SWT.NONE);
 				GridData gd_naslov_ = new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1);
@@ -110,6 +115,7 @@ public class ListAssets implements ViewSelected{
 				naslov_.setText("Imovina");
 
 								Button btnIspis_ = new Button(composite, SWT.NONE);
+								btnIspis_.setBackground(SWTResourceManager.getColor(SWT.COLOR_TITLE_BACKGROUND_GRADIENT));
 								GridData gd_btnIspis_ = new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1);
 								gd_btnIspis_.heightHint = 40;
 								gd_btnIspis_.widthHint = 40;
@@ -117,6 +123,7 @@ public class ListAssets implements ViewSelected{
 								btnIspis_.setImage(ResourceManager.getPluginImage("hr.ante.isms", "src/icons/filetype_pdf.png"));
 
 								Button btnDelete_ = new Button(composite, SWT.NONE);
+								btnDelete_.setBackground(SWTResourceManager.getColor(SWT.COLOR_TITLE_BACKGROUND_GRADIENT));
 								btnDelete_.addSelectionListener(new SelectionAdapter() {
 									@Override
 									public void widgetSelected(SelectionEvent e) {
@@ -147,6 +154,21 @@ public class ListAssets implements ViewSelected{
 								gd_btnDelete_.heightHint = 40;
 								btnDelete_.setLayoutData(gd_btnDelete_);
 								btnDelete_.setImage(ResourceManager.getPluginImage("hr.ante.isms", "src/icons/deletered.png"));
+								
+									
+								Button btnRefresh_ = new Button(composite, SWT.NONE);
+								btnRefresh_.setBackground(SWTResourceManager.getColor(SWT.COLOR_TITLE_BACKGROUND_GRADIENT));
+								btnRefresh_.addSelectionListener(new SelectionAdapter() {
+									@Override
+									public void widgetSelected(SelectionEvent e) {
+										table.redraw();
+									}
+								});
+								GridData gd_btnNewButton = new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1);
+								gd_btnNewButton.widthHint = 40;
+								gd_btnNewButton.heightHint = 40;
+								btnRefresh_.setLayoutData(gd_btnNewButton);
+								btnRefresh_.setImage(ResourceManager.getPluginImage("hr.ante.isms", "src/icons/table_refresh.png"));
 
 
 								btnIspis_.addSelectionListener(new SelectionAdapter() {
@@ -157,9 +179,10 @@ public class ListAssets implements ViewSelected{
 
 											Connection connection = null;
 											String driverName = "com.microsoft.sqlserver.jdbc.SQLServerDriver";
-											String url = "jdbc:sqlserver://192.168.0.76"/* 192.168.0.70 */;
-											String username = "sa"; // You should modify this.
-											String password = "sa"; // You should modify this.
+//											String url = "jdbc:sqlserver://192.168.0.76"/* 192.168.0.70 */;
+											String url = "jdbc:sqlserver://127.0.0.1:1433;integratedSecurity=true"; 
+//											String username = "sa"; // You should modify this.
+//											String password = "sa"; // You should modify this.
 											// Load the JDBC driver
 											try {
 												Class.forName(driverName);
@@ -169,14 +192,15 @@ public class ListAssets implements ViewSelected{
 											}
 											// Create a connection to the database
 											try {
-												connection = DriverManager.getConnection(url, username,
-														password);
+//												connection = DriverManager.getConnection(url, username,
+//														password);
+												connection = DriverManager.getConnection(url);
 											} catch (SQLException e1) {
 												// TODO Auto-generated catch block
 												e1.printStackTrace();
 											}
 
-											JasperPrint print = JasperFillManager.fillReport("C:/Documents and Settings/Zrosko/git/isms/hr.ante.isms/bin/reports/registar_imovine.jasper", hm, /*new JREmptyDataSource()*/connection);
+											JasperPrint print = JasperFillManager.fillReport("C:/Reports/registar_imovine.jasper", hm, /*new JREmptyDataSource()*/connection);
 											JasperViewer.viewReport(print,false);
 
 										} catch (JRException e1) {
@@ -196,7 +220,6 @@ public class ListAssets implements ViewSelected{
 		gd_compositeASKTable.minimumHeight = 100;
 		gd_compositeASKTable.widthHint = 778;
 		compositeASKTable.setLayoutData(gd_compositeASKTable);
-
 
 		table = new NewASKTable1(this,compositeASKTable, new ListAssetASKTableModel(),
 				717, compositeASKTable.getBounds().height);
@@ -222,9 +245,12 @@ public class ListAssets implements ViewSelected{
 
 		Label labelsep_ = new Label(compositeUser_, SWT.SEPARATOR);
 		CLabel labelUserDatum_ = new CLabel(compositeUser_, SWT.NONE);
-		labelUserDatum_.setLayoutData(new GridData(SWT.LEFT, SWT.TOP, true,
-				false, 1, 1));
-		labelUserDatum_.setText("Petak, 21. Lipanj 2013");
+		GridData gd_labelUserDatum_ = new GridData(SWT.RIGHT, SWT.TOP, true,
+				false, 1, 1);
+		gd_labelUserDatum_.widthHint = 150;
+		labelUserDatum_.setLayoutData(gd_labelUserDatum_);
+//		labelUserDatum_.setText("Petak, 21. Lipanj 2013");
+		labelUserDatum_.setText(getCurrentDate());
 		labelUserDatum_.setBackground(SWTResourceManager
 				.getColor(SWT.COLOR_TITLE_INACTIVE_BACKGROUND_GRADIENT));
 		new Label(compositeUser_, SWT.NONE);
@@ -235,10 +261,20 @@ public class ListAssets implements ViewSelected{
 
 
 	}
+	
+	public String getCurrentDate()
+	{
+		Locale currentLocale = new Locale("hr","HR");
+		DateFormat dateFormatter = DateFormat.getDateInstance(DateFormat.FULL,currentLocale);
+		Date today = new Date();
+		String dateOut = dateFormatter.format(today);
+		return dateOut;
+		
+	}
 
 	@PreDestroy
 	public void dispose() throws Exception {
-	  System.out.println("Closing application");
+	  System.out.println("Closing ListAssets");
 	}
 
 

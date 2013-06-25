@@ -15,14 +15,14 @@ import org.mihalis.opal.notify.Notifier;
 
 import com.ibm.icu.util.Calendar;
 
-public class DatabaseConnection {
+public class CopyOfDatabaseConnection {
     public Connection connection = null;
     String driverName = "com.microsoft.sqlserver.jdbc.SQLServerDriver";
     String url = "jdbc:sqlserver://192.168.0.76"/*192.168.0.70*/;
     String username = "sa"; // You should modify this.
     String password = "sa"; // You should modify this.
 
-    public DatabaseConnection() {
+    public CopyOfDatabaseConnection() {
     }
 
     public boolean doConnection() {

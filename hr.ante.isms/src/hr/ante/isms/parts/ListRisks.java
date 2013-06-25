@@ -1,14 +1,17 @@
 package hr.ante.isms.parts;
 
 import hr.ante.isms.connection.DataFromDatabase;
-import hr.ante.isms.parts.table.ListAssetASKTableModel;
+import hr.ante.isms.handlers.QuitHandler;
 import hr.ante.isms.parts.table.ListRiskASKTableModel;
 import hr.ante.isms.parts.table.NewASKTable1;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
+import com.ibm.icu.text.DateFormat;
+import java.util.Date;
 import java.util.HashMap;
+import java.util.Locale;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
@@ -17,7 +20,6 @@ import javax.inject.Inject;
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JasperFillManager;
 import net.sf.jasperreports.engine.JasperPrint;
-import net.sf.jasperreports.view.JRViewer;
 import net.sf.jasperreports.view.JasperViewer;
 
 import org.eclipse.e4.core.contexts.IEclipseContext;
@@ -34,7 +36,10 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Listener;
+import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.wb.swt.ResourceManager;
 import org.eclipse.wb.swt.SWTResourceManager;
 import org.mihalis.opal.notify.Notifier;
@@ -63,9 +68,21 @@ public class ListRisks implements ViewSelected {
 
 	@PostConstruct
 	public void createComposite(final Composite parent) {
+	
 
 		final ScrolledComposite scrollBox = new ScrolledComposite(parent,
-				SWT.BORDER | SWT.H_SCROLL | SWT.V_SCROLL);
+				SWT.H_SCROLL | SWT.V_SCROLL);
+		
+		
+//		Rectangle bounds = parent.getShell().getDisplay().getBounds();
+//		Point point = parent.getShell().getSize();
+//		
+//		int nLeft = (bounds.width - point.x) /2;
+//		int nTop = (bounds.height - point.y) /2;
+//		
+//		parent.getShell().setBounds(nLeft,nTop,point.x,point.y);
+		
+		
 		scrollBox.setBackground(SWTResourceManager.getColor(SWT.COLOR_WHITE));
 		scrollBox.setBounds(0, 0, 490, 537);
 		scrollBox.setMinHeight(470);
@@ -73,11 +90,40 @@ public class ListRisks implements ViewSelected {
 
 		scrollBox.setExpandHorizontal(true);
 		scrollBox.setExpandVertical(true);
-
+		
 		mParent = new Composite(scrollBox, SWT.NONE);
 		mParent.setBackground(SWTResourceManager.getColor(SWT.COLOR_WIDGET_BACKGROUND));
 		mParent.getShell().setText("Upravljanje Rizicima");
+		
+		
+		mParent.getShell().addListener(SWT.Close, new Listener() {
 
+			@Override
+			public void handleEvent(Event event) {
+				// TODO Auto-generated method stub
+				
+				boolean end = Dialog.isConfirmed(
+						"Želite li završiti rad sa programom?",
+						"Odaberite Opciju");
+				if (end)
+					mParent.getShell().close();
+//				 MessageBox messageBox = new MessageBox(mParent.getShell(), SWT.APPLICATION_MODAL | SWT.YES | SWT.NO);
+//				 messageBox.setText("Odaberite Opciju");
+//				 messageBox.setMessage("Želite li završiti rad sa programom?")
+
+			}
+		});
+		
+//		Monitor primary = mParent.getShell().getDisplay().getPrimaryMonitor();
+//		Rectangle bounds = primary.getBounds();
+//		Rectangle rect = mParent.getShell().getBounds();
+//		
+//		int x = bounds.x + (bounds.width - rect.width)/2;
+//		int y = bounds.y + (bounds.height - rect.height)/2;
+//		
+//		 mParent.getShell().setLocation(x, y);
+
+		
 		m_Row = NewASKTable1.clickedRiskRow;
 		dB = new DataFromDatabase();
 
@@ -90,17 +136,20 @@ public class ListRisks implements ViewSelected {
 
 		Composite composite = new Composite(mParent, SWT.NONE);
 		composite.setBackground(SWTResourceManager.getColor(SWT.COLOR_TITLE_BACKGROUND_GRADIENT));
-		composite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, false, false, 1, 1));
-		composite.setLayout(new GridLayout(3, false));
+		GridData gd_composite = new GridData(SWT.FILL, SWT.FILL, false, false, 1, 1);
+		gd_composite.heightHint = 50;
+		composite.setLayoutData(gd_composite);
+		composite.setLayout(new GridLayout(4, false));
 
 				Label naslov_ = new Label (composite, SWT.NONE);
-				naslov_.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false, 1, 1));
+				naslov_.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
 				naslov_.setForeground(SWTResourceManager.getColor(SWT.COLOR_LIST_FOREGROUND));
 				naslov_.setBackground(SWTResourceManager.getColor(SWT.COLOR_TITLE_BACKGROUND_GRADIENT));
 				naslov_.setFont(SWTResourceManager.getFont("Georgia", 18, SWT.BOLD));
 				naslov_.setText("Rizici");
 
 				Button btnIspis_ = new Button(composite, SWT.NONE);
+				btnIspis_.setBackground(SWTResourceManager.getColor(SWT.COLOR_TITLE_BACKGROUND_GRADIENT));
 				GridData gd_btnIspis_ = new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1);
 				gd_btnIspis_.widthHint = 40;
 				gd_btnIspis_.heightHint = 40;
@@ -113,9 +162,10 @@ public class ListRisks implements ViewSelected {
 
 							Connection connection = null;
 							String driverName = "com.microsoft.sqlserver.jdbc.SQLServerDriver";
-							String url = "jdbc:sqlserver://192.168.0.76"/* 192.168.0.70 */;
-							String username = "sa"; // You should modify this.
-							String password = "sa"; // You should modify this.
+//							String url = "jdbc:sqlserver://192.168.0.76"/* 192.168.0.70 */;
+							String url = "jdbc:sqlserver://127.0.0.1:1433;integratedSecurity=true";
+////							String username = "sa"; // You should modify this.
+//							String password = "sa"; // You should modify this.
 							// Load the JDBC driver
 							try {
 								Class.forName(driverName);
@@ -125,15 +175,17 @@ public class ListRisks implements ViewSelected {
 							}
 							// Create a connection to the database
 							try {
-								connection = DriverManager.getConnection(url, username,
-										password);
+//								connection = DriverManager.getConnection(url, username,
+//										password);
+								connection = DriverManager.getConnection(url);
 							} catch (SQLException e1) {
 								// TODO Auto-generated catch block
 								e1.printStackTrace();
 							}
 
-							JasperPrint print = JasperFillManager.fillReport("C:/Documents and Settings/Zrosko/git/isms/hr.ante.isms/src/reports/lista_rizika.jasper", hm, /*new JREmptyDataSource()*/connection);
-
+//							JasperPrint print = JasperFillManager.fillReport("C:/Documents and Settings/Zrosko/git/isms/hr.ante.isms/src/reports/lista_rizika.jasper", hm, /*new JREmptyDataSource()*/connection);
+							JasperPrint print = JasperFillManager.fillReport("C:/Reports/lista_rizika.jasper", hm, /*new JREmptyDataSource()*/connection);
+							
 							JasperViewer.viewReport(print,false);
 
 						} catch (JRException e1) {
@@ -145,6 +197,7 @@ public class ListRisks implements ViewSelected {
 				btnIspis_.setImage(ResourceManager.getPluginImage("hr.ante.isms", "src/icons/filetype_pdf.png"));
 
 				Button btnDelete_= new Button(composite, SWT.NONE);
+				btnDelete_.setBackground(SWTResourceManager.getColor(SWT.COLOR_TITLE_BACKGROUND_GRADIENT));
 		btnDelete_.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
@@ -179,6 +232,20 @@ public class ListRisks implements ViewSelected {
 				gd_btnDelete_.heightHint = 40;
 				btnDelete_.setLayoutData(gd_btnDelete_);
 				btnDelete_.setImage(ResourceManager.getPluginImage("hr.ante.isms", "src/icons/deletered.png"));
+				
+				Button btnRefresh = new Button(composite, SWT.NONE);
+				btnRefresh.setBackground(SWTResourceManager.getColor(SWT.COLOR_TITLE_BACKGROUND_GRADIENT));
+				GridData gd_btnRefresh = new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1);
+				gd_btnRefresh.widthHint = 40;
+				gd_btnRefresh.heightHint = 40;
+				btnRefresh.setLayoutData(gd_btnRefresh);
+				btnRefresh.addSelectionListener(new SelectionAdapter() {
+					@Override
+					public void widgetSelected(SelectionEvent e) {
+						table.redraw();
+					}
+				});
+				btnRefresh.setImage(ResourceManager.getPluginImage("hr.ante.isms", "src/icons/table_refresh.png"));
 
 		Composite compositeASKTable = new Composite(mParent, SWT.NONE);
 		compositeASKTable.setBackground(SWTResourceManager
@@ -190,12 +257,8 @@ public class ListRisks implements ViewSelected {
 		gd_compositeASKTable.widthHint = 778;
 		compositeASKTable.setLayoutData(gd_compositeASKTable);
 
-
 		table = new NewASKTable1(this,compositeASKTable, new ListRiskASKTableModel(7, 1,""),
 				717, compositeASKTable.getBounds().height);
-
-//		new ASKTable(compositeASKTable, new ListRiskASKTableModel(7, 1,""), 717,
-//				compositeASKTable.getBounds().height);
 
 		Composite compositeUser_ = new Composite(mParent, SWT.NONE);
 		compositeUser_.setBackground(SWTResourceManager
@@ -218,9 +281,12 @@ public class ListRisks implements ViewSelected {
 
 		Label labelsep_ = new Label(compositeUser_, SWT.SEPARATOR);
 		CLabel labelUserDatum_ = new CLabel(compositeUser_, SWT.NONE);
-		labelUserDatum_.setLayoutData(new GridData(SWT.LEFT, SWT.TOP, true,
-				false, 1, 1));
-		labelUserDatum_.setText("Petak, 21. Lipanj 2013");
+		GridData gd_labelUserDatum_ = new GridData(SWT.RIGHT, SWT.TOP, true,
+				false, 1, 1);
+		gd_labelUserDatum_.widthHint = 150;
+		labelUserDatum_.setLayoutData(gd_labelUserDatum_);
+//		labelUserDatum_.setText("Petak, 21. Lipanj 2013");
+		labelUserDatum_.setText(getCurrentDate());
 		labelUserDatum_.setBackground(SWTResourceManager
 				.getColor(SWT.COLOR_TITLE_INACTIVE_BACKGROUND_GRADIENT));
 		new Label(compositeUser_, SWT.NONE);
@@ -229,9 +295,21 @@ public class ListRisks implements ViewSelected {
 
 		scrollBox.setContent(mParent);
 	}
+	
+	private String getCurrentDate()
+	{
+		Locale currentLocale = new Locale("hr","HR");
+		DateFormat dateFormatter = DateFormat.getDateInstance(DateFormat.FULL,currentLocale);
+		Date today = new Date();
+		String dateOut = dateFormatter.format(today);
+		return dateOut;
+		
+	}
+	
 	@PreDestroy
 	public void dispose() throws Exception {
-	  System.out.println("Closing application");
+	  System.out.println("Closing ListRisks");
+	  System.exit(0);
 	}
 
 	@Focus

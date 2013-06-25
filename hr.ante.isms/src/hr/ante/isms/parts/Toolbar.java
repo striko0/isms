@@ -54,6 +54,8 @@ public class Toolbar {
 	public ToolItem tltmIdentifikacijaRanjivosti;
 	private int m_Row;
 	private Composite m_Parent;
+	private MPart assetPart ;
+	public static int assetIsVisible=0;
 
 	@Inject
 	IStylingEngine engine;
@@ -78,7 +80,7 @@ public class Toolbar {
 		gl_parent.marginHeight = 0;
 		parent.setLayout(gl_parent);
 
-		expandBar = new ExpandBar(parent, SWT.BORDER | SWT.V_SCROLL);
+		expandBar = new ExpandBar(parent, SWT.V_SCROLL);
 		//gd_expandBar.heightHint = 490;
 		GridData gd_expandBar = new GridData(SWT.FILL, SWT.FILL, true, true, 1,
 				1);
@@ -193,7 +195,7 @@ public class Toolbar {
 
 		final ToolBar bar2 = new ToolBar(expandBar, SWT.FLAT | SWT.WRAP | SWT.RIGHT | SWT.SHADOW_OUT | SWT.VERTICAL);
 		xpndtmProcjenaRizika.setControl(bar2);
-		xpndtmProcjenaRizika.setHeight(500);
+		xpndtmProcjenaRizika.setHeight(300);
 
 		ToolItem tltmImovina = new ToolItem(bar2, SWT.NONE);
 		tltmImovina.setImage(ResourceManager.getPluginImage("hr.ante.isms",
@@ -362,7 +364,7 @@ public class Toolbar {
 		xpndtmSmanjivanjeRizika.setText("Smanjivanje Rizika");
 
 		final MPart riskPart = partService.findPart("hr.ante.isms.part.risk");
-		final MPart assetPart = partService.findPart("hr.ante.isms.part.asset");
+		assetPart = partService.findPart("hr.ante.isms.part.asset");
 		final MPart startPart = partService.findPart("hr.ante.isms.part.start");
 
 		expandBar.addExpandListener(new ExpandListener() {
@@ -377,6 +379,7 @@ public class Toolbar {
 						riskPart.setVisible(false);
 						assetPart.setVisible(false);
 						startPart.setVisible(true);
+						assetIsVisible=0;
 
 					}
 				}
@@ -386,6 +389,7 @@ public class Toolbar {
 						riskPart.setVisible(false);
 						assetPart.setVisible(false);
 						startPart.setVisible(true);
+						assetIsVisible=0;
 
 					}
 
@@ -400,6 +404,7 @@ public class Toolbar {
 						riskPart.setVisible(false);
 						assetPart.setVisible(false);
 						startPart.setVisible(true);
+						assetIsVisible=0;
 
 					}
 				}
@@ -416,6 +421,7 @@ public class Toolbar {
 					startPart.setVisible(false);
 
 					assetPart.setVisible(true);
+					assetIsVisible=1;
 
 //					MPart part = partService.findPart("hr.ante.isms.part.risk");
 //					part.setVisible(false);
@@ -431,6 +437,7 @@ public class Toolbar {
 					startPart.setVisible(false);
 
 					riskPart.setVisible(true);
+					assetIsVisible=0;
 
 
 
@@ -452,6 +459,7 @@ public class Toolbar {
 					riskPart.setVisible(false);
 
 					startPart.setVisible(true);
+					assetIsVisible=0;
 
 
 
@@ -592,6 +600,17 @@ public class Toolbar {
 //		});
 //		tltmPotvrdaProcjene.setText("Potvrda Procjene");
 
+	}
+	
+	public int isAssetPartVisible(){
+		
+		
+		
+		if(assetPart.isVisible())
+			return 1;
+		else
+			return 0;
+		
 	}
 
 	@PreDestroy

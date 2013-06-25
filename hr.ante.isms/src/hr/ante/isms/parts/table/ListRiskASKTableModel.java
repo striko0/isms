@@ -1,7 +1,7 @@
 package hr.ante.isms.parts.table;
 
 import hr.ante.isms.connection.DataFromDatabase;
-import hr.ante.isms.connection.DatabaseConnection;
+import hr.ante.isms.connection.DatabaseConnectionDoma;
 import hr.ante.isms.parts.DataFromServer;
 import hr.ante.test.renderers.ASFixedCellRenderer;
 
@@ -111,34 +111,34 @@ public class ListRiskASKTableModel extends KTableSortedModel {
 			if (m_Vrsta == 3) {
 				content = dB.getContentFromDB("view_risk",
 						"VulnerabilityIdentification", m_assetid);
-				if (content.size() == 3) {
-
-					Notifier.notify("Odreðivanje vjerojatnosti",
-							"Nema podataka za identifikaciju ranjivosti",
-							NotifierTheme.RED_THEME);
-				}
+//				if (content.size() == 3) {
+//
+//					Notifier.notify("Identifikacija Ranjivost",
+//							"Nema podataka za identifikaciju ranjivosti",
+//							NotifierTheme.RED_THEME);
+//				}
 				System.out.println("SIZE " + content.size());
 			}
 
 			if (m_Vrsta == 4) {
 				content = dB.getContentFromDB("view_risk", "Probability",
 						m_assetid);
-				if (content.size() == 4) {
-					Notifier.notify("Odreðivanje vjerojatnosti",
-							"Nema podataka za odreðivanje vjerojatnosti",
-							NotifierTheme.RED_THEME);
-				}
+//				if (content.size() == 4) {
+//					Notifier.notify("Odreðivanje Vjerojatnosti",
+//							"Nema podataka za odreðivanje vjerojatnosti",
+//							NotifierTheme.RED_THEME);
+//				}
 				System.out.println("SIZE " + content.size());
 			}
 
 			if (m_Vrsta == 5) {
 				content = dB.getContentFromDB("view_risk", "ImpactAnalysis",
 						m_assetid);
-				if (content.size() == 5) {
-					Notifier.notify("Odreðivanje vjerojatnosti",
-							"Nema podataka za odreðivanje vjerojatnosti",
-							NotifierTheme.RED_THEME);
-				}
+//				if (content.size() == 5) {
+//					Notifier.notify("Analiza Uèinka",
+//							"Nema podataka za odreðivanje vjerojatnosti",
+//							NotifierTheme.RED_THEME);
+//				}
 				System.out.println("SIZE " + content.size());
 			}
 

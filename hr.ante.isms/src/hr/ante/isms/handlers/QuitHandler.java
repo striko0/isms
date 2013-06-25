@@ -25,8 +25,8 @@ public class QuitHandler {
 	@Execute
 	public void execute(IWorkbench workbench,
 			@Named(IServiceConstants.ACTIVE_SHELL) Shell shell){
-		if (MessageDialog.openConfirm(shell, "Confirmation",
-				"Do you want to exit?")) {
+		if (MessageDialog.openConfirm(shell, "Odaberite Opciju",
+				"Želite li završiti rad sa programom?")) {
 			workbench.close();
 		}
 	}

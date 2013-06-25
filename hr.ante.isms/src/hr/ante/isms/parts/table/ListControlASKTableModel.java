@@ -2,7 +2,7 @@ package hr.ante.isms.parts.table;
 
 
 import hr.ante.isms.connection.DataFromDatabase;
-import hr.ante.isms.connection.DatabaseConnection;
+import hr.ante.isms.connection.DatabaseConnectionDoma;
 import hr.ante.isms.parts.DataFromServer;
 import hr.ante.test.renderers.ASCurrencyTextCellRenderer;
 import hr.ante.test.renderers.ASFixedCellRenderer;
@@ -73,7 +73,7 @@ public class ListControlASKTableModel extends KTableSortedModel {
    *
    */
 	public void readAllFromDB(){
-		if (!empty) {
+//		if (!empty) {
 			content = dB.getContentFromDB("view_control",
 					"ListControlASKTableModel");
 //			if (content.size() == 4) {
@@ -86,22 +86,22 @@ public class ListControlASKTableModel extends KTableSortedModel {
 			columnNumber = 7;
 			rowNumber = Integer.parseInt(content.get("@@brojac").toString());
 			initialize();
-		}
-		else {
-			Notifier.notify("Problem!", "Odaberite kontrolu!",
-					NotifierTheme.RED_THEME);
-			initialize();
-		}
+//		}
+//		else {
+//			Notifier.notify("Problem!", "Odaberite kontrolu!",
+//					NotifierTheme.RED_THEME);
+//			initialize();
+//		}
 	}
-	public ListControlASKTableModel(String controlId) {
+	public ListControlASKTableModel(/*String controlId*/) {
 
 		dB = new DataFromDatabase();
 
-		if(controlId!="ID"){
-			m_ControlId = controlId;
-			empty=false;
-
-		}
+//		if(controlId!="ID"){
+//			m_ControlId = controlId;
+//			empty=false;
+//
+//		}
 
 		initialize();
 
@@ -121,10 +121,14 @@ public class ListControlASKTableModel extends KTableSortedModel {
 
 		readAllFromDB();
 
-		setColumnWidth(0, 30);
-		setColumnWidth(1,100);
-		setColumnWidth(2,250);
-		setColumnWidth(3,100);
+		setColumnWidth(0,30);
+		setColumnWidth(1,75);
+		setColumnWidth(2,75);
+		setColumnWidth(3,300);
+		setColumnWidth(4,100);
+		setColumnWidth(5,100);
+		setColumnWidth(6,100);
+		setColumnWidth(7,75);
 	}
 
 	public HashMap getMeta() {

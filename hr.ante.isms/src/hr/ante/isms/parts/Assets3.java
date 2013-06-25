@@ -1,6 +1,7 @@
 package hr.ante.isms.parts;
 
-import hr.ante.isms.connection.DatabaseConnection;
+import hr.ante.isms.connection.DataFromDatabase;
+import hr.ante.isms.connection.DatabaseConnectionDoma;
 import hr.ante.isms.parts.table.ListAssetASKTableModel;
 import hr.ante.isms.parts.table.NewASKTable1;
 
@@ -8,17 +9,19 @@ import java.sql.SQLException;
 import java.util.Hashtable;
 
 import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
 import javax.inject.Inject;
 
 import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.e4.ui.di.Focus;
 import org.eclipse.e4.ui.workbench.modeling.EPartService;
+import org.eclipse.jface.action.IContributionItem;
+import org.eclipse.jface.action.ICoolBarManager;
+import org.eclipse.jface.action.MenuManager;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.ScrolledComposite;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
-import org.eclipse.swt.events.SelectionListener;
-import org.eclipse.swt.internal.ole.win32.COMObject;
 import org.eclipse.swt.layout.FormAttachment;
 import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.layout.FormLayout;
@@ -29,16 +32,23 @@ import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.Text;
-import org.eclipse.ui.internal.SaveAction;
+import org.eclipse.ui.IWorkbenchWindow;
+import org.eclipse.ui.handlers.IHandlerService;
+import org.eclipse.ui.internal.Workbench;
+import org.eclipse.ui.internal.WorkbenchWindow;
 import org.eclipse.wb.swt.ResourceManager;
 import org.mihalis.opal.notify.Notifier;
 import org.mihalis.opal.notify.NotifierColorsFactory.NotifierTheme;
+
+import com.ibm.icu.lang.UCharacter.WordBreak;
 
 import de.kupzog.ktable.KTableSortedModel;
 
 public class Assets3 {
 
+	private DataFromDatabase dB;
 	private KTableSortedModel m_Model;
 	private NewASKTable1 m_Table;
 	private int m_Row;
@@ -56,6 +66,7 @@ public class Assets3 {
 	private Combo comboRaspolozivost_ ;
 	private Combo comboBi_;
 	private String Objanjenjeostalo_;
+	public static int assetPartVisible = 0;
 
 
 	@Inject
@@ -85,6 +96,7 @@ public class Assets3 {
 		m_Table = NewASKTable1.m_TableAsset;
 		m_Model = DataFromServer.listAssetASKTableModel;
 		m_Row = NewASKTable1.clickedAssetRow;
+		dB = new DataFromDatabase();
 
 		Composite compositeLeft = new Composite(mParent, SWT.NONE);
 		compositeLeft.setLayout(new FormLayout());
@@ -373,6 +385,7 @@ public class Assets3 {
 		fillForm();
 
 		scrollBox.setContent(mParent);
+		mParent.getShell().setDefaultButton(btnSpremi_);
 
 
 	}
@@ -380,22 +393,14 @@ public class Assets3 {
 	private void fillForm() {
 		// TODO Auto-generated method stub
 
-		/**Dohvaæanje iz baze
-		 *
-		 */
+		
 
 		initialSettings();
+		
 
-		comboNoisteljorgjed_.setItems(getComboItemsFromDB("as_owner"));
-		comboPovjerljivost_.setItems(getComboItemsFromDB("as_confidentiality"));
-		comboCjelovitost_.setItems(getComboItemsFromDB("as_integrity"));
-		comboRaspolozivost_.setItems(getComboItemsFromDB("as_accessibility", "Combo"));
-		comboBi_.setItems(getComboItemsFromDB("as_business_impact"));
-
-
-
-		if(m_Row!=0/* && !m_Table.m_Selection.isEmpty()*/){
-			//initialSettings();
+		if(m_Row!=0/* && !m_Table.m_Selection.isEmpty()*/ ){
+			
+					
 			action=2;
 			comboPodkateg_.setEnabled(true);
 			m_AssetId=m_Model.getContentAt(10, m_Row).toString();
@@ -409,39 +414,48 @@ public class Assets3 {
 			String accessId= m_Model.getContentAt(7, m_Row).toString();
 			String bimpactId= m_Model.getContentAt(8, m_Row).toString();
 
-			String subcategory = getDesiredColumnFromDB("view_asset", "category_name","WHERE asset_id=" + m_AssetId + "");
-			String owner = getDesiredColumnFromDB("view_asset", "owner_name","WHERE asset_id=" + m_AssetId + "");
-			String confidentiality = getDesiredColumnFromDB("view_asset", "confidentiality","WHERE asset_id=" + m_AssetId + "");
-			String integrity = getDesiredColumnFromDB("view_asset", "integrity","WHERE asset_id=" + m_AssetId + "");
-			String accessibility = getDesiredColumnFromDB("view_asset", "accessibility","WHERE asset_id=" + m_AssetId + "");
-			String businessImpact = getDesiredColumnFromDB("view_asset", "businessimpact","WHERE asset_id=" + m_AssetId + "");
+			String subcategory = dB.getDesiredColumnFromDB("view_asset", "category_name","WHERE asset_id=" + m_AssetId + "");
+			String owner = dB.getDesiredColumnFromDB("view_asset", "owner_name","WHERE asset_id=" + m_AssetId + "");
+			
+			String confidentiality = dB.getDesiredColumnFromDB("view_asset", "confidentiality","WHERE asset_id=" + m_AssetId + "");
+			String integrity = dB.getDesiredColumnFromDB("view_asset", "integrity","WHERE asset_id=" + m_AssetId + "");
+			String accessibility = dB.getDesiredColumnFromDB("view_asset", "accessibility","WHERE asset_id=" + m_AssetId + "");
+			String businessImpact = dB.getDesiredColumnFromDB("view_asset", "businessimpact","WHERE asset_id=" + m_AssetId + "");
 
-			comboPodkateg_.setItems(getComboItemsFromDB("as_subcateg", "WHERE assubcateg_id LIKE '"+subcategoryId.substring(0,2)+"%'"));
+			comboPodkateg_.setItems(dB.getComboItemsFromDB("as_subcateg", "WHERE assubcateg_id LIKE '"+subcategoryId.substring(0,2)+"%'"));
 
 			comboPodkateg_.setText(subcategoryId+"-"+subcategory);
 
-			comboKateg_.setText(getTextFromDB("as_asset_type", "WHERE assettype_id="+subcategoryId.substring(0,2)+""));
-
-			comboNoisteljorgjed_.setText(ownerId+"-"+owner);
+			String categoryId = subcategoryId.substring(0,2);
+			String category = dB.getDesiredColumnFromDB("as_asset_type","name", "WHERE assettype_id="+categoryId+"");
+			
+			comboKateg_.setText(categoryId+"-"+category);
+			if(owner==null)
+				comboNoisteljorgjed_.setText("");
+			else
+				comboNoisteljorgjed_.setText(ownerId+"-"+owner);
 			comboPovjerljivost_.setText(confId+"-"+confidentiality);
 			comboCjelovitost_.setText(integId+"-"+integrity);
 			comboRaspolozivost_.setText(accessId+"-"+accessibility);
 			comboBi_.setText(bimpactId+"-"+businessImpact);
 
-			String Opis_ = getDesiredColumnFromDB("view_asset", "description", "WHERE asset_id=" + m_AssetId + "");
-			if(Opis_ == null)
-				Opis_ = " ";
-			textOpis_.setText(Opis_);
+			String Opis_ = dB.getDesiredColumnFromDB("view_asset", "description", "WHERE asset_id=" + m_AssetId + "");
+			if(Opis_==null)
+				Opis_ = "";
+			else
+				textOpis_.setText(Opis_);
 
-			Objanjenjeostalo_= getDesiredColumnFromDB("view_asset", "bi_description", "WHERE asset_id=" + m_AssetId + "");
-			if(Objanjenjeostalo_ == null)
-				Objanjenjeostalo_ = " ";
-			textObjanjenjeostalo_.setText(Objanjenjeostalo_);
+			Objanjenjeostalo_= dB.getDesiredColumnFromDB("view_asset", "bi_description", "WHERE asset_id=" + m_AssetId + "");
+			if(Objanjenjeostalo_==null)
+				Objanjenjeostalo_ = "";
+			else
+				textObjanjenjeostalo_.setText(Objanjenjeostalo_);
 
 		}
 		else
 		{
 			action=1;
+			assetPartVisible=0;
 		}
 
 
@@ -451,7 +465,8 @@ public class Assets3 {
 	}
 
 	private void initialSettings(){
-		comboKateg_.setItems(getComboItemsFromDB("as_asset_type"));
+		action=1;
+		comboKateg_.setItems(dB.getComboItemsFromDB("as_asset_type"));
 		comboKateg_.addSelectionListener(new SelectionAdapter() {
 
 			@Override
@@ -462,9 +477,15 @@ public class Assets3 {
 				comboPodkateg_.setEnabled(true);
 //				if(comboKateg_.getText()!="")
 //					comboPodkateg_.setText(getTextFromDB("as_subcateg", "WHERE assubcateg_id ="+comboKateg_.getText().substring(0,2)+10+""));
-				comboPodkateg_.setItems(getComboItemsFromDB("as_subcateg", "WHERE assubcateg_id LIKE '"+index+"%'"));
+				comboPodkateg_.setItems(dB.getComboItemsFromDB("as_subcateg", "WHERE assubcateg_id LIKE '"+index+"%'"));
 			}
 		});
+		
+		comboNoisteljorgjed_.setItems(dB.getComboItemsFromDB("as_owner"));
+		comboPovjerljivost_.setItems(dB.getComboItemsFromDB("as_confidentiality"));
+		comboCjelovitost_.setItems(dB.getComboItemsFromDB("as_integrity"));
+		comboRaspolozivost_.setItems(dB.getComboItemsFromDB("as_accessibility", "Combo"));
+		comboBi_.setItems(dB.getComboItemsFromDB("as_business_impact"));
 	}
 
 	private void saveAction(){
@@ -481,18 +502,9 @@ public class Assets3 {
 				&& comboBi_.getText() != "" && comboBi_.getText().length() > 0) {
 
 			Hashtable<String, String> data = new Hashtable<String, String>();
-			/**
-			 *
-			 *
-			 * UPDATE
-			 */
 			data.put("assettype_id", comboKateg_.getText().substring(0,2));
 			data.put("name", textNaziv_.getText());
-			if(comboPodkateg_.getText().equals(""))
-				data.put("category", "");
-			else{
-				data.put("category", comboPodkateg_.getText().substring(0,4));
-			}
+			data.put("category", comboPodkateg_.getText().substring(0,4));			
 
 			if(comboNoisteljorgjed_.getText().equals(""))
 				data.put("owner", "");
@@ -501,12 +513,12 @@ public class Assets3 {
 			}
 
 
-			if(textOpis_.getText().equals(""))
-				data.put("description", "");
-			else{
+//			if(textOpis_.getText().equals(""))
+//				data.put("description", "");
+//			else{
 				data.put("description", textOpis_.getText());
-			}
-
+//			}
+			
 			data.put(
 					"confidentiality_level",
 					comboPovjerljivost_.getText() != null ? comboPovjerljivost_
@@ -522,11 +534,11 @@ public class Assets3 {
 			data.put("businessimpact_level",
 					comboBi_.getText() != null ? comboBi_.getText().substring(0,1) : "");
 
-			if(textObjanjenjeostalo_.getText().equals(""))
-				data.put("bi_description", "");
-			else{
+//			if(textObjanjenjeostalo_.getText().equals(""))
+//				data.put("bi_description", "");
+//			else{
 				data.put("bi_description", textObjanjenjeostalo_.getText());
-			}
+//			}
 
 
 
@@ -534,11 +546,10 @@ public class Assets3 {
 			System.out.println("Hashtable" + data);
 			try {
 				if (action == 2) {
-					insertDataInDB("as_asset", data, "update", m_Model
-							.getContentAt(1, m_Row).toString());
+					dB.insertDataInDB("as_asset", data, "update","Assets", m_AssetId);
 
 				} else
-					insertDataInDB("as_asset", data, "insert", "");
+					dB.insertDataInDB("as_asset", data, "insert","Assets", "");
 
 			} catch (Exception e1) {
 				e1.printStackTrace();
@@ -563,124 +574,124 @@ public class Assets3 {
 	}
 
 
-	public String[] getComboItemsFromDB(String tableName){
-		DatabaseConnection con = new DatabaseConnection();
-		con.doConnection();
+//	public String[] getComboItemsFromDB(String tableName){
+//		DatabaseConnectionDoma con = new DatabaseConnectionDoma();
+//		con.doConnection();
+//
+//		try {
+//
+//				return con.getComboItems(tableName);
+//
+//		} catch (SQLException ex) {
+//			System.out.println(ex.getMessage());
+//			try {
+//				con.connection.close();
+//			} catch (SQLException e1) {
+//				// TODO Auto-generated catch block
+//				e1.printStackTrace();
+//			}
+//
+//		}
+//		System.out.println("Connection : " + con.doConnection());
+//		try {
+//			con.connection.close();
+//		} catch (SQLException e1) {
+//			// TODO Auto-generated catch block
+//			e1.printStackTrace();
+//		}
+//		return new String[]{};
+//
+//	}
+//
+//	public String[] getComboItemsFromDB(String tableName, String whereStatement){
+//		DatabaseConnectionDoma con = new DatabaseConnectionDoma();
+//		con.doConnection();
+//
+//		try {
+//
+//			return con.getComboItemsWithWhere(tableName, whereStatement);
+//
+//		} catch (SQLException ex) {
+//			System.out.println(ex.getMessage());
+//			try {
+//				con.connection.close();
+//			} catch (SQLException e1) {
+//				// TODO Auto-generated catch block
+//				e1.printStackTrace();
+//			}
+//
+//		}
+//		System.out.println("Connection : " + con.doConnection());
+//		try {
+//			con.connection.close();
+//		} catch (SQLException e1) {
+//			// TODO Auto-generated catch block
+//			e1.printStackTrace();
+//		}
+//		return new String[]{};
+//
+//	}
 
-		try {
+//	public String getTextFromDB(String tableName, String whereStatement){
+//		DatabaseConnectionDoma con = new DatabaseConnectionDoma();
+//		con.doConnection();
+//
+//		try {
+//
+//			return con.getTextWithWhere(tableName, whereStatement);
+//
+//		} catch (SQLException ex) {
+//			System.out.println(ex.getMessage());
+//			try {
+//				con.connection.close();
+//			} catch (SQLException e1) {
+//				// TODO Auto-generated catch block
+//				e1.printStackTrace();
+//			}
+//
+//		}
+//		System.out.println("Connection : " + con.doConnection());
+//		try {
+//			con.connection.close();
+//		} catch (SQLException e1) {
+//			// TODO Auto-generated catch block
+//			e1.printStackTrace();
+//		}
+//		return new String();
+//
+//	}
 
-				return con.getComboItems(tableName);
-
-		} catch (SQLException ex) {
-			System.out.println(ex.getMessage());
-			try {
-				con.connection.close();
-			} catch (SQLException e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
-			}
-
-		}
-		System.out.println("Connection : " + con.doConnection());
-		try {
-			con.connection.close();
-		} catch (SQLException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		}
-		return new String[]{};
-
-	}
-
-	public String[] getComboItemsFromDB(String tableName, String whereStatement){
-		DatabaseConnection con = new DatabaseConnection();
-		con.doConnection();
-
-		try {
-
-			return con.getComboItemsWithWhere(tableName, whereStatement);
-
-		} catch (SQLException ex) {
-			System.out.println(ex.getMessage());
-			try {
-				con.connection.close();
-			} catch (SQLException e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
-			}
-
-		}
-		System.out.println("Connection : " + con.doConnection());
-		try {
-			con.connection.close();
-		} catch (SQLException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		}
-		return new String[]{};
-
-	}
-
-	public String getTextFromDB(String tableName, String whereStatement){
-		DatabaseConnection con = new DatabaseConnection();
-		con.doConnection();
-
-		try {
-
-			return con.getTextWithWhere(tableName, whereStatement);
-
-		} catch (SQLException ex) {
-			System.out.println(ex.getMessage());
-			try {
-				con.connection.close();
-			} catch (SQLException e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
-			}
-
-		}
-		System.out.println("Connection : " + con.doConnection());
-		try {
-			con.connection.close();
-		} catch (SQLException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		}
-		return new String();
-
-	}
-
-	public String getDesiredColumnFromDB(String tableName, String columnName, String whereStatement){
-		DatabaseConnection con = new DatabaseConnection();
-		con.doConnection();
-
-		try {
-
-			return con.getContentFromDesiredColumn(tableName, columnName, whereStatement);
-
-		} catch (SQLException ex) {
-			System.out.println(ex.getMessage());
-			try {
-				con.connection.close();
-			} catch (SQLException e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
-			}
-
-		}
-		System.out.println("Connection : " + con.doConnection());
-		try {
-			con.connection.close();
-		} catch (SQLException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		}
-		return new String();
-
-	}
+//	public String getDesiredColumnFromDB(String tableName, String columnName, String whereStatement){
+//		DatabaseConnectionDoma con = new DatabaseConnectionDoma();
+//		con.doConnection();
+//
+//		try {
+//
+//			return con.getContentFromDesiredColumn(tableName, columnName, whereStatement);
+//
+//		} catch (SQLException ex) {
+//			System.out.println(ex.getMessage());
+//			try {
+//				con.connection.close();
+//			} catch (SQLException e1) {
+//				// TODO Auto-generated catch block
+//				e1.printStackTrace();
+//			}
+//
+//		}
+//		System.out.println("Connection : " + con.doConnection());
+//		try {
+//			con.connection.close();
+//		} catch (SQLException e1) {
+//			// TODO Auto-generated catch block
+//			e1.printStackTrace();
+//		}
+//		return new String();
+//
+//	}
 
 	public String getDescriptionFromDB(String tableName, String where){
-		DatabaseConnection con = new DatabaseConnection();
+		DatabaseConnectionDoma con = new DatabaseConnectionDoma();
 		con.doConnection();
 
 		try {
@@ -712,37 +723,37 @@ public class Assets3 {
 
 	}
 
-	public void insertDataInDB(String tableName, Hashtable data, String updateOrInsert, String id) throws Exception{
-		DatabaseConnection con = new DatabaseConnection();
-		con.doConnection();
-
-		try {
-
-			if(updateOrInsert=="insert")
-				con.insertAssetData(tableName, data);
-			if(updateOrInsert=="update")
-				con.updateAssetData(tableName, data, id);
-
-		} catch (SQLException ex) {
-			System.out.println(ex.getMessage());
-			try {
-				con.connection.close();
-			} catch (SQLException e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
-			}
-
-		}
-		System.out.println("Connection : " + con.doConnection());
-		try {
-			con.connection.close();
-		} catch (SQLException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		}
-
-
-	}
+//	public void insertDataInDB(String tableName, Hashtable data, String updateOrInsert, String id) throws Exception{
+//		DatabaseConnectionDoma con = new DatabaseConnectionDoma();
+//		con.doConnection();
+//
+//		try {
+//
+//			if(updateOrInsert=="insert")
+//				con.insertAssetData(tableName, data);
+//			if(updateOrInsert=="update")
+//				con.updateAssetData(tableName, data, id);
+//
+//		} catch (SQLException ex) {
+//			System.out.println(ex.getMessage());
+//			try {
+//				con.connection.close();
+//			} catch (SQLException e1) {
+//				// TODO Auto-generated catch block
+//				e1.printStackTrace();
+//			}
+//
+//		}
+//		System.out.println("Connection : " + con.doConnection());
+//		try {
+//			con.connection.close();
+//		} catch (SQLException e1) {
+//			// TODO Auto-generated catch block
+//			e1.printStackTrace();
+//		}
+//
+//
+//	}
 
 //	public void updateDataInDB(String tableName, Hashtable data, String id) throws Exception{
 //		DatabaseConnection con = new DatabaseConnection();
@@ -776,19 +787,10 @@ public class Assets3 {
 
 
 
-//	@PreDestroy
-//	public void dispose() throws Exception {
-//	  System.out.println("Closing application");
-//	}
-//
-//	 @Persist
-//	  public void save() {
-//	    System.out.println("Saving data");
-//	    // Save the data
-//	    // ...
-//	    // Now set the dirty flag to false
-//	    dirty.setDirty(false);
-//	  }
+	@PreDestroy
+	public void dispose() throws Exception {
+	  System.out.println("Closing application");
+	}
 
 
 	@Focus

@@ -15,6 +15,7 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.ScrolledComposite;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
@@ -49,7 +50,7 @@ public class RiskAssessment {
 	private Combo comboVjerojatnostOtkrivanja_;
 	private Combo comboUtjecajNaPovjerljivost_;
 	private Combo comboUtjecajNaCjelovitost_;
-	private Combo comboUtjecajNaRaspolozivost_ ;
+	private Combo comboUtjecajNaRaspolozivost_;
 	private Combo comboUcinak_;
 	private Text textImovina_;
 	private Text textNazivRizika_;
@@ -118,7 +119,7 @@ public class RiskAssessment {
 		Label lblPrijetnja_ = new Label(composite, SWT.NONE);
 		lblPrijetnja_.setText("Prijetnja:");
 
-		comboPrijetnja_ = new Combo(composite, SWT.NONE);
+		comboPrijetnja_ = new Combo(composite, SWT.READ_ONLY);
 		GridData gd_comboPrijetnja_ = new GridData(SWT.LEFT, SWT.CENTER, true,
 				false, 1, 1);
 		gd_comboPrijetnja_.widthHint = 300;
@@ -127,7 +128,7 @@ public class RiskAssessment {
 		Label lblRanjivost_ = new Label(composite, SWT.NONE);
 		lblRanjivost_.setText("Ranjivost");
 
-		comboRanjivost_ = new Combo(composite, SWT.NONE);
+		comboRanjivost_ = new Combo(composite, SWT.READ_ONLY);
 		GridData gd_comboRanjivost_ = new GridData(SWT.LEFT, SWT.CENTER, true,
 				false, 1, 1);
 		gd_comboRanjivost_.widthHint = 300;
@@ -148,11 +149,12 @@ public class RiskAssessment {
 		lblVjerojatnost_.setText("Vjerojatnost: ");
 
 		comboVjerojatnost_ = new Combo(grpVjerojatnostOstvarenjaPrijetnje,
-				SWT.NONE);
+				SWT.READ_ONLY);
 		GridData gd_comboVjerojatnost_ = new GridData(SWT.LEFT, SWT.CENTER,
 				true, false, 1, 1);
 		gd_comboVjerojatnost_.widthHint = 217;
 		comboVjerojatnost_.setLayoutData(gd_comboVjerojatnost_);
+		
 
 		Label lblVjerojatnostOtkrivanja_ = new Label(
 				grpVjerojatnostOstvarenjaPrijetnje, SWT.NONE);
@@ -181,6 +183,7 @@ public class RiskAssessment {
 		gd_textOpisVjerojatnosti_.minimumHeight = 50;
 		gd_textOpisVjerojatnosti_.heightHint = 42;
 		textOpisVjerojatnosti_.setLayoutData(gd_textOpisVjerojatnosti_);
+		textOpisVjerojatnosti_.setEnabled(false);
 
 		textOpisVjerojatnostiOtkrivanja_ = new Text(
 				grpVjerojatnostOstvarenjaPrijetnje, SWT.BORDER | SWT.WRAP
@@ -190,6 +193,7 @@ public class RiskAssessment {
 		gd_textOpisVjerojatnostiOtkrivanja_.minimumHeight = 50;
 		textOpisVjerojatnostiOtkrivanja_
 				.setLayoutData(gd_textOpisVjerojatnostiOtkrivanja_);
+		textOpisVjerojatnostiOtkrivanja_.setEnabled(false);
 		new Label(grpVjerojatnostOstvarenjaPrijetnje, SWT.NONE);
 		new Label(grpVjerojatnostOstvarenjaPrijetnje, SWT.NONE);
 		new Label(grpVjerojatnostOstvarenjaPrijetnje, SWT.NONE);
@@ -206,7 +210,7 @@ public class RiskAssessment {
 		Label lblUcinak_ = new Label(grpAnalizaUinkaPrijetnje, SWT.NONE);
 		lblUcinak_.setText("U\u010Dinak:");
 
-		comboUcinak_ = new Combo(grpAnalizaUinkaPrijetnje, SWT.NONE);
+		comboUcinak_ = new Combo(grpAnalizaUinkaPrijetnje, SWT.READ_ONLY);
 		GridData gd_comboUcinak_ = new GridData(SWT.LEFT, SWT.CENTER, true,
 				false, 1, 1);
 		gd_comboUcinak_.widthHint = 75;
@@ -219,8 +223,8 @@ public class RiskAssessment {
 				SWT.NONE);
 		lblUtjecajNaPovjerljivost_.setText("Utjecaj na povjerljivost:");
 
-		comboUtjecajNaPovjerljivost_ = new Combo(
-				grpAnalizaUinkaPrijetnje, SWT.NONE);
+		comboUtjecajNaPovjerljivost_ = new Combo(grpAnalizaUinkaPrijetnje,
+				SWT.NONE);
 		GridData gd_comboUtjecajNaPovjerljivost_ = new GridData(SWT.LEFT,
 				SWT.CENTER, true, false, 1, 1);
 		gd_comboUtjecajNaPovjerljivost_.widthHint = 120;
@@ -257,8 +261,8 @@ public class RiskAssessment {
 				SWT.CENTER, false, false, 1, 1));
 		lblUtjecajNaRaspolozivost_.setText("Utjecaj na raspolo\u017Eivost:");
 
-		comboUtjecajNaRaspolozivost_ = new Combo(
-				grpAnalizaUinkaPrijetnje, SWT.NONE);
+		comboUtjecajNaRaspolozivost_ = new Combo(grpAnalizaUinkaPrijetnje,
+				SWT.NONE);
 		GridData gd_comboUtjecajNaRaspolozivost_ = new GridData(SWT.LEFT,
 				SWT.CENTER, true, false, 1, 1);
 		gd_comboUtjecajNaRaspolozivost_.widthHint = 120;
@@ -292,6 +296,7 @@ public class RiskAssessment {
 				true, 2, 2);
 		gd_textOpisUcinka_.minimumHeight = 50;
 		textOpisUcinka_.setLayoutData(gd_textOpisUcinka_);
+		textOpisUcinka_.setEnabled(false);
 
 		textOpisFaktoraIzlozenosti_ = new Text(grpAnalizaUinkaPrijetnje,
 				SWT.BORDER | SWT.V_SCROLL);
@@ -300,6 +305,7 @@ public class RiskAssessment {
 		gd_textOpisFaktoraIzlozenosti_.minimumHeight = 50;
 		textOpisFaktoraIzlozenosti_
 				.setLayoutData(gd_textOpisFaktoraIzlozenosti_);
+		textOpisFaktoraIzlozenosti_.setEnabled(false);
 
 		Composite compositeButtons_ = new Composite(mParent, SWT.NONE);
 		GridData gd_compositeButtons_ = new GridData(SWT.RIGHT, SWT.FILL, true,
@@ -341,14 +347,13 @@ public class RiskAssessment {
 		});
 		btnIzlaz_.setText("Izlaz");
 
-
 		fillForm();
 		scrollBox.setContent(mParent);
+		mParent.getShell().setDefaultButton(btnSpremi_);
 	}
 
-	public void refreshTable(){
-		((ListRiskASKTableModel)m_Model).readAllFromDB();
-		((ListAssetASKTableModel) m_ModelAsset).readAllFromDB();
+	public void refreshTable() {
+		((ListRiskASKTableModel) m_Model).readAllFromDB();
 		m_Table.redraw();
 
 	}
@@ -356,25 +361,7 @@ public class RiskAssessment {
 	private void fillForm() {
 		// TODO Auto-generated method stub
 
-		/**
-		 * Poèetno postavljanje controla
-		 *
-		 */
-		action=1;
-		comboVjerojatnost_.setItems(dB.getComboItemsFromDB("as_probability"));
-		comboVjerojatnostOtkrivanja_.setItems(dB.getComboItemsFromDB("as_detection_probability"));
-		comboUcinak_.setItems(dB.getComboItemsFromDB("as_threat_impact"));
-		String[] impactItems = dB.getComboItemsFromDB("as_impact");
-		comboUtjecajNaPovjerljivost_.setItems(impactItems);
-		comboUtjecajNaCjelovitost_.setItems(impactItems);
-		comboUtjecajNaRaspolozivost_.setItems(impactItems);
-
-		comboVjerojatnost_.setText("");
-		comboVjerojatnostOtkrivanja_.setText("");
-		comboUcinak_.setText("");
-		comboUtjecajNaPovjerljivost_.setText("");
-		comboUtjecajNaCjelovitost_.setText("");
-		comboUtjecajNaRaspolozivost_.setText("");
+		initialSettings();		
 
 		if(m_Row!=0/* && !m_Table.m_Selection.isEmpty()*/){
 			action=2;
@@ -386,148 +373,271 @@ public class RiskAssessment {
 			String threat = m_Model.getContentAt(5, m_Row).toString();
 			threatId = dB.getDesiredColumnFromDB("view_threat",
 					"threat_id", "WHERE name='" + threat + "'");
-
+			comboPrijetnja_.setText(threatId+"-"+threat);
+			
 			String vulnerability = m_Model.getContentAt(6, m_Row).toString();
 			vulnerabilityId = dB.getDesiredColumnFromDB("view_vulnerability",
 					"vulnerability_id", "WHERE name='" + vulnerability + "'");
+			comboRanjivost_.setText(vulnerabilityId+"-"+vulnerability);
 
 			String probabilityId = m_Model.getContentAt(8, m_Row).toString();
-			String probability = dB.getDesiredColumnFromDB("as_probability",
-					"name", "WHERE probability_id='" + probabilityId + "'");
+			if(!probabilityId.equals("") && probabilityId.length()>0)
+			{
+				String probability = dB.getDesiredColumnFromDB("as_probability",
+						"name", "WHERE probability_id='" + probabilityId + "'");
+				comboVjerojatnost_.setText(probabilityId+"-"+probability);
+				textOpisVjerojatnosti_.setText(m_Model.getContentAt(10, m_Row).toString());		
+				textOpisVjerojatnosti_.setEnabled(true);	
+			
+			}
+			else
+			{
+				comboVjerojatnost_.setText("");
+				textOpisVjerojatnosti_.setText("");		
+				textOpisVjerojatnosti_.setEnabled(false);	
+			}			
 
 			String detection_probabilityId  = m_Model.getContentAt(9, m_Row).toString();
-			if(detection_probabilityId!="")
+			if(!detection_probabilityId.equals("") && detection_probabilityId.length()>0)
 			{
 				String detection_probability = dB.getDesiredColumnFromDB("as_detection_probability",
 						"name", "WHERE asdetectionprobability_id='" + detection_probabilityId + "'");
 				comboVjerojatnostOtkrivanja_.setText(detection_probabilityId+"-"+detection_probability);
+				textOpisVjerojatnostiOtkrivanja_.setText(m_Model.getContentAt(11, m_Row).toString());
+				textOpisVjerojatnostiOtkrivanja_.setEnabled(true);
 
 			}
-
-			textOpisVjerojatnosti_.setText(m_Model.getContentAt(10, m_Row).toString());
-			textOpisVjerojatnostiOtkrivanja_.setText(m_Model.getContentAt(11, m_Row).toString());
-
+			
+			else
+			{
+				comboVjerojatnostOtkrivanja_.setText("");
+				textOpisVjerojatnostiOtkrivanja_.setText("");
+				textOpisVjerojatnostiOtkrivanja_.setEnabled(false);
+			}
+	
 			String impactId = m_Model.getContentAt(12, m_Row).toString();
-			String impact = dB.getDesiredColumnFromDB("as_impact",
-					"name", "WHERE asimpact_id='" + impactId + "'");
-
-			textOpisUcinka_.setText(m_Model.getContentAt(13, m_Row).toString());
-
-			textFaktorIzlozenosti_.setText(m_Model.getContentAt(14, m_Row).toString());
-
+			if(!impactId.equals("") && impactId.length()>0)
+			{
+				String impact = dB.getDesiredColumnFromDB("as_impact",
+						"name", "WHERE asimpact_id='" + impactId + "'");
+				comboUcinak_.setText(impactId+"-"+impact);
+				textOpisUcinka_.setText(m_Model.getContentAt(13, m_Row).toString());	
+				textOpisUcinka_.setEnabled(true);
+			}
+			else{
+				comboUcinak_.setText("");
+				textOpisUcinka_.setText("");	
+				textOpisUcinka_.setEnabled(false);
+			}
+			
+			String faktorIzloze  = m_Model.getContentAt(14, m_Row).toString();
+			if(!faktorIzloze.equals("") && faktorIzloze.length()>0)
+			{
+					textFaktorIzlozenosti_.setText(faktorIzloze);	
+					textOpisFaktoraIzlozenosti_.setEnabled(true);
+					textOpisFaktoraIzlozenosti_.setText(m_Model.getContentAt(16, m_Row).toString());				
+			
+			}
+			else
+			{
+				textFaktorIzlozenosti_.setText("");	
+				textOpisFaktoraIzlozenosti_.setEnabled(true);
+				textOpisFaktoraIzlozenosti_.setText("");
+			}
+				
 			textPotencijalniGubitak_.setText(m_Model.getContentAt(15, m_Row).toString());
 
-			textOpisFaktoraIzlozenosti_.setText(m_Model.getContentAt(16, m_Row).toString());
-
-			comboPrijetnja_.setText(threatId+"-"+threat);
-			comboRanjivost_.setText(vulnerabilityId+"-"+vulnerability);
-			comboVjerojatnost_.setText(probabilityId+"-"+probability);
-
-			comboUcinak_.setText(impactId+"-"+impact);
-
-//			comboPrijetnja_.setText(string)
 
 
-
-
-
+		}
+		else{
+			action=1;
 		}
 
 
 
 	}
 
+	private void initialSettings() {
+		action = 1;
 
-	public void saveAction(){
-		if((comboPrijetnja_.getText()!="" && comboPrijetnja_.getText().length()>0 )
-				&& (comboRanjivost_.getText()!="" && comboRanjivost_.getText().length()>0)
-				&& (comboVjerojatnost_.getText()!="" && comboVjerojatnost_.getText().length()>0)
-				&& (comboUcinak_.getText()!="" && comboUcinak_.getText().length()>0)
-				){
+		comboPrijetnja_.setItems(dB.getThreatVulnerabilityItemsFromDB(
+				"as_threat", ""));
+		comboRanjivost_.setItems(dB.getThreatVulnerabilityItemsFromDB(
+				"as_vulnerability", ""));
+		comboVjerojatnost_.setItems(dB.getComboItemsFromDB("as_probability"));
+		comboVjerojatnost_.addSelectionListener(new SelectionAdapter() {
+			
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				// TODO Auto-generated method stub
+				textOpisVjerojatnosti_.setEnabled(true);
+			}
+		});
+		comboVjerojatnostOtkrivanja_.setItems(dB
+				.getComboItemsFromDB("as_detection_probability"));
+		comboVjerojatnostOtkrivanja_.addSelectionListener(new SelectionAdapter() {
+
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				// TODO Auto-generated method stub
+				textOpisVjerojatnostiOtkrivanja_.setEnabled(true);
+			}
+		});
+		comboUcinak_.setItems(dB.getComboItemsFromDB("as_threat_impact"));
+		comboUcinak_.addSelectionListener(new SelectionAdapter() {
+
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				// TODO Auto-generated method stub
+				textOpisUcinka_.setEnabled(true);
+			}
+		});
+		String[] impactItems = dB.getComboItemsFromDB("as_impact");
+		comboUtjecajNaPovjerljivost_.setItems(impactItems);
+		comboUtjecajNaCjelovitost_.setItems(impactItems);
+		comboUtjecajNaRaspolozivost_.setItems(impactItems);
+		
+		textFaktorIzlozenosti_.addSelectionListener(new SelectionAdapter() {
+			
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				// TODO Auto-generated method stub
+				textOpisFaktoraIzlozenosti_.setEnabled(true);
+			}
+		});
+		
+		
+
+		textPotencijalniGubitak_.setText("");
+		textOpisVjerojatnostiOtkrivanja_.setText("");
+		textOpisVjerojatnosti_.setText("");
+		textOpisUcinka_.setText("");
+		textOpisFaktoraIzlozenosti_.setText("");
+		textImovina_.setText("");
+		textFaktorIzlozenosti_.setText("");
+		textNazivRizika_.setText("");
+		comboPrijetnja_.setText("");
+		comboRanjivost_.setText("");
+		comboVjerojatnost_.setText("");
+		comboVjerojatnostOtkrivanja_.setText("");
+		comboUcinak_.setText("");
+		comboUtjecajNaPovjerljivost_.setText("");
+		comboUtjecajNaCjelovitost_.setText("");
+		comboUtjecajNaRaspolozivost_.setText("");
+
+	}
+
+	public void saveAction() {
+		if ((comboPrijetnja_.getText() != "" && comboPrijetnja_.getText()
+				.length() > 0)
+				&& (comboRanjivost_.getText() != "" && comboRanjivost_
+						.getText().length() > 0)
+				&& (comboVjerojatnost_.getText() != "" && comboVjerojatnost_
+						.getText().length() > 0)
+				&& (comboUcinak_.getText() != "" && comboUcinak_.getText()
+						.length() > 0)) {
 			Hashtable<String, String> data = new Hashtable<String, String>();
 
-//			String temp = comboPrijetnja_.getText();
-//			int t = temp.indexOf("-");
+			// String temp = comboPrijetnja_.getText();
+			// int t = temp.indexOf("-");
 			assetName = m_Model.getContentAt(3, m_Row).toString();
-			data.put("threat_id",threatId);
-			data.put("vulnerability_id",vulnerabilityId);
-			data.put("asset_id",dB.getDesiredColumnFromDB("view_asset", "asset_id", "WHERE name='"+assetName+"'"));
+			data.put("threat_id", threatId);
+			data.put("vulnerability_id", vulnerabilityId);
+			data.put("asset_id", dB.getDesiredColumnFromDB("view_asset",
+					"asset_id", "WHERE name='" + assetName + "'"));
 			data.put("name", textNazivRizika_.getText());
-			data.put("assetsubcateg_id", dB.getDesiredColumnFromDB("view_asset", "category", "WHERE name='"+assetName+"'"));
+			data.put("assetsubcateg_id", dB.getDesiredColumnFromDB(
+					"view_asset", "category", "WHERE name='" + assetName + "'"));
 			data.put("owner", m_Model.getContentAt(4, m_Row).toString());
-			data.put("asset_value", dB.getDesiredColumnFromDB("view_asset", "asset_value", "WHERE name='"+assetName+"'"));
-			data.put("confidentiality_level",dB.getDesiredColumnFromDB("view_asset", "confidentiality_level", "WHERE name='"+assetName+"'"));
-			data.put("integrity_level", dB.getDesiredColumnFromDB("view_asset", "integrity_level", "WHERE name='"+assetName+"'"));
-			data.put("accessibility_level",	dB.getDesiredColumnFromDB("view_asset", "accessibility_level", "WHERE name='"+assetName+"'"));
-			data.put("businessimpact_level",dB.getDesiredColumnFromDB("view_asset", "businessimpact_level", "WHERE name='"+assetName+"'"));
+			data.put("asset_value", dB.getDesiredColumnFromDB("view_asset",
+					"asset_value", "WHERE name='" + assetName + "'"));
+			data.put("confidentiality_level", dB.getDesiredColumnFromDB(
+					"view_asset", "confidentiality_level", "WHERE name='"
+							+ assetName + "'"));
+			data.put("integrity_level", dB.getDesiredColumnFromDB("view_asset",
+					"integrity_level", "WHERE name='" + assetName + "'"));
+			data.put("accessibility_level", dB.getDesiredColumnFromDB(
+					"view_asset", "accessibility_level", "WHERE name='"
+							+ assetName + "'"));
+			data.put("businessimpact_level", dB.getDesiredColumnFromDB(
+					"view_asset", "businessimpact_level", "WHERE name='"
+							+ assetName + "'"));
 			data.put("risk_probability", comboVjerojatnost_.getText());
-			if(textOpisVjerojatnosti_.getText().equals(""))
-				data.put("description_risk_probability", " ");
-			else{
-				data.put("description_risk_probability", textOpisVjerojatnosti_.getText());
-			}
-			if(comboVjerojatnostOtkrivanja_.getText().equals(""))
-				data.put("detection_probability", " ");
-			else{
-				data.put("detection_probability", comboVjerojatnostOtkrivanja_.getText());
-			}
-			if( textOpisVjerojatnostiOtkrivanja_.equals(""))
-				data.put("description_detection_probability", " ");
-			else{
-				data.put("description_detection_probability", textOpisVjerojatnostiOtkrivanja_.getText());
-			}
+//			if (textOpisVjerojatnosti_.getText().equals(""))
+//				data.put("description_risk_probability", "");
+//			else {
+				data.put("description_risk_probability",
+						textOpisVjerojatnosti_.getText());
+//			}
+//			if (comboVjerojatnostOtkrivanja_.getText().equals(""))
+//				data.put("detection_probability", "");
+//			else {
+				data.put("detection_probability",
+						comboVjerojatnostOtkrivanja_.getText());
+//			}
+//			if (textOpisVjerojatnostiOtkrivanja_.equals(""))
+//				data.put("description_detection_probability", "");
+//			else {
+				data.put("description_detection_probability",
+						textOpisVjerojatnostiOtkrivanja_.getText());
+//			}
 
 			data.put("impact", comboUcinak_.getText());
 
-
-			if(textOpisUcinka_.getText().equals(""))
-				data.put("description_impact", " ");
-			else{
+//			if (textOpisUcinka_.getText().equals(""))
+//				data.put("description_impact", "");
+//			else {
 				data.put("description_impact", textOpisUcinka_.getText());
-			}
-			if(textFaktorIzlozenosti_.getText().equals(""))
-				data.put("exposure_factor", "0.00");
-			else{
+//			}
+//			if (textFaktorIzlozenosti_.getText().equals(""))
+//				data.put("exposure_factor", "0");
+//			else {
 				data.put("exposure_factor", textFaktorIzlozenosti_.getText());
-			}
-			if(textOpisFaktoraIzlozenosti_.getText().equals(""))
-				data.put("description_exposure_factor", " ");
-			else{
-				data.put("description_exposure_factor", textOpisFaktoraIzlozenosti_.getText());
-			}
-			if(textPotencijalniGubitak_.getText().equals(""))
-				data.put("financial_impact", "0.00");
-			else{
+//			}
+//			if (textOpisFaktoraIzlozenosti_.getText().equals(""))
+//				data.put("description_exposure_factor", "");
+//			else {
+				data.put("description_exposure_factor",
+						textOpisFaktoraIzlozenosti_.getText());
+//			}
+//			if (textPotencijalniGubitak_.getText().equals(""))
+//				data.put("financial_impact", "0.00");
+//			else {
 				data.put("financial_impact", textPotencijalniGubitak_.getText());
-			}
-
+//			}
 
 			System.out.println("Hashtable" + data);
 			try {
 
 				if (action == 2) {
-					dB.insertDataInDB("as_risk", data, "update","RiskAssessment", m_RiskId);
+					dB.insertDataInDB("as_risk", data, "update",
+							"RiskAssessment", m_RiskId);
 
 				} else
-					dB.insertDataInDB("as_risk", data, "insert","RiskAssessment", "");
-
+					dB.insertDataInDB("as_risk", data, "insert",
+							"RiskAssessment", "");
 
 			} catch (Exception e1) {
 				e1.printStackTrace();
 
 			}
 			Notifier.notify(ResourceManager.getPluginImage("hr.ante.isms",
-					"src/icons/tick.png"),"Spremanje uspješno", "Podaci su spremljeni", NotifierTheme.GREEN_THEME);
-			refreshTable();
+					"src/icons/tick.png"), "Spremanje uspješno",
+					"Podaci su spremljeni", NotifierTheme.GREEN_THEME);
+
+			action = 2;
 		}
 
 		else
 			Notifier.notify(ResourceManager.getPluginImage("hr.ante.isms",
-					"src/icons/error.ico"),"Nemože se spremiti", "Niste unijeli sve potrebno podatke", NotifierTheme.RED_THEME);
+					"src/icons/error.ico"), "Nemože se spremiti",
+					"Niste unijeli sve potrebno podatke",
+					NotifierTheme.RED_THEME);
+
+		refreshTable();
 
 	}
-
-
 
 	@PreDestroy
 	public void dispose() throws Exception {

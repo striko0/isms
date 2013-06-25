@@ -1,6 +1,6 @@
 package hr.ante.isms.parts;
 
-import hr.ante.isms.connection.DatabaseConnection;
+import hr.ante.isms.connection.DatabaseConnectionDoma;
 import hr.ante.isms.parts.table.ASKTable;
 import hr.ante.isms.parts.table.ControlsAnalysisASKTableModel;
 
@@ -177,7 +177,7 @@ public class ControlsAnalysis {
 	}
 
 	public String[] getComboItemsFromDB(String tableName){
-		DatabaseConnection con = new DatabaseConnection();
+		DatabaseConnectionDoma con = new DatabaseConnectionDoma();
 		con.doConnection();
 
 		try {

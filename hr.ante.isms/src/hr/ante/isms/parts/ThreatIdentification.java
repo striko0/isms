@@ -1,11 +1,13 @@
 package hr.ante.isms.parts;
 
-import hr.ante.isms.connection.DatabaseConnection;
+import hr.ante.isms.connection.DataFromDatabase;
+import hr.ante.isms.connection.DatabaseConnectionDoma;
 import hr.ante.isms.parts.table.ListAssetASKTableModel;
 import hr.ante.isms.parts.table.ListRiskASKTableModel;
 import hr.ante.isms.parts.table.NewASKTable1;
 import hr.ante.test.asktable.ASTableModel4;
 
+import java.awt.Point;
 import java.sql.SQLException;
 import java.util.Hashtable;
 
@@ -34,6 +36,8 @@ import de.kupzog.ktable.KTableSortedModel;
 public class ThreatIdentification implements ViewSelected {
 
 
+
+	private DataFromDatabase dB;
 	private KTableSortedModel m_Model;
 	private KTableSortedModel m_ModelRisk;
 	private NewASKTable1 m_Table;
@@ -57,7 +61,7 @@ public class ThreatIdentification implements ViewSelected {
 
 		final ScrolledComposite scrollBox = new ScrolledComposite(parent,
 				SWT.V_SCROLL | SWT.H_SCROLL);
-		scrollBox.setMinHeight(359);
+		scrollBox.setMinHeight(280);
 		scrollBox.setMinWidth(450);
 
 		scrollBox.setExpandHorizontal(true);
@@ -65,13 +69,14 @@ public class ThreatIdentification implements ViewSelected {
 
 		mParent = new Composite(scrollBox, SWT.NONE);
 
-		parent.getShell().setSize(759, 389);
+		mParent.getShell().setSize(759, 400);
 
 		m_ModelRisk = DataFromServer.listRiskASKTableModel;
 		m_Model = DataFromServer.listAssetASKTableModel;
 		m_Row = NewASKTable1.clickedAssetRow;
+		dB = new DataFromDatabase();
 
-		assetName = getDesiredColumnFromDB("as_asset", "name", "WHERE asset_id='"+m_Model.getContentAt(1, m_Row)+"'");
+		assetName = dB.getDesiredColumnFromDB("as_asset", "name", "WHERE asset_id='"+m_Model.getContentAt(1, m_Row)+"'");
 		mParent.getShell().setText(
 				"Identifikacija prijetnji za imovinu: "+assetName.toUpperCase()+"");
 		mParent.setLayout(new GridLayout(1, false));
@@ -127,15 +132,8 @@ public class ThreatIdentification implements ViewSelected {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
 				// TODO Auto-generated method stub
-//				dirty.setDirty(true);
-//				if(action==2){
-
 					saveAction();
-					action=1;
-//
-//				}
-//				else
-			}
+					}
 		});
 		btnSpremi_.setText("Spremi");
 
@@ -149,7 +147,7 @@ public class ThreatIdentification implements ViewSelected {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
 				// TODO Auto-generated method stub
-				table.m_Selection.clear();
+//				table.m_Selection.clear();
 				m_Riskid=null;
 				fillForm();
 			}
@@ -174,7 +172,8 @@ public class ThreatIdentification implements ViewSelected {
 
 				if (confirm) {
 					try {
-						deleteDataFromDB("as_risk", "risk_id", m_Riskid);
+						dB.deleteDataFromDB("as_risk", "risk_id", m_Riskid);
+						fillForm();
 						refreshTable();
 
 					} catch (Exception e1) {
@@ -206,6 +205,7 @@ public class ThreatIdentification implements ViewSelected {
 
 		fillForm();
 		scrollBox.setContent(mParent);
+		mParent.getShell().setDefaultButton(btnSpremi_);
 
 	}
 
@@ -222,16 +222,21 @@ public class ThreatIdentification implements ViewSelected {
 		// TODO Auto-generated method stub
 		action=1;
 		initialSettings();
-		table.m_Selection.clear();
+		table.setSelection(null, false);
 
 
 	}
 
 	private void initialSettings(){
-		comboPrijetnja_.setEnabled(false);
+		
 		btnBrisi_.setEnabled(false);
 		btnNovo_.setEnabled(false);
-		comboVrstaPrijet_.setItems(getComboItemsFromDB("as_threat_type"));
+		comboPrijetnja_.setEnabled(false);
+		comboVrstaPrijet_.setText("");
+		comboPrijetnja_.setText("");
+		comboVrstaPrijet_.setItems(new String [0]);
+		comboPrijetnja_.setItems(new String [0]);
+		comboVrstaPrijet_.setItems(dB.getComboItemsFromDB("as_threat_type"));
 		comboVrstaPrijet_.addSelectionListener(new SelectionAdapter() {
 
 			@Override
@@ -239,14 +244,13 @@ public class ThreatIdentification implements ViewSelected {
 				// TODO Auto-generated method stub
 				int index = comboVrstaPrijet_.getSelectionIndex() + 1;
 				comboPrijetnja_.setEnabled(true);
-				comboPrijetnja_.setItems(getComboItemsFromDB("as_threat",
+				comboPrijetnja_.setItems(dB.getComboItemsFromDB("as_threat",
 						"WHERE threattype_id LIKE '" + index + "%'", true));
 			}
 
 		});
 
-		comboVrstaPrijet_.setText("");
-		comboPrijetnja_.setText("");
+		
 	}
 
 	@Override
@@ -260,15 +264,21 @@ public class ThreatIdentification implements ViewSelected {
 			comboPrijetnja_.setEnabled(true);
 
 			String threatId = table.getModel().getContentAt(1, row).toString();
-			if(threatId!="" && threatId.length()>0){
-			String threat = getDesiredColumnFromDB("view_threat", "name", "WHERE threat_id="+threatId+"");
-			String threattypeId = getDesiredColumnFromDB("view_threat", "threattype_id", "WHERE threat_id="+threatId+"");
+			if (threatId != "" && threatId.length() > 0) {
+				String threat = dB.getDesiredColumnFromDB("view_threat",
+						"name", "WHERE threat_id=" + threatId + "");
+				String threattypeId = dB.getDesiredColumnFromDB("view_threat",
+						"threattype_id", "WHERE threat_id=" + threatId + "");
 
-			comboPrijetnja_.setItems(getComboItemsFromDB("as_threat",
-					"WHERE threattype_id="+threattypeId+ "",true));
+				comboPrijetnja_.setItems(dB.getComboItemsFromDB("as_threat",
+						"WHERE threattype_id=" + threattypeId + "", true));
 
-			comboPrijetnja_.setText(threatId +"-"+threat);
-			comboVrstaPrijet_.setText(threattypeId+"-"+getDesiredColumnFromDB("view_threat", "threat_type", "WHERE threat_id="+threatId+""));
+				comboPrijetnja_.setText(threatId + "-" + threat);
+				comboVrstaPrijet_.setText(threattypeId
+						+ "-"
+						+ dB.getDesiredColumnFromDB("view_threat",
+								"threat_type", "WHERE threat_id=" + threatId
+										+ ""));
 
 			}
 		}
@@ -279,241 +289,73 @@ public class ThreatIdentification implements ViewSelected {
 	}
 
 	private void saveAction(){
-		if(comboPrijetnja_.getText()!="" && comboPrijetnja_.getText().length()>0 && comboVrstaPrijet_.getText()!="" && comboVrstaPrijet_.getText().length()>0){
+		if(comboPrijetnja_.getText()!="" && comboPrijetnja_.getText().length()>0 
+				&& comboVrstaPrijet_.getText()!="" && comboVrstaPrijet_.getText().length()>0){
 			Hashtable<String, String> data = new Hashtable<String, String>();
-
+			
 			String temp = comboPrijetnja_.getText();
 			int t = temp.indexOf("-");
-			data.put(
-					"threat_id",
-					getDesiredColumnFromDB("as_threat", "threat_id",
-							"WHERE name='"
-									+ comboPrijetnja_.getText()
-											.substring(t+1) + "'"));
+			data.put("threat_id",dB.getDesiredColumnFromDB("as_threat", "threat_id","WHERE name='"+ comboPrijetnja_.getText().substring(t+1) + "'"));
 			data.put("asset_id", m_Model.getContentAt(1, m_Row)
 					.toString());
-			data.put("name", m_Model.getContentAt(2, m_Row).toString());
-			// data.put("threat_name",
-			// comboPrijetnja_.getText().substring(3));
-			data.put("assetsubcateg_id", m_Model.getContentAt(3, m_Row)
-					.toString());
-			data.put("owner", m_Model.getContentAt(4, m_Row).toString());
-			data.put("asset_value", m_Model.getContentAt(9, m_Row)
-					.toString());
-			data.put("confidentiality_level",
-					m_Model.getContentAt(5, m_Row).toString());
-			data.put("integrity_level", m_Model.getContentAt(6, m_Row)
-					.toString());
-			data.put("accessibility_level",
-					m_Model.getContentAt(7, m_Row).toString());
-			data.put("businessimpact_level",
-					m_Model.getContentAt(8, m_Row).toString());
+			
+			if(action==2){
+				
+				
+				try {
+					System.out.println("Hashtable" + data);
+					dB.insertDataInDB("as_risk", data, "update","ThreatIdentification", m_Riskid);
+				
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				
+			}
+			else {
 
-			System.out.println("Hashtable" + data);
-			try {
+				data.put("name", m_Model.getContentAt(2, m_Row).toString());
+				// data.put("threat_name",
+				// comboPrijetnja_.getText().substring(3));
+				data.put("assetsubcateg_id", m_Model.getContentAt(3, m_Row)
+						.toString());
+				data.put("owner", m_Model.getContentAt(4, m_Row).toString());
+				data.put("asset_value", m_Model.getContentAt(9, m_Row)
+						.toString());
+				data.put("confidentiality_level", m_Model
+						.getContentAt(5, m_Row).toString());
+				data.put("integrity_level", m_Model.getContentAt(6, m_Row)
+						.toString());
+				data.put("accessibility_level", m_Model.getContentAt(7, m_Row)
+						.toString());
+				data.put("businessimpact_level", m_Model.getContentAt(8, m_Row)
+						.toString());
 
-				if (action == 2) {
-					insertDataInDB("as_risk", data, "update", m_Riskid);
+				
+				try {
+					System.out.println("Hashtable" + data);
+					dB.insertDataInDB("as_risk", data, "insert",
+								"ThreatIdentification", "");
+					
+				} catch (Exception e1) {
+					e1.printStackTrace();
 
-				} else
-					insertDataInDB("as_risk", data, "insert", "");
-				refreshTable();
-
-			} catch (Exception e1) {
-				e1.printStackTrace();
-
+				}
+			
+			
 			}
 			Notifier.notify(ResourceManager.getPluginImage("hr.ante.isms",
 					"src/icons/tick.png"),"Spremanje uspješno", "Podaci su spremljeni", NotifierTheme.GREEN_THEME);
 			fillForm();
-			refreshTable();
 
 		}
 
 		else
 			Notifier.notify(ResourceManager.getPluginImage("hr.ante.isms",
 					"src/icons/error.ico"),"Nemože se spremiti", "Niste unijeli sve potrebno podatke", NotifierTheme.RED_THEME);
-
-	}
-
-	public String[] getComboItemsFromDB(String tableName) {
-		DatabaseConnection con = new DatabaseConnection();
-		con.doConnection();
-
-		try {
-
-			return con.getComboItems(tableName);
-
-		} catch (SQLException ex) {
-			System.out.println(ex.getMessage());
-			try {
-				con.connection.close();
-			} catch (SQLException e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
-			}
-
-		}
-		System.out.println("Connection : " + con.doConnection());
-		try {
-			con.connection.close();
-		} catch (SQLException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		}
-		return new String[] {};
-
-	}
-
-	public String[] getComboItemsFromDB(String tableName, String whereStatement) {
-		DatabaseConnection con = new DatabaseConnection();
-		con.doConnection();
-
-		try {
-
-			return con.getComboItemsWithWhere(tableName, whereStatement);
-
-		} catch (SQLException ex) {
-			System.out.println(ex.getMessage());
-			try {
-				con.connection.close();
-			} catch (SQLException e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
-			}
-
-		}
-		System.out.println("Connection : " + con.doConnection());
-		try {
-			con.connection.close();
-		} catch (SQLException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		}
-		return new String[] {};
-
-	}
-
-	public String[] getComboItemsFromDB(String tableName,
-			String whereStatement, boolean valid) {
-		DatabaseConnection con = new DatabaseConnection();
-		con.doConnection();
-
-		try {
-			// if(type=="threat")
-			return con.getComboItemsThreatOrVulnerability(tableName,
-					whereStatement);
-
-		} catch (SQLException ex) {
-			System.out.println(ex.getMessage());
-			try {
-				con.connection.close();
-			} catch (SQLException e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
-			}
-
-		}
-		System.out.println("Connection : " + con.doConnection());
-		try {
-			con.connection.close();
-		} catch (SQLException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		}
-		return new String[] {};
-
-	}
-
-	public void insertDataInDB(String tableName, Hashtable data, String updateOrInsert, String id) throws Exception{
-		DatabaseConnection con = new DatabaseConnection();
-		con.doConnection();
-
-		try {
-
-			if(updateOrInsert=="insert")
-				con.insertThreatIdentData(tableName, data);
-			if(updateOrInsert=="update")
-				con.updateThreatIdentData(tableName, data, id);
-
-		} catch (SQLException ex) {
-			System.out.println(ex.getMessage());
-			try {
-				con.connection.close();
-			} catch (SQLException e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
-			}
-
-		}
-		System.out.println("Connection : " + con.doConnection());
-		try {
-			con.connection.close();
-		} catch (SQLException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		}
-
-
-
-	}
-
-	public void deleteDataFromDB(String tableName, String idField, String id) throws Exception{
-		DatabaseConnection con = new DatabaseConnection();
-		con.doConnection();
-
-		try {
-
-			con.deleteData(tableName,idField, id);
-
-		} catch (SQLException ex) {
-			System.out.println(ex.getMessage());
-			try {
-				con.connection.close();
-			} catch (SQLException e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
-			}
-
-		}
-		System.out.println("Connection : " + con.doConnection());
-		try {
-			con.connection.close();
-		} catch (SQLException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		}
-
-
-
-	}
-
-	public String getDesiredColumnFromDB(String tableName, String columnName, String whereStatement){
-		DatabaseConnection con = new DatabaseConnection();
-		con.doConnection();
-
-		try {
-
-			return con.getContentFromDesiredColumn(tableName, columnName, whereStatement);
-
-		} catch (SQLException ex) {
-			System.out.println(ex.getMessage());
-			try {
-				con.connection.close();
-			} catch (SQLException e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
-			}
-
-		}
-		System.out.println("Connection : " + con.doConnection());
-		try {
-			con.connection.close();
-		} catch (SQLException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		}
-		return new String();
+		
+		
+		refreshTable();
 
 	}
 

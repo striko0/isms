@@ -1,6 +1,7 @@
 package hr.ante.isms.parts;
 
-import hr.ante.isms.connection.DatabaseConnection;
+import hr.ante.isms.connection.DataFromDatabase;
+import hr.ante.isms.connection.DatabaseConnectionDoma;
 import hr.ante.isms.parts.table.ListAssetASKTableModel;
 import hr.ante.isms.parts.table.ListRiskASKTableModel;
 import hr.ante.isms.parts.table.NewASKTable1;
@@ -16,6 +17,7 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.ScrolledComposite;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
@@ -32,10 +34,10 @@ import org.mihalis.opal.opalDialog.Dialog;
 
 import de.kupzog.ktable.KTableSortedModel;
 
-public class ImpactAnalysis implements ViewSelected{
+public class ImpactAnalysis implements ViewSelected {
 
-
-	private int action=1;
+	private DataFromDatabase dB;
+	private int action = 1;
 	private KTableSortedModel m_Model;
 	private KTableSortedModel m_ModelRisk;
 	private NewASKTable1 m_Table;
@@ -53,7 +55,6 @@ public class ImpactAnalysis implements ViewSelected{
 	private Text textOpisVjerojat_;
 	private Text textOpisUcinka_;
 	private Button btnBrisi_;
-
 
 	@PostConstruct
 	public void createComposite(final Composite parent) {
@@ -73,70 +74,82 @@ public class ImpactAnalysis implements ViewSelected{
 		m_ModelRisk = DataFromServer.listRiskASKTableModel;
 		m_Model = DataFromServer.listAssetASKTableModel;
 		m_Row = NewASKTable1.clickedAssetRow;
+		dB = new DataFromDatabase();
 
-		assetName = getDesiredColumnFromDB("as_asset", "name", "WHERE asset_id='"+m_Model.getContentAt(1, m_Row)+"'");
+		assetName = dB.getDesiredColumnFromDB("as_asset", "name",
+				"WHERE asset_id='" + m_Model.getContentAt(1, m_Row) + "'");
 		mParent.getShell().setText(
-				"Analiza uèinka ostvarenja prijetnja za imovinu: "+assetName.toUpperCase()+"");
+				"Analiza uèinka ostvarenja prijetnja za imovinu: "
+						+ assetName.toUpperCase() + "");
 
 		mParent.setLayout(new GridLayout(2, false));
 
 		Label labelPrijet_ = new Label(mParent, SWT.NONE);
-		GridData gd_labelPrijet_ = new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1);
+		GridData gd_labelPrijet_ = new GridData(SWT.FILL, SWT.CENTER, false,
+				false, 1, 1);
 		gd_labelPrijet_.horizontalIndent = 10;
 		gd_labelPrijet_.widthHint = 60;
 		labelPrijet_.setLayoutData(gd_labelPrijet_);
 		labelPrijet_.setText("Prijetnja:");
 
-		comboPrijet_ = new Combo(mParent, SWT.NONE);
-		//gd_comboPrijet_.widthHint = 730;
-		comboPrijet_.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
-
+		comboPrijet_ = new Combo(mParent, SWT.READ_ONLY);
+		comboPrijet_.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true,
+				false, 1, 1));
 
 		Label lblRanjivost_ = new Label(mParent, SWT.NONE);
-		GridData gd_lblRanjivost_ = new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1);
+		GridData gd_lblRanjivost_ = new GridData(SWT.LEFT, SWT.CENTER, false,
+				false, 1, 1);
 		gd_lblRanjivost_.horizontalIndent = 10;
 		lblRanjivost_.setLayoutData(gd_lblRanjivost_);
 		lblRanjivost_.setText("Ranjivost:");
 
-		comboRanjivost_ = new Combo(mParent, SWT.NONE);
-		//gd_comboRanjivost_.widthHint = 715;
-		comboRanjivost_.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
-
+		comboRanjivost_ = new Combo(mParent, SWT.READ_ONLY);
+		comboRanjivost_.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true,
+				false, 1, 1));
 
 		Group grpVjerojatnostOstvarenjaPrijetnje = new Group(mParent, SWT.NONE);
 		grpVjerojatnostOstvarenjaPrijetnje.setLayout(new GridLayout(2, false));
-		GridData gd_grpVjerojatnostOstvarenjaPrijetnje = new GridData(SWT.FILL, SWT.FILL, true, true, 2, 2);
+		GridData gd_grpVjerojatnostOstvarenjaPrijetnje = new GridData(SWT.FILL,
+				SWT.FILL, true, true, 2, 2);
 		gd_grpVjerojatnostOstvarenjaPrijetnje.horizontalIndent = 10;
 		gd_grpVjerojatnostOstvarenjaPrijetnje.heightHint = 107;
 		gd_grpVjerojatnostOstvarenjaPrijetnje.widthHint = 799;
-		grpVjerojatnostOstvarenjaPrijetnje.setLayoutData(gd_grpVjerojatnostOstvarenjaPrijetnje);
-		grpVjerojatnostOstvarenjaPrijetnje.setText("Vjerojatnost Ostvarenja Prijetnje");
+		grpVjerojatnostOstvarenjaPrijetnje
+				.setLayoutData(gd_grpVjerojatnostOstvarenjaPrijetnje);
+		grpVjerojatnostOstvarenjaPrijetnje
+				.setText("Vjerojatnost Ostvarenja Prijetnje");
 
-		Label lblVjerojatnost_ = new Label(grpVjerojatnostOstvarenjaPrijetnje, SWT.NONE);
-		GridData gd_lblVjerojatnost_ = new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1);
+		Label lblVjerojatnost_ = new Label(grpVjerojatnostOstvarenjaPrijetnje,
+				SWT.NONE);
+		GridData gd_lblVjerojatnost_ = new GridData(SWT.LEFT, SWT.CENTER,
+				false, false, 1, 1);
 		gd_lblVjerojatnost_.widthHint = 96;
 		lblVjerojatnost_.setLayoutData(gd_lblVjerojatnost_);
 		lblVjerojatnost_.setText("Vjerojatnost:");
 
-		comboVjerojatnost_ = new Combo(grpVjerojatnostOstvarenjaPrijetnje, SWT.NONE);
-		GridData gd_comboVjerojatnost_ = new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1);
+		comboVjerojatnost_ = new Combo(grpVjerojatnostOstvarenjaPrijetnje,
+				SWT.READ_ONLY);
+		GridData gd_comboVjerojatnost_ = new GridData(SWT.LEFT, SWT.CENTER,
+				false, false, 1, 1);
 		gd_comboVjerojatnost_.widthHint = 250;
 		comboVjerojatnost_.setLayoutData(gd_comboVjerojatnost_);
 
-
-		Label lblOpisVjerojat_ = new Label(grpVjerojatnostOstvarenjaPrijetnje, SWT.NONE);
+		Label lblOpisVjerojat_ = new Label(grpVjerojatnostOstvarenjaPrijetnje,
+				SWT.NONE);
 		lblOpisVjerojat_.setText("Opis Vjerojatnosti:");
 		new Label(grpVjerojatnostOstvarenjaPrijetnje, SWT.NONE);
 
-		textOpisVjerojat_ = new Text(grpVjerojatnostOstvarenjaPrijetnje, SWT.BORDER | SWT.WRAP | SWT.V_SCROLL);
-		GridData gd_textOpisVjerojat_ = new GridData(SWT.FILL, SWT.FILL, true, true, 2, 1);
+		textOpisVjerojat_ = new Text(grpVjerojatnostOstvarenjaPrijetnje,
+				SWT.BORDER | SWT.WRAP | SWT.V_SCROLL);
+		GridData gd_textOpisVjerojat_ = new GridData(SWT.FILL, SWT.FILL, true,
+				true, 2, 1);
 		gd_textOpisVjerojat_.minimumHeight = 65;
 		textOpisVjerojat_.setLayoutData(gd_textOpisVjerojat_);
 
-
 		Group grpAnalizaUinkaPrijetnje = new Group(mParent, SWT.NONE);
 		grpAnalizaUinkaPrijetnje.setText("Analiza U\u010Dinka Prijetnje");
-		GridData gd_grpAnalizaUinkaPrijetnje = new GridData(SWT.FILL, SWT.FILL, true, true, 2, 1);
+		GridData gd_grpAnalizaUinkaPrijetnje = new GridData(SWT.FILL, SWT.FILL,
+				true, true, 2, 1);
 		gd_grpAnalizaUinkaPrijetnje.horizontalIndent = 10;
 		gd_grpAnalizaUinkaPrijetnje.heightHint = 125;
 		gd_grpAnalizaUinkaPrijetnje.widthHint = 371;
@@ -146,38 +159,45 @@ public class ImpactAnalysis implements ViewSelected{
 		Label lblUcinak_ = new Label(grpAnalizaUinkaPrijetnje, SWT.NONE);
 		lblUcinak_.setText("U\u010Dinak:");
 
-		comboUcinak_ = new Combo(grpAnalizaUinkaPrijetnje, SWT.NONE);
-		GridData gd_comboUcinak_ = new GridData(SWT.LEFT, SWT.CENTER, true, false, 1, 1);
+		comboUcinak_ = new Combo(grpAnalizaUinkaPrijetnje, SWT.READ_ONLY);
+		GridData gd_comboUcinak_ = new GridData(SWT.LEFT, SWT.CENTER, true,
+				false, 1, 1);
 		gd_comboUcinak_.widthHint = 250;
 		comboUcinak_.setLayoutData(gd_comboUcinak_);
 
 		Label lblOpisUcinka_ = new Label(grpAnalizaUinkaPrijetnje, SWT.NONE);
-		GridData gd_lblOpisUcinka_ = new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1);
+		GridData gd_lblOpisUcinka_ = new GridData(SWT.LEFT, SWT.CENTER, false,
+				false, 1, 1);
 		gd_lblOpisUcinka_.widthHint = 104;
 		lblOpisUcinka_.setLayoutData(gd_lblOpisUcinka_);
 		lblOpisUcinka_.setText("Opis U\u010Dinka:");
 		new Label(grpAnalizaUinkaPrijetnje, SWT.NONE);
 
-		textOpisUcinka_ = new Text(grpAnalizaUinkaPrijetnje, SWT.BORDER | SWT.WRAP | SWT.V_SCROLL);
-		GridData gd_textOpisUcinka_ = new GridData(SWT.FILL, SWT.FILL, true, true, 2, 1);
+		textOpisUcinka_ = new Text(grpAnalizaUinkaPrijetnje, SWT.BORDER
+				| SWT.WRAP | SWT.V_SCROLL);
+		GridData gd_textOpisUcinka_ = new GridData(SWT.FILL, SWT.FILL, true,
+				true, 2, 1);
 		gd_textOpisUcinka_.minimumHeight = 65;
 		gd_textOpisUcinka_.heightHint = 46;
 		textOpisUcinka_.setLayoutData(gd_textOpisUcinka_);
-
-
+		textOpisUcinka_.setEnabled(false);
 
 		Composite compositeASKTable = new Composite(mParent, SWT.NONE);
 		compositeASKTable.setLayout(new FillLayout());
-		GridData gd_compositeASKTable = new GridData(SWT.FILL, SWT.FILL, true, true, 2, 1);
+		GridData gd_compositeASKTable = new GridData(SWT.FILL, SWT.FILL, true,
+				true, 2, 1);
 		gd_compositeASKTable.heightHint = 95;
 		gd_compositeASKTable.minimumHeight = 150;
 		gd_compositeASKTable.widthHint = 778;
 		gd_compositeASKTable.horizontalIndent = 10;
 		compositeASKTable.setLayoutData(gd_compositeASKTable);
 
-		table = new NewASKTable1(this, compositeASKTable, new ListRiskASKTableModel(4, 5, m_Model.getContentAt(1,m_Row).toString()), 717, 200);
-//		new ASKTable(compositeASKTable,new ImpactAnalysisASKTableModel(), 717,compositeASKTable.getBounds().height );
-				new Label(mParent, SWT.NONE);
+		table = new NewASKTable1(this, compositeASKTable,
+				new ListRiskASKTableModel(4, 5, m_Model.getContentAt(1, m_Row)
+						.toString()), 717, 200);
+		// new ASKTable(compositeASKTable,new ImpactAnalysisASKTableModel(),
+		// 717,compositeASKTable.getBounds().height );
+		new Label(mParent, SWT.NONE);
 
 		Composite compositeButtons_ = new Composite(mParent, SWT.NONE);
 		GridData gd_compositeButtons_ = new GridData(SWT.RIGHT, SWT.CENTER,
@@ -198,7 +218,7 @@ public class ImpactAnalysis implements ViewSelected{
 			public void widgetSelected(SelectionEvent e) {
 				// TODO Auto-generated method stub
 				saveAction();
-				action=1;
+				//action = 1;
 			}
 		});
 		btnSpremi_.setText("Spremi");
@@ -214,11 +234,14 @@ public class ImpactAnalysis implements ViewSelected{
 			@Override
 			public void widgetSelected(SelectionEvent e) {
 				// TODO Auto-generated method stub
-				boolean confirm = Dialog.isConfirmed("Je ste li sigurni da želite obrisati podatak?", "Podatak æe biti obrisan");
+				boolean confirm = Dialog.isConfirmed(
+						"Je ste li sigurni da želite obrisati podatak?",
+						"Podatak æe biti obrisan");
 
 				if (confirm) {
 					try {
-						deleteDataFromDB("as_risk", "risk_id", m_Riskid);
+						dB.deleteDataFromDB("as_risk", "risk_id", m_Riskid);
+						fillForm();
 						refreshTable();
 
 					} catch (Exception e1) {
@@ -247,34 +270,43 @@ public class ImpactAnalysis implements ViewSelected{
 
 		fillForm();
 		scrollBox.setContent(mParent);
+		mParent.getShell().setDefaultButton(btnSpremi_);
 	}
 
-	public void refreshTable(){
-		((ListAssetASKTableModel)m_Model).readAllFromDB();
-		((ListRiskASKTableModel)table.getModel()).readAllFromDB();
+	public void refreshTable() {
+		((ListAssetASKTableModel) m_Model).readAllFromDB();
+		((ListRiskASKTableModel) table.getModel()).readAllFromDB();
 		((ListRiskASKTableModel) m_ModelRisk).readAllFromDB();
 		table.redraw();
 	}
 
 	private void fillForm() {
 		// TODO Auto-generated method stub
-
-		/**
-		 * Poèetno postavljanje controla
-		 *
-		 */
-		action=1;
+		action = 1;
 		initialSettings();
-		table.m_Selection.clear();
+		table.setSelection(null, false);
+
 
 	}
 
-	private void initialSettings(){
+	private void initialSettings() {
 
-		comboPrijet_.setItems(getThreatVulnerabilityItemsFromDB("as_threat",""));
-		comboRanjivost_.setItems(getThreatVulnerabilityItemsFromDB("as_vulnerability",""));
-		comboVjerojatnost_.setItems(getComboItemsFromDB("as_probability"));
-		comboUcinak_.setItems(getComboItemsFromDB("as_threat_impact"));
+		comboPrijet_
+				.setItems(dB.getThreatVulnerabilityItemsFromDB("as_threat", ""));
+		comboRanjivost_.setItems(dB.getThreatVulnerabilityItemsFromDB(
+				"as_vulnerability", ""));
+		comboVjerojatnost_.setItems(dB.getComboItemsFromDB("as_probability"));
+		comboUcinak_.setItems(dB.getComboItemsFromDB("as_threat_impact"));
+		comboUcinak_.addSelectionListener(new SelectionAdapter() {
+			
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				// TODO Auto-generated method stub
+				textOpisUcinka_.setEnabled(true);
+				
+			}
+			
+		});
 		comboPrijet_.setText("");
 		comboRanjivost_.setText("");
 		comboVjerojatnost_.setText("");
@@ -287,126 +319,155 @@ public class ImpactAnalysis implements ViewSelected{
 	@Override
 	public void rowSelected(int row) {
 		// TODO Auto-generated method stub
-		if (row!=0 && !table.getModel().getContentAt(1, row).toString().equals("")) {
-			action=2;
+		if (row != 0
+				&& !table.getModel().getContentAt(1, row).toString().equals("")) {
+			action = 2;
 			initialSettings();
 
 			btnBrisi_.setEnabled(true);
-			m_Riskid=table.getModel().getContentAt(7, row).toString();
+			m_Riskid = table.getModel().getContentAt(7, row).toString();
 
-			String vulnerabilityId = table.getModel().getContentAt(5, row).toString();
-			String threatId= table.getModel().getContentAt(6, row).toString();
-			String probability_id = table.getModel().getContentAt(3, row).toString();
+			String vulnerabilityId = table.getModel().getContentAt(5, row)
+					.toString();
+			String threatId = table.getModel().getContentAt(6, row).toString();
+			String probability_id = table.getModel().getContentAt(3, row)
+					.toString();
 			String impact_id = table.getModel().getContentAt(4, row).toString();
 
-			String threat = table.getModel().getContentAt(1, row)
-						.toString();
+			String threat = table.getModel().getContentAt(1, row).toString();
 			String vulnerability = table.getModel().getContentAt(2, row)
-							.toString();
+					.toString();
 
-			String probability = getDesiredColumnFromDB("as_probability",
+			String probability = dB.getDesiredColumnFromDB("as_probability",
 					"name", "WHERE probability_id=" + probability_id + "");
-
 
 			comboRanjivost_.setText(vulnerabilityId + "-" + vulnerability);
 			comboPrijet_.setText(threatId + "-" + threat);
-			comboVjerojatnost_.setText(probability_id + "-"
-					+ probability);
+			comboVjerojatnost_.setText(probability_id + "-" + probability);
 
-			String opisVjerojatnosti = getDesiredColumnFromDB("view_risk", "description_risk_probability","WHERE risk_id=" + m_Riskid + "");
-			if(opisVjerojatnosti!=null)
-				textOpisVjerojat_.setText(opisVjerojatnosti);
+			String opisVjerojatnosti = dB.getDesiredColumnFromDB("view_risk",
+					"description_risk_probability", "WHERE risk_id=" + m_Riskid
+							+ "");
+			if (opisVjerojatnosti == null)
+				textOpisVjerojat_.setText("");
 			else
-				textOpisVjerojat_.setText(" ");
+				textOpisVjerojat_.setText(opisVjerojatnosti);
+			if (!impact_id.equals("") && impact_id.length() > 0) {
 
-			if(!impact_id.equals("0") && impact_id.length() > 0) {
+				String impact = dB.getDesiredColumnFromDB("as_impact", "name",
+						"WHERE asimpact_id=" + impact_id + "");
+				comboUcinak_.setText(impact_id + "-" + impact);
+				textOpisUcinka_.setEnabled(true);
+				
+					
 
-					String impact = getDesiredColumnFromDB(
-							"as_impact", "name",
-							"WHERE asimpact_id=" + impact_id
-									+ "");
-					comboUcinak_.setText(impact_id
-							+ "-" + impact);
-					String opisUcinka = getDesiredColumnFromDB(
-							"view_risk", "description_impact",
-							"WHERE risk_id=" + m_Riskid + "");
-					if(opisUcinka!=null)
-						textOpisUcinka_.setText(opisUcinka);
-					else
-						textOpisUcinka_.setText("");
-
-
-			}
-			else{
+			} else {
 				comboUcinak_.setText("");
+				textOpisUcinka_.setEnabled(false);
 			}
+			
+			String opisUcinka = dB.getDesiredColumnFromDB("view_risk",
+					"description_impact", "WHERE risk_id=" + m_Riskid + "");
+			if (opisUcinka == null)
+				textOpisUcinka_.setText("");					
+			else
+				textOpisUcinka_.setText(opisUcinka);
 
-		}
-		else
-		{
+		} else {
 			fillForm();
 		}
 	}
 
-	public void saveAction(){
-		if((comboPrijet_.getText()!="" && comboPrijet_.getText().length()>0 )
-				&& (comboRanjivost_.getText()!="" && comboRanjivost_.getText().length()>0)
-				&& (comboVjerojatnost_.getText()!="" && comboVjerojatnost_.getText().length()>0)
-				&& (comboUcinak_.getText()!="" && comboUcinak_.getText().length()>0)
-				){
+	public void saveAction() {
+		if ((comboPrijet_.getText() != "" && comboPrijet_.getText().length() > 0)
+				&& (comboRanjivost_.getText() != "" && comboRanjivost_
+						.getText().length() > 0)
+				&& (comboVjerojatnost_.getText() != "" && comboVjerojatnost_
+						.getText().length() > 0)
+				&& (comboUcinak_.getText() != "" && comboUcinak_.getText()
+						.length() > 0)) {
 			Hashtable<String, String> data = new Hashtable<String, String>();
 
 			String temp = comboPrijet_.getText();
 			int t = temp.indexOf("-");
-			data.put("threat_id",getDesiredColumnFromDB("as_threat", "threat_id","WHERE name='"+ comboPrijet_.getText().substring(t+1) + "'"));
-			temp=comboRanjivost_.getText();
+			data.put(
+					"threat_id",
+					dB.getDesiredColumnFromDB(
+							"as_threat",
+							"threat_id",
+							"WHERE name='"
+									+ comboPrijet_.getText().substring(t + 1)
+									+ "'"));
+			temp = comboRanjivost_.getText();
 			t = temp.indexOf("-");
-			data.put("vulnerability_id",getDesiredColumnFromDB("as_vulnerability", "vulnerability_id","WHERE name='"+ comboRanjivost_.getText().substring(t+1) + "'"));
+			data.put(
+					"vulnerability_id",
+					dB.getDesiredColumnFromDB("as_vulnerability",
+							"vulnerability_id", "WHERE name='"
+									+ comboRanjivost_.getText()
+											.substring(t + 1) + "'"));
 			data.put("asset_id", m_Model.getContentAt(1, m_Row).toString());
-			data.put("name", m_Model.getContentAt(2, m_Row).toString());
-			data.put("assetsubcateg_id", m_Model.getContentAt(3, m_Row).toString());
-			data.put("owner", m_Model.getContentAt(4, m_Row).toString());
-			data.put("asset_value", m_Model.getContentAt(9, m_Row).toString());
-			data.put("confidentiality_level",m_Model.getContentAt(5, m_Row).toString());
-			data.put("integrity_level", m_Model.getContentAt(6, m_Row).toString());
-			data.put("accessibility_level",	m_Model.getContentAt(7, m_Row).toString());
-			data.put("businessimpact_level",m_Model.getContentAt(8, m_Row).toString());
+			
 			data.put("risk_probability", comboVjerojatnost_.getText());
+//			if (textOpisVjerojat_.getText().equals(""))
+				data.put("description_risk_probability", "");
+//			else {
+//				data.put("description_risk_probability",
+//						textOpisVjerojat_.getText());
+//			}			
 
-			if(textOpisVjerojat_.getText().equals(""))
-				data.put("description_risk_probability", " ");
-			else{
-				data.put("description_risk_probability", textOpisVjerojat_.getText());
-			}
-
-			if(comboUcinak_.getText().equals(""))
-				data.put("impact", " ");
-			else{
+//			if (comboUcinak_.getText().equals(""))
+//				data.put("impact", "");
+//			else {
 				data.put("impact", comboUcinak_.getText());
-			}
+//			}
 
-			if(textOpisUcinka_.getText().equals(""))
-				data.put("description_impact", " ");
-			else{
+//			if (textOpisUcinka_.getText().equals(""))
+//				data.put("description_impact", "");
+//			else {
 				data.put("description_impact", textOpisUcinka_.getText());
-			}
+//			}
+			
+			
+			if (action == 2) {
+				try {
+					System.out.println("Hashtable" + data);
+					dB.insertDataInDB("as_risk", data, "update","ImpactAnalysis", m_Riskid);
+				} catch (Exception e1) {
+					e1.printStackTrace();
 
-			System.out.println("Hashtable" + data);
-			try {
+				}
+			} else {
+				data.put("name", m_Model.getContentAt(2, m_Row).toString());
+				data.put("assetsubcateg_id", m_Model.getContentAt(3, m_Row)
+						.toString());
+				data.put("owner", m_Model.getContentAt(4, m_Row).toString());
+				data.put("asset_value", m_Model.getContentAt(9, m_Row)
+						.toString());
+				data.put("confidentiality_level", m_Model
+						.getContentAt(5, m_Row).toString());
+				data.put("integrity_level", m_Model.getContentAt(6, m_Row)
+						.toString());
+				data.put("accessibility_level", m_Model.getContentAt(7, m_Row)
+						.toString());
+				data.put("businessimpact_level", m_Model.getContentAt(8, m_Row)
+						.toString());
+				
 
-				if (action == 2) {
-					insertDataInDB("as_risk", data, "update", m_Riskid);
+				
+				try {
+					System.out.println("Hashtable" + data);
+					dB.insertDataInDB("as_risk", data, "insert","ImpactAnalysis", "");
 
-				} else
-					insertDataInDB("as_risk", data, "insert", "");
+				} catch (Exception e1) {
+					e1.printStackTrace();
 
-
-			} catch (Exception e1) {
-				e1.printStackTrace();
-
+				}
+				
 			}
 			Notifier.notify(ResourceManager.getPluginImage("hr.ante.isms",
-					"src/icons/tick.png"),"Spremanje uspješno", "Podaci su spremljeni", NotifierTheme.GREEN_THEME);
+					"src/icons/tick.png"), "Spremanje uspješno",
+					"Podaci su spremljeni", NotifierTheme.GREEN_THEME);
 
 			fillForm();
 			refreshTable();
@@ -414,166 +475,167 @@ public class ImpactAnalysis implements ViewSelected{
 
 		else
 			Notifier.notify(ResourceManager.getPluginImage("hr.ante.isms",
-					"src/icons/error.ico"),"Nemože se spremiti", "Niste unijeli sve potrebno podatke", NotifierTheme.RED_THEME);
+					"src/icons/error.ico"), "Nemože se spremiti",
+					"Niste unijeli sve potrebno podatke",
+					NotifierTheme.RED_THEME);
 
 	}
 
-	public String[] getComboItemsFromDB(String tableName) {
-		DatabaseConnection con = new DatabaseConnection();
-		con.doConnection();
+//	public String[] getComboItemsFromDB(String tableName) {
+//		DatabaseConnectionDoma con = new DatabaseConnectionDoma();
+//		con.doConnection();
+//
+//		try {
+//
+//			return con.getComboItems(tableName);
+//
+//		} catch (SQLException ex) {
+//			System.out.println(ex.getMessage());
+//			try {
+//				con.connection.close();
+//			} catch (SQLException e1) {
+//				// TODO Auto-generated catch block
+//				e1.printStackTrace();
+//			}
+//
+//		}
+//		System.out.println("Connection : " + con.doConnection());
+//		try {
+//			con.connection.close();
+//		} catch (SQLException e1) {
+//			// TODO Auto-generated catch block
+//			e1.printStackTrace();
+//		}
+//		return new String[] {};
+//
+//	}
 
-		try {
+//	public String[] getThreatVulnerabilityItemsFromDB(String tableName,
+//			String whereStatement) {
+//		DatabaseConnectionDoma con = new DatabaseConnectionDoma();
+//		con.doConnection();
+//
+//		try {
+//
+//			return con.getComboItemsThreatOrVulnerability(tableName,
+//					whereStatement);
+//
+//		} catch (SQLException ex) {
+//			System.out.println(ex.getMessage());
+//			try {
+//				con.connection.close();
+//			} catch (SQLException e1) {
+//				// TODO Auto-generated catch block
+//				e1.printStackTrace();
+//			}
+//
+//		}
+//		System.out.println("Connection : " + con.doConnection());
+//		try {
+//			con.connection.close();
+//		} catch (SQLException e1) {
+//			// TODO Auto-generated catch block
+//			e1.printStackTrace();
+//		}
+//		return new String[] {};
+//
+//	}
 
-			return con.getComboItems(tableName);
+//	public String getDesiredColumnFromDB(String tableName, String columnName,
+//			String whereStatement) {
+//		DatabaseConnectionDoma con = new DatabaseConnectionDoma();
+//		con.doConnection();
+//
+//		try {
+//
+//			return con.getContentFromDesiredColumn(tableName, columnName,
+//					whereStatement);
+//
+//		} catch (SQLException ex) {
+//			System.out.println(ex.getMessage());
+//			try {
+//				con.connection.close();
+//			} catch (SQLException e1) {
+//				// TODO Auto-generated catch block
+//				e1.printStackTrace();
+//			}
+//
+//		}
+//		System.out.println("Connection : " + con.doConnection());
+//		try {
+//			con.connection.close();
+//		} catch (SQLException e1) {
+//			// TODO Auto-generated catch block
+//			e1.printStackTrace();
+//		}
+//		return new String();
+//
+//	}
 
-		} catch (SQLException ex) {
-			System.out.println(ex.getMessage());
-			try {
-				con.connection.close();
-			} catch (SQLException e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
-			}
-
-		}
-		System.out.println("Connection : " + con.doConnection());
-		try {
-			con.connection.close();
-		} catch (SQLException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		}
-		return new String[] {};
-
-	}
-
-
-	public String[] getThreatVulnerabilityItemsFromDB(String tableName,String whereStatement){
-		DatabaseConnection con = new DatabaseConnection();
-		con.doConnection();
-
-		try {
-
-			return con.getComboItemsThreatOrVulnerability(tableName, whereStatement);
-
-		} catch (SQLException ex) {
-			System.out.println(ex.getMessage());
-			try {
-				con.connection.close();
-			} catch (SQLException e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
-			}
-
-		}
-		System.out.println("Connection : " + con.doConnection());
-		try {
-			con.connection.close();
-		} catch (SQLException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		}
-		return new String[]{};
-
-	}
-
-	public String getDesiredColumnFromDB(String tableName, String columnName, String whereStatement){
-		DatabaseConnection con = new DatabaseConnection();
-		con.doConnection();
-
-		try {
-
-			return con.getContentFromDesiredColumn(tableName, columnName, whereStatement);
-
-		} catch (SQLException ex) {
-			System.out.println(ex.getMessage());
-			try {
-				con.connection.close();
-			} catch (SQLException e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
-			}
-
-		}
-		System.out.println("Connection : " + con.doConnection());
-		try {
-			con.connection.close();
-		} catch (SQLException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		}
-		return new String();
-
-	}
-
-	public void insertDataInDB(String tableName, Hashtable data, String updateOrInsert, String id) throws Exception{
-		DatabaseConnection con = new DatabaseConnection();
-		con.doConnection();
-
-		try {
-
-			if(updateOrInsert=="insert")
-				con.insertImpactAnalysisData(tableName, data);
-			if(updateOrInsert=="update")
-				con.updateImpactAnalysisData(tableName, data, id);
-
-		} catch (SQLException ex) {
-			System.out.println(ex.getMessage());
-			try {
-				con.connection.close();
-			} catch (SQLException e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
-			}
-
-		}
-		System.out.println("Connection : " + con.doConnection());
-		try {
-			con.connection.close();
-		} catch (SQLException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		}
-
-
-
-	}
-
-	public void deleteDataFromDB(String tableName, String idField, String id) throws Exception{
-		DatabaseConnection con = new DatabaseConnection();
-		con.doConnection();
-
-		try {
-
-			con.deleteData(tableName,idField, id);
-
-		} catch (SQLException ex) {
-			System.out.println(ex.getMessage());
-			try {
-				con.connection.close();
-			} catch (SQLException e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
-			}
-
-		}
-		System.out.println("Connection : " + con.doConnection());
-		try {
-			con.connection.close();
-		} catch (SQLException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		}
-
-
-
-	}
-
-
+//	public void insertDataInDB(String tableName, Hashtable data,
+//			String updateOrInsert, String id) throws Exception {
+//		DatabaseConnectionDoma con = new DatabaseConnectionDoma();
+//		con.doConnection();
+//
+//		try {
+//
+//			if (updateOrInsert == "insert")
+//				con.insertImpactAnalysisData(tableName, data);
+//			if (updateOrInsert == "update")
+//				con.updateImpactAnalysisData(tableName, data, id);
+//
+//		} catch (SQLException ex) {
+//			System.out.println(ex.getMessage());
+//			try {
+//				con.connection.close();
+//			} catch (SQLException e1) {
+//				// TODO Auto-generated catch block
+//				e1.printStackTrace();
+//			}
+//
+//		}
+//		System.out.println("Connection : " + con.doConnection());
+//		try {
+//			con.connection.close();
+//		} catch (SQLException e1) {
+//			// TODO Auto-generated catch block
+//			e1.printStackTrace();
+//		}
+//
+//	}
+//
+//	public void deleteDataFromDB(String tableName, String idField, String id)
+//			throws Exception {
+//		DatabaseConnectionDoma con = new DatabaseConnectionDoma();
+//		con.doConnection();
+//
+//		try {
+//
+//			con.deleteData(tableName, idField, id);
+//
+//		} catch (SQLException ex) {
+//			System.out.println(ex.getMessage());
+//			try {
+//				con.connection.close();
+//			} catch (SQLException e1) {
+//				// TODO Auto-generated catch block
+//				e1.printStackTrace();
+//			}
+//
+//		}
+//		System.out.println("Connection : " + con.doConnection());
+//		try {
+//			con.connection.close();
+//		} catch (SQLException e1) {
+//			// TODO Auto-generated catch block
+//			e1.printStackTrace();
+//		}
+//
+//	}
 
 	@PreDestroy
 	public void dispose() throws Exception {
-	  System.out.println("Closing application");
+		System.out.println("Closing application");
 	}
 
 	@Focus

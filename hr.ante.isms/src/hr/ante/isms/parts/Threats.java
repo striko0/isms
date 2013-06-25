@@ -115,7 +115,7 @@ public class Threats implements ViewSelected {
 		Label lblVrsta_ = new Label(composite1, SWT.NONE);
 		lblVrsta_.setText("Vrsta:");
 
-		comboVrsta_ = new Combo(composite1, SWT.NONE);
+		comboVrsta_ = new Combo(composite1, SWT.READ_ONLY);
 		GridData gd_comboVrsta_ = new GridData(SWT.LEFT, SWT.CENTER, true,
 				false, 3, 1);
 		gd_comboVrsta_.widthHint = 190;
@@ -234,7 +234,7 @@ public class Threats implements ViewSelected {
 			public void widgetSelected(SelectionEvent e) {
 				// TODO Auto-generated method stub
 				saveAction();
-				action=1;
+				//action=1;
 			}
 		});
 		btnSpremi_.setText("Spremi");
@@ -248,7 +248,6 @@ public class Threats implements ViewSelected {
 		btnNovo_.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				table.m_Selection.clear();
 				m_ThreatId=null;
 				fillForm();
 			}
@@ -288,6 +287,7 @@ public class Threats implements ViewSelected {
 				if (confirm) {
 					try {
 						dB.deleteDataFromDB("as_threat", "threat_id", m_ThreatId);
+						fillForm();
 						refreshTable();
 
 					} catch (Exception e1) {
@@ -328,9 +328,10 @@ public class Threats implements ViewSelected {
 
 					Connection connection = null;
 					String driverName = "com.microsoft.sqlserver.jdbc.SQLServerDriver";
-					String url = "jdbc:sqlserver://192.168.0.76"/* 192.168.0.70 */;
-					String username = "sa"; // You should modify this.
-					String password = "sa"; // You should modify this.
+//					String url = "jdbc:sqlserver://192.168.0.76"/* 192.168.0.70 */;
+					String url = "jdbc:sqlserver://127.0.0.1:1433;integratedSecurity=true"; 
+//					String username = "sa"; // You should modify this.
+//					String password = "sa"; // You should modify this.
 					// Load the JDBC driver
 					try {
 						Class.forName(driverName);
@@ -340,14 +341,16 @@ public class Threats implements ViewSelected {
 					}
 					// Create a connection to the database
 					try {
-						connection = DriverManager.getConnection(url, username,
-								password);
+//						connection = DriverManager.getConnection(url, username,
+//								password);
+						connection = DriverManager.getConnection(url);
 					} catch (SQLException e1) {
 						// TODO Auto-generated catch block
 						e1.printStackTrace();
 					}
 
-					JasperPrint print = JasperFillManager.fillReport("C:/Documents and Settings/Zrosko/git/isms/hr.ante.isms/src/reports/prijetnje.jasper", hm, /*new JREmptyDataSource()*/connection);
+//					JasperPrint print = JasperFillManager.fillReport("C:/Documents and Settings/Zrosko/git/isms/hr.ante.isms/src/reports/prijetnje.jasper", hm, /*new JREmptyDataSource()*/connection);
+					JasperPrint print = JasperFillManager.fillReport("C:/Reports/prijetnje.jasper", hm, /*new JREmptyDataSource()*/connection);
 
 					JasperViewer.viewReport(print,false);
 
@@ -361,6 +364,7 @@ public class Threats implements ViewSelected {
 
 		fillForm();
 		scrollBox.setContent(mParent);
+		mParent.getShell().setDefaultButton(btnSpremi_);
 
 	}
 
@@ -371,14 +375,9 @@ public class Threats implements ViewSelected {
 
 	private void fillForm() {
 		// TODO Auto-generated method stub
-
-		/**
-		 * Poèetno postavljanje kontrola
-		 *
-		 */
 		action=1;
 		initialSettings();
-		table.m_Selection.clear();
+		table.setSelection(null, false);
 
 	}
 
@@ -428,73 +427,84 @@ public class Threats implements ViewSelected {
 			threatTypeId =  dB.getDesiredColumnFromDB("view_threat",
 					"threattype_id", "WHERE threat_id='" + m_ThreatId + "'");
 
-			String description = table.getModel().getContentAt(7, row).toString();
-			textOpis_.setText(description);
-//			else
-//				textOpis_.setText("");
+			textOpis_.setText(table.getModel().getContentAt(7, row).toString());
 
-			String motivation = table.getModel().getContentAt(8, row).toString();
-//			if(motivation!="")
-			textMotivation_.setText(motivation);
-//			else
-//				textMotivation.setText(" ");
+			textMotivation_.setText(table.getModel().getContentAt(8, row).toString());
 
 			String probability =  table.getModel().getContentAt(4, row).toString();
-			probabilityId =  dB.getDesiredColumnFromDB("view_threat",
-					"probability", "WHERE threat_id='" + m_ThreatId + "'");
+			if(probability.equals(""))
+			{
+				comboVjerojatnost_.setText("");
+			}
+			else{
+				probabilityId =  dB.getDesiredColumnFromDB("view_threat",
+						"probability", "WHERE threat_id='" + m_ThreatId + "'");
+				comboVjerojatnost_.setText(probabilityId + "-" + probability);
+				
+			}			
 
-			String origin =  table.getModel().getContentAt(9, row).toString();
-			originId =  dB.getDesiredColumnFromDB("view_threat",
-					"origin", "WHERE threat_id='" + m_ThreatId + "'");
+			String origin =  table.getModel().getContentAt(9, row).toString();			
+			if(origin.equals(""))
+			{
+				comboPorijeklo_.setText("");
+			}
+			else{
+				originId =  dB.getDesiredColumnFromDB("view_threat",
+						"origin", "WHERE threat_id='" + m_ThreatId + "'");
+				comboPorijeklo_.setText(originId + "-" + origin);
+				
+			}
+			
 
-			String frequency =  table.getModel().getContentAt(10, row).toString();
-			frequencyId =  dB.getDesiredColumnFromDB("view_threat",
-					"frequency", "WHERE threat_id='" + m_ThreatId + "'");
+			String frequency =  table.getModel().getContentAt(10, row).toString();			
+			if(frequency.equals(""))
+			{
+				comboUcestalost_.setText("");
+			}
+			else{
+				frequencyId =  dB.getDesiredColumnFromDB("view_threat",
+						"frequency", "WHERE threat_id='" + m_ThreatId + "'");
+				comboUcestalost_.setText(frequencyId + "-" + frequency);
+				
+			}
 
-			String impact =  table.getModel().getContentAt(11, row).toString();
-			impactId =  dB.getDesiredColumnFromDB("view_threat",
-					"impact_level", "WHERE threat_id='" + m_ThreatId + "'");
+			String impact =  table.getModel().getContentAt(11, row).toString();			
+			if(impact.equals(""))
+			{
+				comboRazorMoc_.setText("");
+			}
+			else{
+				impactId =  dB.getDesiredColumnFromDB("view_threat",
+						"impact_level", "WHERE threat_id='" + m_ThreatId + "'");
+				comboRazorMoc_.setText(impactId+ "-" + impact);
+				
+			}
 
-			String source =  table.getModel().getContentAt(12, row).toString();
-			sourceId =  dB.getDesiredColumnFromDB("view_threat",
-					"source", "WHERE threat_id='" + m_ThreatId + "'");
+			String source =  table.getModel().getContentAt(12, row).toString();			
+			if(source.equals(""))
+			{
+				comboIzvor_.setText("");
+			}
+			else{
+				sourceId =  dB.getDesiredColumnFromDB("view_threat",
+						"source", "WHERE threat_id='" + m_ThreatId + "'");
+				comboIzvor_.setText(sourceId+ "-" + source);
+				
+			}
 
 			String intention =  table.getModel().getContentAt(6, row).toString();
-			intentionId =  dB.getDesiredColumnFromDB("view_threat",
-					"source", "WHERE threat_id='" + m_ThreatId + "'");
+			if(intention.equals(""))
+			{
+				comboNamjera_.setText("");
+			}
+			else{
+				intentionId =  dB.getDesiredColumnFromDB("view_threat",
+						"intention", "WHERE threat_id='" + m_ThreatId + "'");
+				comboNamjera_.setText(intentionId+"-" + intention);
+				
+			}
 
 			comboVrsta_.setText(threatTypeId + "-" + threatType);
-
-			if(probability!="")
-				comboVjerojatnost_.setText(probabilityId + "-" + probability);
-			else
-				comboVjerojatnost_.setText("");
-
-			if(origin!="")
-				comboPorijeklo_.setText(originId + "-" + origin);
-			else
-				comboPorijeklo_.setText("");
-
-			if(frequency!="")
-				comboUcestalost_.setText(frequencyId + "-" + frequency);
-			else
-				comboUcestalost_.setText("");
-
-			if(impact!="")
-				comboRazorMoc_.setText(impactId+ "-" + impact);
-			else
-				comboRazorMoc_.setText("");
-
-			if(source!="")
-				comboIzvor_.setText(sourceId+ "-" + source);
-			else
-				comboIzvor_.setText("");
-
-			if(intention!="")
-				comboNamjera_.setText(intentionId+"-" + intention);
-			else
-				comboNamjera_.setText("");
-
 
 		}
 		else
@@ -521,39 +531,34 @@ public class Threats implements ViewSelected {
 				t = temp.indexOf("-");
 				data.put("source",comboIzvor_.getText().substring(0,t));
 			}
-//			else
-//				data.put("source","");
+			else
+				data.put("source","");
 
 			if(!comboPorijeklo_.getText().equals("")){
 				temp = comboPorijeklo_.getText();
 				t = temp.indexOf("-");
 				data.put("origin",comboPorijeklo_.getText().substring(0,t));
 			}
-//			else
-//				data.put("origin","");
+			else
+				data.put("origin","");
 
 			if(!comboNamjera_.getText().equals("")){
 				temp = comboNamjera_.getText();
 				t = temp.indexOf("-");
 				data.put("intention",comboNamjera_.getText().substring(0,t));
 			}
-//			else
-//				data.put("intention","");
+			else
+				data.put("intention","");
 
-			if(!textOpis_.getText().equals("")){
+//			if(!textOpis_.getText().equals("")){
 				data.put("description",textOpis_.getText());
-			}
+//			}
 //			else
 //				data.put("description","");
 
-//			if(textMotivation.getText().equals(" "))
-//				data.put("motivation", " ");
-//			else{
-//				data.put("motivation",textMotivation.getText());
-//			}
-			if(!textMotivation_.getText().equals("")){
+//			if(!textMotivation_.getText().equals("")){
 				data.put("motivation",textMotivation_.getText());
-			}
+//			}
 //			else
 //				data.put("motivation","");
 
@@ -562,16 +567,16 @@ public class Threats implements ViewSelected {
 				t = temp.indexOf("-");
 				data.put("impact_level",comboRazorMoc_.getText().substring(0,t));
 			}
-//			else
-//				data.put("impact_level","");
+			else
+				data.put("impact_level","");
 
 			if(!comboUcestalost_.getText().equals("")){
 				temp = comboUcestalost_.getText();
 				t = temp.indexOf("-");
 				data.put("frequency",comboUcestalost_.getText().substring(0,t));
 			}
-//			else
-//				data.put("frequency","");
+			else
+				data.put("frequency","");
 
 
 			if(!comboVjerojatnost_.getText().equals("")){
@@ -579,8 +584,8 @@ public class Threats implements ViewSelected {
 				t = temp.indexOf("-");
 				data.put("probability",comboVjerojatnost_.getText().substring(0,t));
 			}
-//			else
-//				data.put("probability","");
+			else
+				data.put("probability","");
 
 			System.out.println("Hashtable" + data);
 			try {
@@ -603,10 +608,12 @@ public class Threats implements ViewSelected {
 			fillForm();
 
 		}
-
-		else
+		else{
 			Notifier.notify(ResourceManager.getPluginImage("hr.ante.isms",
 					"src/icons/error.ico"),"Nemože se spremiti", "Niste unijeli sve potrebno podatke", NotifierTheme.RED_THEME);
+			
+		}
+	
 
 	}
 

@@ -1,6 +1,6 @@
 package hr.ante.isms.parts.table;
 
-import hr.ante.isms.connection.DatabaseConnection;
+import hr.ante.isms.connection.DatabaseConnectionDoma;
 import hr.ante.isms.parts.DataFromServer;
 import hr.ante.test.asktable.editors.ASKTableCellEditorComboText;
 import hr.ante.test.asktable.editors.ASKTableCellEditorCurrency3;
@@ -124,7 +124,7 @@ public class ThreatIdentASKTableModel extends KTableSortedModel {
 
 
 	public HashMap<String, String> getContentFromDB(String tableName) {
-		DatabaseConnection con = new DatabaseConnection();
+		DatabaseConnectionDoma con = new DatabaseConnectionDoma();
 		con.doConnection();
 
 		try {
