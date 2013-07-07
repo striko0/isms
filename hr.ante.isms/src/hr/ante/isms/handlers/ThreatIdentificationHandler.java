@@ -34,7 +34,7 @@ public class ThreatIdentificationHandler {
 				window = MBasicFactory.INSTANCE.createWindow();
 
 				MPart part = MBasicFactory.INSTANCE.createPart();
-				part.setContributionURI("bundleclass://hr.ante.isms/hr.ante.isms.parts.ThreatIdentification");
+				part.setContributionURI("bundleclass://hr.ante.isms/hr.ante.isms.parts.riskassessment.ThreatIdentification");
 				part.setCloseable(true);
 
 				window.getChildren().add(part);

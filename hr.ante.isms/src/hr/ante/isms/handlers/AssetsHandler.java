@@ -1,7 +1,7 @@
 package hr.ante.isms.handlers;
 
-import hr.ante.isms.parts.Assets3;
 import hr.ante.isms.parts.Toolbar;
+import hr.ante.isms.parts.riskassessment.Assets;
 
 import javax.inject.Inject;
 import javax.tools.Tool;
@@ -40,7 +40,7 @@ public class AssetsHandler {
 
 			window = MBasicFactory.INSTANCE.createWindow();
 			MPart part = MBasicFactory.INSTANCE.createPart();
-			part.setContributionURI("bundleclass://hr.ante.isms/hr.ante.isms.parts.Assets3");
+			part.setContributionURI("bundleclass://hr.ante.isms/hr.ante.isms.parts.riskassessment.Assets");
 			part.setCloseable(true);
 			window.getChildren().add(part);
 			app.getChildren().add(window);

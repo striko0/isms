@@ -31,7 +31,7 @@ public class ProbabilityHandler {
 			if (m_Row != 0) {
 				window = MBasicFactory.INSTANCE.createWindow();
 				MPart part = MBasicFactory.INSTANCE.createPart();
-				part.setContributionURI("bundleclass://hr.ante.isms/hr.ante.isms.parts.Probability");
+				part.setContributionURI("bundleclass://hr.ante.isms/hr.ante.isms.parts.riskassessment.Probability");
 				part.setElementId("hr.ante.isms.part.probability");
 				part.setCloseable(true);
 				window.getChildren().add(part);

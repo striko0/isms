@@ -2,15 +2,22 @@ package hr.ante.isms.parts.table;
 
 import hr.ante.isms.parts.AssetRowSelected;
 import hr.ante.isms.parts.Controls;
-import hr.ante.isms.parts.ImpactAnalysis;
+import hr.ante.isms.parts.ListAssets;
 import hr.ante.isms.parts.ListRisks;
-import hr.ante.isms.parts.Probability;
-import hr.ante.isms.parts.SuggestMeasures;
-import hr.ante.isms.parts.ThreatIdentification;
 import hr.ante.isms.parts.Threats;
 import hr.ante.isms.parts.ViewSelected;
 import hr.ante.isms.parts.Vulnerability;
-import hr.ante.isms.parts.VulnerabilityIdentification;
+import hr.ante.isms.parts.riskassessment.ImpactAnalysis;
+import hr.ante.isms.parts.riskassessment.Probability;
+import hr.ante.isms.parts.riskassessment.ThreatIdentification;
+import hr.ante.isms.parts.riskassessment.VulnerabilityIdentification;
+import hr.ante.isms.parts.riskmitigation.SuggestMeasures;
+import hr.ante.isms.parts.table.model.ListAssetASKTableModel;
+import hr.ante.isms.parts.table.model.ListControlASKTableModel;
+import hr.ante.isms.parts.table.model.ListControlRiskASKTableModel;
+import hr.ante.isms.parts.table.model.ListRiskASKTableModel;
+import hr.ante.isms.parts.table.model.ListThreatASKTableModel;
+import hr.ante.isms.parts.table.model.ListVulnerabilityASKTableModel;
 
 import javax.inject.Inject;
 
@@ -59,7 +66,8 @@ public class NewASKTable1 extends KTable{
 	private ViewSelected m_ViewControl;
 	private ViewSelected m_ViewControlRisk;
 	private AssetRowSelected m_AssetRow;
-	private int cRow = -1;
+	private static boolean clickedAlready=false;
+	private int cRow = 0;
 	private int cCol = -1;
 
 	@Inject
@@ -124,9 +132,9 @@ public class NewASKTable1 extends KTable{
 //			m_ViewRisk=view;
 //		}
 //
-//		if(view instanceof ListAssets){
-//			m_ViewAsset=view;
-//		}
+		if(view instanceof ListAssets){
+			m_ViewAsset=view;
+		}
 		else
 			m_View = view;
 
@@ -197,9 +205,26 @@ public class NewASKTable1 extends KTable{
 //					setClickedRow(cRow);
 //					updateStatus(cCol, cRow);
 //				}
+				
+				if (e.keyCode == SWT.ARROW_DOWN) {
+					//cRow=clickedRow;			
+//					clickedAlready=false;
+					if(cRow!=0)
+						cRow++;
+					clickedAlready=false;
+//					setClickedRow(cRow);
+					
+				}
+	//
+				if (e.keyCode == SWT.ARROW_UP) {
+					
+					if(cRow!=0)
+						cRow--;
+					clickedAlready=false;
+				
+				}
 //				
-				if(e.keyCode == SWT.CTRL)
-					selection=false;
+//				
 //
 			}
 		});
@@ -243,7 +268,13 @@ public class NewASKTable1 extends KTable{
 //					
 				
 					// TODO Auto-generated method stub
-					setClickedRow(row);
+//					if(clickedAlready==false){
+//						clickedAlready=true;
+						setClickedRow(row);
+						clickedAlready=true;
+						
+//					}
+					
 							
 				
 //					if (selection==true) {
@@ -282,14 +313,22 @@ public class NewASKTable1 extends KTable{
 			@Override
 			public void keyPressed(KeyEvent e) {
 				// TODO Auto-generated method stub
-				if ((e.stateMask & SWT.CTRL) == 0) {
+//				if ((e.stateMask & SWT.CTRL) == 0) {
+//
+//					selection = false;
+//
+//				} else
+//					selection = true;
+				if (e.keyCode == SWT.CTRL) {				
 
 					selection = false;
 
 				} else
 					selection = true;
-				}
+				
 			
+		
+			}
 
 
 
@@ -313,7 +352,10 @@ public class NewASKTable1 extends KTable{
 		    	// changes when sorting is done.
 			
 				int modelRow = model.mapRowIndexToModel(row);
-				setClickedRow(row);		
+				if(clickedAlready==false){
+//					setClickedRow(row);
+					setClickedRow(cRow);
+				}
 				updateStatus(col, row);
 				System.out.println("Cell [" + col + ";" + row
 						+ "] selected. - Model row: " + modelRow);
@@ -474,15 +516,13 @@ public class NewASKTable1 extends KTable{
 		}
 
 	private void setClickedRow(int row){
-//		cRow=row;
-		
+		cRow=row;
 			if (selection == true) {
 				System.out.println("CLICKDEEEED ROW " + row);
 				if (getModel() instanceof ListAssetASKTableModel) {
 
 					clickedAssetRow = row;
-
-					// m_ViewAsset.rowSelected(row);
+					m_ViewAsset.rowSelected(row);
 				}
 
 				if (getModel() instanceof ListVulnerabilityASKTableModel) {
@@ -521,17 +561,19 @@ public class NewASKTable1 extends KTable{
 					
 				}
 				
+				
 			}
 
 			else {
+				
 				clickedRow = 0;
-				if ((getModel() instanceof ListControlRiskASKTableModel) == false)
-					m_View.rowSelected(0);
+//				if ((getModel() instanceof ListControlRiskASKTableModel) == false)
+//					m_ViewControlRisk.rowSelected(0);
 
 				if (getModel() instanceof ListAssetASKTableModel) {
 
 					clickedAssetRow = 0;
-					// m_ViewAsset.rowSelected(0);
+					m_ViewAsset.rowSelected(row);
 				}
 
 				if (getModel() instanceof ListVulnerabilityASKTableModel) {
@@ -574,6 +616,8 @@ public class NewASKTable1 extends KTable{
 
 
 	}
+	
+	
 
 
 }

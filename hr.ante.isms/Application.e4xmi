@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <application:Application xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:advanced="http://www.eclipse.org/ui/2010/UIModel/application/ui/advanced" xmlns:application="http://www.eclipse.org/ui/2010/UIModel/application" xmlns:basic="http://www.eclipse.org/ui/2010/UIModel/application/ui/basic" xmlns:menu="http://www.eclipse.org/ui/2010/UIModel/application/ui/menu" xmi:id="_DOk2QMHoEeKRFJks8F58qg" elementId="org.eclipse.e4.ide.application" bindingContexts="_DOk2SMHoEeKRFJks8F58qg">
-  <children xsi:type="basic:TrimmedWindow" xmi:id="_DOk2QcHoEeKRFJks8F58qg" elementId="hr.ante.isms.trimmedwindow.0" selectedElement="_DOk2X8HoEeKRFJks8F58qg" label="ISMS" iconURI="platform:/plugin/hr.ante.isms/src/icons/info_shield.png" x="-1" y="-1" width="900" height="600">
+  <children xsi:type="basic:TrimmedWindow" xmi:id="_DOk2QcHoEeKRFJks8F58qg" elementId="hr.ante.isms.trimmedwindow.0" selectedElement="_DOk2X8HoEeKRFJks8F58qg" label="ISMS" iconURI="platform:/plugin/hr.ante.isms/src/icons/info_shield.png" x="250" y="50" width="900" height="600">
     <children xsi:type="advanced:PerspectiveStack" xmi:id="_DOk2X8HoEeKRFJks8F58qg" elementId="hr.ante.isms.perspectivestack.admin" selectedElement="_DOk2YMHoEeKRFJks8F58qg">
       <children xsi:type="advanced:Perspective" xmi:id="_DOk2YMHoEeKRFJks8F58qg" elementId="hr.ante.isms.perspective.main" label="Admin">
         <children xsi:type="basic:Part" xmi:id="_-ND-0Ma2EeKnGd2mN_Ma-g" elementId="hr.ante.isms.part.asset" visible="false" contributionURI="bundleclass://hr.ante.isms/hr.ante.isms.parts.ListAssets" label="Imovina" closeable="true"/>
@@ -23,9 +23,14 @@
       <children xsi:type="menu:Menu" xmi:id="_kBCIEMa8EeKnGd2mN_Ma-g" elementId="hr.ante.isms.menu.pomoc" label="&amp;Pomoć">
         <children xsi:type="menu:HandledMenuItem" xmi:id="_y9C0YMa8EeKnGd2mN_Ma-g" elementId="hr.ante.isms.handledmenuitem.0" label="O aplikaciji"/>
       </children>
+      <children xsi:type="menu:Menu" xmi:id="_ofkH0N2EEeKVQva-d0rw6w" elementId="hr.ante.isms.menu.user" visible="false" label="&amp;Korisnik">
+        <children xsi:type="menu:HandledMenuItem" xmi:id="_sFUtkN2EEeKVQva-d0rw6w" elementId="hr.ante.isms.handledmenuitem.administrator" label="Administrator" iconURI="platform:/plugin/hr.ante.isms/src/icons/controls.png" tooltip="Administrator" command="_4p1XAN2EEeKVQva-d0rw6w"/>
+        <children xsi:type="menu:HandledMenuItem" xmi:id="_uIeREN2EEeKVQva-d0rw6w" elementId="hr.ante.isms.handledmenuitem.vinfor" label="Voditelj Informacijske sigurnosti" tooltip="Voditelj Informacijske sigurnosti"/>
+        <children xsi:type="menu:HandledMenuItem" xmi:id="_1CljgN2EEeKVQva-d0rw6w" elementId="hr.ante.isms.handledmenuitem.vlasnik" label="Vlasnik Resursa" tooltip="Vlasnik Resursa"/>
+      </children>
     </mainMenu>
-    <trimBars xmi:id="_oU1pEMeMEeK97MPScHyovA" elementId="hr.ante.isms.trimbar.1" side="Left">
-      <children xsi:type="menu:ToolControl" xmi:id="_pqvsEMeMEeK97MPScHyovA" elementId="hr.ante.isms.toolcontrol.1" contributionURI="bundleclass://hr.ante.isms/hr.ante.isms.parts.Toolbar"/>
+    <trimBars xmi:id="_oU1pEMeMEeK97MPScHyovA" elementId="hr.ante.isms.trimbar.toolbar" side="Left">
+      <children xsi:type="menu:ToolControl" xmi:id="_pqvsEMeMEeK97MPScHyovA" elementId="hr.ante.isms.toolcontrol.administrator" contributionURI="bundleclass://hr.ante.isms/hr.ante.isms.parts.Toolbar"/>
     </trimBars>
   </children>
   <handlers xmi:id="_DOk2TMHoEeKRFJks8F58qg" contributionURI="bundleclass://hr.ante.isms/hr.ante.isms.handlers.QuitHandler" command="_DOk2S8HoEeKRFJks8F58qg"/>
@@ -38,6 +43,7 @@
   <handlers xmi:id="_RvJQ4NmbEeKdEI2dTSmUJw" elementId="hr.ante.isms.handler.vulnerabilityidentification" contributionURI="bundleclass://hr.ante.isms/hr.ante.isms.handlers.VulnerabilityIdentificationHandler" command="_No-swNmbEeKdEI2dTSmUJw"/>
   <handlers xmi:id="_3reeMNmbEeKdEI2dTSmUJw" elementId="hr.ante.isms.handler.probability" contributionURI="bundleclass://hr.ante.isms/hr.ante.isms.handlers.ProbabilityHandler" command="_u0GN0NmbEeKdEI2dTSmUJw"/>
   <handlers xmi:id="_Z-JdMNmcEeKdEI2dTSmUJw" elementId="hr.ante.isms.handler.impactAnalysis" contributionURI="bundleclass://hr.ante.isms/hr.ante.isms.handlers.ImpactAnalysisHandler" command="_R2SlQNmcEeKdEI2dTSmUJw"/>
+  <handlers xmi:id="_8_izAN2EEeKVQva-d0rw6w" elementId="hr.ante.isms.handler.administrator" contributionURI="bundleclass://hr.ante.isms/hr.ante.isms.handlers.AdminHandler" command="_4p1XAN2EEeKVQva-d0rw6w"/>
   <bindingTables xmi:id="_DOk2TcHoEeKRFJks8F58qg" bindingContext="_DOk2SMHoEeKRFJks8F58qg">
     <bindings xmi:id="_DOk2TsHoEeKRFJks8F58qg" keySequence="M1+Q" command="_DOk2S8HoEeKRFJks8F58qg"/>
     <bindings xmi:id="_DOk2UcHoEeKRFJks8F58qg" keySequence="M1+O" command="_DOk2T8HoEeKRFJks8F58qg"/>
@@ -58,6 +64,7 @@
   <commands xmi:id="_No-swNmbEeKdEI2dTSmUJw" elementId="hr.ante.isms.command.vulnerabilityidentification" commandName="vulnerabilityIdentification"/>
   <commands xmi:id="_u0GN0NmbEeKdEI2dTSmUJw" elementId="hr.ante.isms.command.probability" commandName="probability"/>
   <commands xmi:id="_R2SlQNmcEeKdEI2dTSmUJw" elementId="hr.ante.isms.command.impactanalysis" commandName="impactAnalysis"/>
+  <commands xmi:id="_4p1XAN2EEeKVQva-d0rw6w" elementId="hr.ante.isms.command.administrator" commandName="administratorCommand"/>
   <addons xmi:id="_DOk2QsHoEeKRFJks8F58qg" elementId="org.eclipse.e4.core.commands.service" contributionURI="bundleclass://org.eclipse.e4.core.commands/org.eclipse.e4.core.commands.CommandServiceAddon"/>
   <addons xmi:id="_DOk2Q8HoEeKRFJks8F58qg" elementId="org.eclipse.e4.ui.contexts.service" contributionURI="bundleclass://org.eclipse.e4.ui.services/org.eclipse.e4.ui.services.ContextServiceAddon"/>
   <addons xmi:id="_DOk2RMHoEeKRFJks8F58qg" elementId="org.eclipse.e4.ui.bindings.service" contributionURI="bundleclass://org.eclipse.e4.ui.bindings/org.eclipse.e4.ui.bindings.BindingServiceAddon"/>

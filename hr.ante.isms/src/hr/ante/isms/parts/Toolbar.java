@@ -1,7 +1,7 @@
 package hr.ante.isms.parts;
 
-import hr.ante.isms.parts.table.ListRiskASKTableModel;
 import hr.ante.isms.parts.table.NewASKTable1;
+import hr.ante.isms.parts.table.model.ListRiskASKTableModel;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -56,6 +56,8 @@ public class Toolbar {
 	private Composite m_Parent;
 	private MPart assetPart ;
 	public static int assetIsVisible=0;
+	private String userName;
+	private ExpandItem xpndtmPostavke;
 
 	@Inject
 	IStylingEngine engine;
@@ -93,99 +95,101 @@ public class Toolbar {
 
 		m_Table = NewASKTable1.m_Table;
 		m_Model = DataFromServer.listRiskASKTableModel;
-
-		final ExpandItem xpndtmPostavke = new ExpandItem(expandBar, SWT.NONE);
-		try {
-			xpndtmPostavke.setImage(ResourceManager.getPluginImage(
-					"hr.ante.isms", "src/icons/applications_system.png"));
-		} catch (Exception e) {
-			System.out.println("Cannot load images");
-			System.out.println(e.getMessage());
-			System.exit(1);
-		}
-		xpndtmPostavke.setText("Administracija");
-		// Toolbar( ) {
-
-		final ToolBar bar1 = new ToolBar(expandBar, SWT.FLAT | SWT.RIGHT
-				| SWT.SHADOW_OUT | SWT.VERTICAL);
-		xpndtmPostavke.setControl(bar1);
-
-		ToolItem tltmKontrole_ = new ToolItem(bar1, SWT.NONE);
-		tltmKontrole_.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				// Create the window
-				final MWindow window = MBasicFactory.INSTANCE.createWindow();
-
-				MPart part = MBasicFactory.INSTANCE.createPart();
-				part.setContributionURI("bundleclass://hr.ante.isms/hr.ante.isms.parts.Controls");
-				part.setCloseable(true);
-				window.getChildren().add(part);
-
-				app.getChildren().add(window);
+		
+		
+		xpndtmPostavke = new ExpandItem(expandBar, SWT.NONE);
+			try {
+				xpndtmPostavke.setImage(ResourceManager.getPluginImage(
+						"hr.ante.isms", "src/icons/applications_system.png"));
+			} catch (Exception e) {
+				System.out.println("Cannot load images");
+				System.out.println(e.getMessage());
+				System.exit(1);
 			}
-		});
-
-		try {
-			tltmKontrole_.setImage(ResourceManager.getPluginImage(
-					"hr.ante.isms", "bin/icons/document2_add.png"));
-		} catch (Exception e) {
-			System.out.println("Cannot load images");
-			System.out.println(e.getMessage());
-			System.exit(1);
-		}
-		tltmKontrole_.setText("Evidencija Kontrola");
-		xpndtmPostavke.setHeight(130);
-
-		ToolItem tltmDodajRanjivosti = new ToolItem(bar1, SWT.NONE);
-		tltmDodajRanjivosti.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				// Create the window
-				final MWindow window = MBasicFactory.INSTANCE.createWindow();
-
-				MPart part = MBasicFactory.INSTANCE.createPart();
-				part.setContributionURI("bundleclass://hr.ante.isms/hr.ante.isms.parts.Vulnerability");
-				part.setCloseable(true);
-				window.getChildren().add(part);
-
-				app.getChildren().add(window);
+			xpndtmPostavke.setText("Administracija");
+			// Toolbar( ) {
+	
+			final ToolBar bar1 = new ToolBar(expandBar, SWT.FLAT | SWT.RIGHT
+					| SWT.SHADOW_OUT | SWT.VERTICAL);
+			xpndtmPostavke.setControl(bar1);
+	
+			ToolItem tltmKontrole_ = new ToolItem(bar1, SWT.NONE);
+			tltmKontrole_.addSelectionListener(new SelectionAdapter() {
+				@Override
+				public void widgetSelected(SelectionEvent e) {
+					// Create the window
+					final MWindow window = MBasicFactory.INSTANCE.createWindow();
+	
+					MPart part = MBasicFactory.INSTANCE.createPart();
+					part.setContributionURI("bundleclass://hr.ante.isms/hr.ante.isms.parts.Controls");
+					part.setCloseable(true);
+					window.getChildren().add(part);
+	
+					app.getChildren().add(window);
+				}
+			});
+	
+			try {
+				tltmKontrole_.setImage(ResourceManager.getPluginImage(
+						"hr.ante.isms", "bin/icons/document2_add.png"));
+			} catch (Exception e) {
+				System.out.println("Cannot load images");
+				System.out.println(e.getMessage());
+				System.exit(1);
 			}
-		});
-		tltmDodajRanjivosti.setText("Evidencija Ranjivosti");
-		try {
-			tltmDodajRanjivosti.setImage(ResourceManager.getPluginImage(
-					"hr.ante.isms", "bin/icons/document2_add.png"));
-		} catch (Exception e) {
-			System.out.println("Cannot load images");
-			System.out.println(e.getMessage());
-			System.exit(1);
-		}
-
-		ToolItem tltmDodajPrijetnje = new ToolItem(bar1, SWT.NONE);
-		tltmDodajPrijetnje.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				// Create the window
-				final MWindow window = MBasicFactory.INSTANCE.createWindow();
-
-				MPart part = MBasicFactory.INSTANCE.createPart();
-				part.setContributionURI("bundleclass://hr.ante.isms/hr.ante.isms.parts.Threats");
-				part.setCloseable(true);
-				window.getChildren().add(part);
-
-				app.getChildren().add(window);
+			tltmKontrole_.setText("Evidencija Kontrola");
+			xpndtmPostavke.setHeight(130);
+	
+			ToolItem tltmDodajRanjivosti = new ToolItem(bar1, SWT.NONE);
+			tltmDodajRanjivosti.addSelectionListener(new SelectionAdapter() {
+				@Override
+				public void widgetSelected(SelectionEvent e) {
+					// Create the window
+					final MWindow window = MBasicFactory.INSTANCE.createWindow();
+	
+					MPart part = MBasicFactory.INSTANCE.createPart();
+					part.setContributionURI("bundleclass://hr.ante.isms/hr.ante.isms.parts.Vulnerability");
+					part.setCloseable(true);
+					window.getChildren().add(part);
+	
+					app.getChildren().add(window);
+				}
+			});
+			tltmDodajRanjivosti.setText("Evidencija Ranjivosti");
+			try {
+				tltmDodajRanjivosti.setImage(ResourceManager.getPluginImage(
+						"hr.ante.isms", "bin/icons/document2_add.png"));
+			} catch (Exception e) {
+				System.out.println("Cannot load images");
+				System.out.println(e.getMessage());
+				System.exit(1);
 			}
-		});
-		try {
-			tltmDodajPrijetnje.setImage(ResourceManager.getPluginImage(
-					"hr.ante.isms", "src/icons/document2_add.png"));
-		} catch (Exception e) {
-			System.out.println("Cannot load images");
-			System.out.println(e.getMessage());
-			System.exit(1);
-		}
-		tltmDodajPrijetnje.setText("Evidencija Prijetnji");
+	
+			ToolItem tltmDodajPrijetnje = new ToolItem(bar1, SWT.NONE);
+			tltmDodajPrijetnje.addSelectionListener(new SelectionAdapter() {
+				@Override
+				public void widgetSelected(SelectionEvent e) {
+					// Create the window
+					final MWindow window = MBasicFactory.INSTANCE.createWindow();
+	
+					MPart part = MBasicFactory.INSTANCE.createPart();
+					part.setContributionURI("bundleclass://hr.ante.isms/hr.ante.isms.parts.Threats");
+					part.setCloseable(true);
+					window.getChildren().add(part);
+	
+					app.getChildren().add(window);
+				}
+			});
+			try {
+				tltmDodajPrijetnje.setImage(ResourceManager.getPluginImage(
+						"hr.ante.isms", "src/icons/document2_add.png"));
+			} catch (Exception e) {
+				System.out.println("Cannot load images");
+				System.out.println(e.getMessage());
+				System.exit(1);
+			}
+			tltmDodajPrijetnje.setText("Evidencija Prijetnji");
+			
 
 		final ExpandItem xpndtmProcjenaRizika = new ExpandItem(expandBar,
 				SWT.NONE);
@@ -207,7 +211,7 @@ public class Toolbar {
 				final MWindow window = MBasicFactory.INSTANCE.createWindow();
 
 				MPart part = MBasicFactory.INSTANCE.createPart();
-				part.setContributionURI("bundleclass://hr.ante.isms/hr.ante.isms.parts.Assets3");
+				part.setContributionURI("bundleclass://hr.ante.isms/hr.ante.isms.parts.riskassessment.Assets");
 				part.setCloseable(true);
 				window.getChildren().add(part);
 
@@ -233,7 +237,7 @@ public class Toolbar {
 								.createWindow();
 
 						MPart part = MBasicFactory.INSTANCE.createPart();
-						part.setContributionURI("bundleclass://hr.ante.isms/hr.ante.isms.parts.ThreatIdentification");
+						part.setContributionURI("bundleclass://hr.ante.isms/hr.ante.isms.parts.riskassessment.ThreatIdentification");
 						part.setCloseable(true);
 
 						window.getChildren().add(part);
@@ -264,7 +268,7 @@ public class Toolbar {
 								.createWindow();
 
 						MPart part = MBasicFactory.INSTANCE.createPart();
-						part.setContributionURI("bundleclass://hr.ante.isms/hr.ante.isms.parts.VulnerabilityIdentification");
+						part.setContributionURI("bundleclass://hr.ante.isms/hr.ante.isms.parts.riskassessment.VulnerabilityIdentification");
 						part.setCloseable(true);
 						window.getChildren().add(part);
 
@@ -312,7 +316,7 @@ public class Toolbar {
 						final MWindow window = MBasicFactory.INSTANCE
 								.createWindow();
 						MPart part = MBasicFactory.INSTANCE.createPart();
-						part.setContributionURI("bundleclass://hr.ante.isms/hr.ante.isms.parts.Probability");
+						part.setContributionURI("bundleclass://hr.ante.isms/hr.ante.isms.parts.riskassessment.Probability");
 						part.setElementId("hr.ante.isms.part.probability");
 						part.setCloseable(true);
 						window.getChildren().add(part);
@@ -341,7 +345,7 @@ public class Toolbar {
 					final MWindow window = MBasicFactory.INSTANCE
 							.createWindow();
 					MPart part = MBasicFactory.INSTANCE.createPart();
-					part.setContributionURI("bundleclass://hr.ante.isms/hr.ante.isms.parts.ImpactAnalysis");
+					part.setContributionURI("bundleclass://hr.ante.isms/hr.ante.isms.parts.riskassessment.ImpactAnalysis");
 					part.setCloseable(true);
 					window.getChildren().add(part);
 
@@ -374,77 +378,73 @@ public class Toolbar {
 				// expandBar.setSize(expandBar.getSize().x,
 				// xpndtmWarningDetails.getHeaderHeight());
 				// parent.layout(true);
-				if (e.item == xpndtmProcjenaRizika) {
-					if (xpndtmSmanjivanjeRizika.getExpanded()!= true && xpndtmPostavke.getExpanded()!=true){
-						riskPart.setVisible(false);
-						assetPart.setVisible(false);
-						startPart.setVisible(true);
-						assetIsVisible=0;
+				
+					if (e.item == xpndtmProcjenaRizika) {
+						if (xpndtmSmanjivanjeRizika.getExpanded() != true
+								&& xpndtmPostavke.getExpanded() != true) {
+							riskPart.setVisible(false);
+							assetPart.setVisible(false);
+							startPart.setVisible(true);
+							assetIsVisible = 0;
 
-					}
-				}
-
-				if (e.item == xpndtmSmanjivanjeRizika) {
-					if (xpndtmProcjenaRizika.getExpanded()!= true && xpndtmPostavke.getExpanded()!=true){
-						riskPart.setVisible(false);
-						assetPart.setVisible(false);
-						startPart.setVisible(true);
-						assetIsVisible=0;
-
+						}
 					}
 
-//					MPart part = partService.findPart("hr.ante.isms.part.risk");
-//					part.setVisible(false);
-//					MPart partToShow = partService.findPart("hr.ante.isms.part.asset");
-//					partToShow.setVisible(true);
-				}
+					if (e.item == xpndtmSmanjivanjeRizika) {
+						if (xpndtmProcjenaRizika.getExpanded() != true
+								&& xpndtmPostavke.getExpanded() != true) {
+							riskPart.setVisible(false);
+							assetPart.setVisible(false);
+							startPart.setVisible(true);
+							assetIsVisible = 0;
 
-				if (e.item == xpndtmPostavke) {
-					if (xpndtmSmanjivanjeRizika.getExpanded()!= true && xpndtmProcjenaRizika.getExpanded()!=true){
-						riskPart.setVisible(false);
-						assetPart.setVisible(false);
-						startPart.setVisible(true);
-						assetIsVisible=0;
+						}
 
+						// MPart part =
+						// partService.findPart("hr.ante.isms.part.risk");
+						// part.setVisible(false);
+						// MPart partToShow =
+						// partService.findPart("hr.ante.isms.part.asset");
+						// partToShow.setVisible(true);
 					}
-				}
 
+					if (e.item == xpndtmPostavke) {
+						if (xpndtmSmanjivanjeRizika.getExpanded() != true
+								&& xpndtmProcjenaRizika.getExpanded() != true) {
+							riskPart.setVisible(false);
+							assetPart.setVisible(false);
+							startPart.setVisible(true);
+							assetIsVisible = 0;
+
+						}
+					}
+
+				
+				
 			}
 
 			@Override
 			public void itemExpanded(ExpandEvent e) {
 
+				
 				if (e.item == xpndtmProcjenaRizika) {
 					xpndtmSmanjivanjeRizika.setExpanded(false);
-					riskPart.setVisible(false);
-					xpndtmPostavke.setExpanded(false);
+					xpndtmPostavke.setExpanded(false);		
+					riskPart.setVisible(false);					
 					startPart.setVisible(false);
-
 					assetPart.setVisible(true);
 					assetIsVisible=1;
-
-//					MPart part = partService.findPart("hr.ante.isms.part.risk");
-//					part.setVisible(false);
-//					MPart partToShow = partService.findPart("hr.ante.isms.part.asset");
-//					partToShow.setVisible(true);
 				}
 
 				if (e.item == xpndtmSmanjivanjeRizika) {
-					((ListRiskASKTableModel)m_Model).readAllFromDB();
+					((ListRiskASKTableModel)m_Model).readAllFromDB();					
 					xpndtmProcjenaRizika.setExpanded(false);
-					assetPart.setVisible(false);
 					xpndtmPostavke.setExpanded(false);
+					assetPart.setVisible(false);					
 					startPart.setVisible(false);
-
 					riskPart.setVisible(true);
 					assetIsVisible=0;
 
-
-
-
-
-					xpndtmProcjenaRizika.setExpanded(false);
-					xpndtmPostavke.setExpanded(false);
 //					MPart part = partService.findPart("hr.ante.isms.part.risk");
 //					part.setVisible(true);
 //					MPart partToShow = partService
@@ -454,10 +454,9 @@ public class Toolbar {
 
 				if (e.item == xpndtmPostavke) {
 					xpndtmProcjenaRizika.setExpanded(false);
-					assetPart.setVisible(false);
-					xpndtmSmanjivanjeRizika.setExpanded(false);
+					xpndtmSmanjivanjeRizika.setExpanded(false);					
+					assetPart.setVisible(false);					
 					riskPart.setVisible(false);
-
 					startPart.setVisible(true);
 					assetIsVisible=0;
 
@@ -465,11 +464,10 @@ public class Toolbar {
 
 				}
 
-				//
-				// expandBar.setSize(expandBar.getSize().x, 300);
-				// expandBar.layout(true);
-				// parent.layout(true);
 
+			
+			
+			
 			}
 
 		});
@@ -489,7 +487,7 @@ public class Toolbar {
 					final MWindow window = MBasicFactory.INSTANCE
 							.createWindow();
 					MPart part = MBasicFactory.INSTANCE.createPart();
-					part.setContributionURI("bundleclass://hr.ante.isms/hr.ante.isms.parts.RiskAssessment");
+					part.setContributionURI("bundleclass://hr.ante.isms/hr.ante.isms.parts.riskmitigation.RiskAssessment");
 					part.setCloseable(true);
 					window.getChildren().add(part);
 
@@ -517,7 +515,7 @@ public class Toolbar {
 					final MWindow window = MBasicFactory.INSTANCE
 							.createWindow();
 					MPart part = MBasicFactory.INSTANCE.createPart();
-					part.setContributionURI("bundleclass://hr.ante.isms/hr.ante.isms.parts.SuggestMeasures");
+					part.setContributionURI("bundleclass://hr.ante.isms/hr.ante.isms.parts.riskmitigation.SuggestMeasures");
 					part.setCloseable(true);
 					window.getChildren().add(part);
 
@@ -542,7 +540,7 @@ public class Toolbar {
 					final MWindow window = MBasicFactory.INSTANCE
 							.createWindow();
 					MPart part = MBasicFactory.INSTANCE.createPart();
-					part.setContributionURI("bundleclass://hr.ante.isms/hr.ante.isms.parts.MeasureEvaluation");
+					part.setContributionURI("bundleclass://hr.ante.isms/hr.ante.isms.parts.riskmitigation.MeasureEvaluation");
 					part.setCloseable(true);
 					window.getChildren().add(part);
 

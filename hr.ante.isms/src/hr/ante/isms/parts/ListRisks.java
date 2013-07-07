@@ -2,8 +2,8 @@ package hr.ante.isms.parts;
 
 import hr.ante.isms.connection.DataFromDatabase;
 import hr.ante.isms.handlers.QuitHandler;
-import hr.ante.isms.parts.table.ListRiskASKTableModel;
 import hr.ante.isms.parts.table.NewASKTable1;
+import hr.ante.isms.parts.table.model.ListRiskASKTableModel;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -51,6 +51,7 @@ import org.mihalis.opal.opalDialog.Dialog;
 public class ListRisks implements ViewSelected {
 
 	private NewASKTable1 table;
+	public static NewASKTable1 listRiskTable;
 	private DataFromDatabase dB;
 	private int m_Row;
 
@@ -293,6 +294,7 @@ public class ListRisks implements ViewSelected {
 		new Label(compositeUser_, SWT.NONE);
 		new Label(compositeUser_, SWT.NONE);
 
+		listRiskTable = table;
 		scrollBox.setContent(mParent);
 	}
 	

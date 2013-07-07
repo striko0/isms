@@ -1,8 +1,8 @@
 package hr.ante.isms.parts;
 
 import hr.ante.isms.connection.DataFromDatabase;
-import hr.ante.isms.parts.table.ListThreatASKTableModel;
 import hr.ante.isms.parts.table.NewASKTable1;
+import hr.ante.isms.parts.table.model.ListThreatASKTableModel;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -376,8 +376,9 @@ public class Threats implements ViewSelected {
 	private void fillForm() {
 		// TODO Auto-generated method stub
 		action=1;
-		initialSettings();
 		table.setSelection(null, false);
+		initialSettings();
+		
 
 	}
 

@@ -1,8 +1,8 @@
 package hr.ante.isms.parts;
 
 import hr.ante.isms.connection.DataFromDatabase;
-import hr.ante.isms.parts.table.ListControlASKTableModel;
 import hr.ante.isms.parts.table.NewASKTable1;
+import hr.ante.isms.parts.table.model.ListControlASKTableModel;
 
 import java.util.Hashtable;
 

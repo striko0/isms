@@ -31,7 +31,7 @@ public class ImpactAnalysisHandler {
 			if (m_Row != 0) {
 				window = MBasicFactory.INSTANCE.createWindow();
 				MPart part = MBasicFactory.INSTANCE.createPart();
-				part.setContributionURI("bundleclass://hr.ante.isms/hr.ante.isms.parts.ImpactAnalysis");
+				part.setContributionURI("bundleclass://hr.ante.isms/hr.ante.isms.parts.riskassessment.ImpactAnalysis");
 				part.setCloseable(true);
 				window.getChildren().add(part);
 
